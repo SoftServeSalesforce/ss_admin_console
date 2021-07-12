@@ -1,0 +1,25 @@
+<template>
+    <template if:true={isrun}>
+        <lightning-combobox
+            name="scheduledClasses"
+            label="Select a Scheduled class:"
+            value={scheduledClassName}
+            placeholder="Select a Scheduled class"
+            options={scheduledClasses}
+            onchange={handleSelectClassName}
+        >
+        </lightning-combobox>
+        <lightning-input 
+            type="time" 
+            name="scheduledTime" 
+            label="Enter scheduled Time"
+            value={scheduledTime}
+            onchange={handleScheduledTime} >
+        </lightning-input>
+        <lightning-button 
+            label="Start" title="Run Scheduled Job" 
+            onclick={handleRunScheduledJob} 
+            class="slds-m-left_x-small">
+        </lightning-button>
+    </template>
+</template>

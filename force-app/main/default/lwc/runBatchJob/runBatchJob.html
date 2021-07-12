@@ -1,0 +1,25 @@
+<template>
+    <template if:true={isrun}>
+        <lightning-combobox
+            name="batchClasses"
+            label="Select a Batch class:"
+            value={batchClassName}
+            placeholder="Select a Batch class"
+            options={batchClasses}
+            onchange={handleSelectClassName}
+        >
+        </lightning-combobox>
+        <lightning-input 
+            type="number" 
+            name="batchSize" 
+            label="Enter Batch Size"
+            value={batchSize}
+            onchange={handleBatchSize} >
+        </lightning-input>
+        <lightning-button 
+            label="Start" title="Run Batch" 
+            onclick={handleRunBatch} 
+            class="slds-m-left_x-small">
+        </lightning-button>
+    </template>
+</template>

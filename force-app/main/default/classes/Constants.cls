@@ -88,16 +88,4 @@ public with sharing class Constants {
         'Katya,Karatnyk',
         'Pavlo,Karatnyk'
     };
-
-    public static List<String> FIRST_NAME = new List<String> {
-        
-    };
-
-    public static List<String> LAST_NAME = new List<String> {
-
-    };
-
-    public static List<String> EMAIL = new List<String> {
-
-    };
 }

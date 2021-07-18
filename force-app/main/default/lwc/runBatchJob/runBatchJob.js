@@ -1,6 +1,6 @@
 import { LightningElement, track, api } from 'lwc';
 import runBatch from '@salesforce/apex/DiagnosticController.runBatch';
-import obtainBatchClasses from '@salesforce/apex/DiagnosticController.obtainBatchClasses';
+import obtainJobClasses from '@salesforce/apex/DiagnosticController.obtainJobClasses';
 
 export default class RunBatchJob extends LightningElement {
     @track batchClasses = [];
@@ -32,18 +32,23 @@ export default class RunBatchJob extends LightningElement {
     };
 
     handleRunBatch = () => {
-        this.isLoading = true;
+        if (!this.batchClassName || !this.batchSize) {
+            return;
+        }
         runBatch({className: this.batchClassName, batchSize: this.batchSize})
             .then(result => {
-                 this.isLoading = false;
+                const runJobEvent = new CustomEvent('runbatchjob', {
+                    detail: result
+                });
+                this.dispatchEvent(runJobEvent);
              })
              .catch(error => {
-                 this.isLoading = false;
+                 console.log(error);
              })
     };
 
     runBatchAction = () => {
-        obtainBatchClasses()
+        obtainJobClasses({interfaceName: 'Database.Batchable'})
             .then(result => {
                 this.batchClasses = this.getBatchClasses(result);
         })

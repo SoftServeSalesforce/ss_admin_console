@@ -1,5 +1,5 @@
 import { LightningElement, track, api } from 'lwc';
-import obtainScheduledClasses from '@salesforce/apex/DiagnosticController.obtainScheduledClasses';
+import obtainJobClasses from '@salesforce/apex/DiagnosticController.obtainJobClasses';
 import setUpScheduledJob from '@salesforce/apex/DiagnosticController.setUpScheduledJob';
 
 export default class RunDailyJob extends LightningElement {
@@ -13,7 +13,7 @@ export default class RunDailyJob extends LightningElement {
     }
 
     runDailyJobAction = () => {
-        obtainScheduledClasses()
+        obtainJobClasses({interfaceName: 'Schedulable'})
             .then(result => {
                 this.scheduledClasses = this.getScheduledClasses(result);
         })
@@ -42,13 +42,17 @@ export default class RunDailyJob extends LightningElement {
     };
 
     handleRunScheduledJob = () => {
-        this.isLoading = true;
+        if (!this.scheduledClassName || !this.scheduledTime) {
+            return;
+        }
         setUpScheduledJob({className: this.scheduledClassName, jobTime: this.scheduledTime})
             .then(result => {
-                 this.isLoading = false;
+                const runScheduledEvent = new CustomEvent('runscheduledjob', {
+                    detail: result
+                });
+                this.dispatchEvent(runScheduledEvent);
              })
              .catch(error => {
-                 this.isLoading = false;
              })
     };
 }

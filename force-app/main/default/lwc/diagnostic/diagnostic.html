@@ -9,24 +9,28 @@
         <lightning-combobox
             name="actions"
             label="Select an action:"
-            value={action}
             placeholder="Select an action"
             options={options}
             onchange={handleChange} >
         </lightning-combobox>
 
         <c-load-test-data 
-            isrun = {isLoadData}>
+            isrun={isLoadData}
+            onrundataloading={handleDataLoading}>
         </c-load-test-data>
         
         <c-run-batch-job 
-            isrun = {isRunBatch}>
+            isrun={isRunBatch}
+            onrunbatchjob={handleBatchJob}>
         </c-run-batch-job>
         
-        <c-run-daily-job
-            isrun = {isDailyBatch}>
+        <c-run-daily-job 
+            isrun={isDailyBatch}
+            onrunscheduledjob={handleScheduledjob}>
         </c-run-daily-job>
-        
-        <c-log-screen> </c-log-screen>
+        <c-logs-listener onlogslistener={handleLogs}></c-logs-listener>
+        <template if:true={logsExist}>
+            <c-log-screen logs={logs}> </c-log-screen>
+        </template>
     </div>
 </template>

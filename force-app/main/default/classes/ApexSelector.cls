@@ -6,6 +6,4 @@ public with sharing class ApexSelector {
             FROM ApexClass
         ];
     }
-
-
 }

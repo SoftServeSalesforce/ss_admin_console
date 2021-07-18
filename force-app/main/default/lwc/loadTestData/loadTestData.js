@@ -7,7 +7,10 @@ export default class LoadTestData extends LightningElement {
     handleLoadData = () => {
         runDataLoading()
             .then(result => {
-                
+                const runDataLoading = new CustomEvent('rundataloading', {
+                    detail: result
+                });
+                this.dispatchEvent(runDataLoading);
         })
             .catch(error => {
                 console.log(error);

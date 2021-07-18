@@ -1,9 +1,13 @@
 <template>
     <template if:true={isrun}>
-        <lightning-button 
-            label="Load Accounts" title="Run Data Loading" 
-            onclick={handleLoadData} 
-            class="slds-m-left_x-small">
-        </lightning-button>
+        <div class="slds-box slds-m-top_large">
+            <lightning-button 
+                label="Load Test Data"
+                title="Run Data Loading" 
+                variant="Brand"
+                onclick={handleLoadData} 
+                class="slds-m-left_x-small">
+            </lightning-button>
+        </div>
     </template>
 </template>

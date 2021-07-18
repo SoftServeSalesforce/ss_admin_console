@@ -8,6 +8,7 @@ public with sharing class DiagnosticService {
 
     public List<String> obtainClasses(String interfaceName) {
         List<ApexClass> apexClasses = this.apexSelector.getApexClasses();
+        
         return this.obtainApexClasses(apexClasses, interfaceName);
     }
 
@@ -16,6 +17,7 @@ public with sharing class DiagnosticService {
 		String hour = (timeSplit.get(0).startsWith('0')) ? timeSplit.get(0).replaceFirst('0', '') : timeSplit.get(0);
 		String minute = (timeSplit.get(1).startsWith('0')) ? timeSplit.get(1).replaceFirst('0', '') : timeSplit.get(1);
 		String cronExpression = '0 ' + minute + ' ' + hour + ' ? * * *';
+
 		return cronExpression;
     }
 
@@ -27,6 +29,7 @@ public with sharing class DiagnosticService {
                 result.add(aClass.Name);
             }
         }
+
         return result;
     }
 
@@ -34,6 +37,7 @@ public with sharing class DiagnosticService {
     private Boolean isImplementInterface(ApexClass apexClass, String interfaceName) {
         Type apexClassType = Type.forName(apexClass.Name);
         Type interfaceType = Type.forName(interfaceName);
+
         return interfaceType.isAssignableFrom(apexClassType);
     }
 }

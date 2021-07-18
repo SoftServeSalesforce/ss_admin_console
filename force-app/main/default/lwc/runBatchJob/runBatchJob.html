@@ -1,25 +1,35 @@
 <template>
     <template if:true={isrun}>
-        <lightning-combobox
-            name="batchClasses"
-            label="Select a Batch class:"
-            value={batchClassName}
-            placeholder="Select a Batch class"
-            options={batchClasses}
-            onchange={handleSelectClassName}
-        >
-        </lightning-combobox>
-        <lightning-input 
-            type="number" 
-            name="batchSize" 
-            label="Enter Batch Size"
-            value={batchSize}
-            onchange={handleBatchSize} >
-        </lightning-input>
-        <lightning-button 
-            label="Start" title="Run Batch" 
-            onclick={handleRunBatch} 
-            class="slds-m-left_x-small">
-        </lightning-button>
+        <div class="slds-box slds-m-top_large">
+            <div class="slds-m-left_x-small">
+                <lightning-combobox
+                    name="batchClasses"
+                    label="Select a Batch class:"
+                    value={batchClassName}
+                    placeholder="Select a Batch class"
+                    options={batchClasses}
+                    required=true
+                    onchange={handleSelectClassName}>
+                </lightning-combobox>
+                <lightning-input 
+                    type="number" 
+                    name="batchSize" 
+                    label="Enter Batch Size"
+                    value={batchSize}
+                    required=true
+                    onchange={handleBatchSize} >
+            </lightning-input>
+            </div>
+            
+            <div class="slds-m-top_x-small">
+                <lightning-button 
+                    label="Start" 
+                    title="Run Batch"
+                    variant="Brand"
+                    onclick={handleRunBatch} 
+                    class="slds-m-left_x-small">
+                </lightning-button>
+            </div>
+        </div>
     </template>
 </template>

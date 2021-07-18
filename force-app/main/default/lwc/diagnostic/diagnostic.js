@@ -1,12 +1,13 @@
-import {LightningElement, track, wire} from 'lwc';
+import {LightningElement, track, api} from 'lwc';
 
 export default class Diagnostic extends LightningElement {
     @track value;
     @track isLoading = false;
-    @track isTestFLSData;
     @track isDailyBatch;
     @track isRunBatch;
     @track isLoadData;
+    @track logs = [];
+    @track logsExist = false;
     
     get options() {
         return [
@@ -17,36 +18,51 @@ export default class Diagnostic extends LightningElement {
         ];
     };
 
+    handleLogs(event) {
+        event.detail.forEach(log => {
+            this.logs.push(log);
+        });
+        this.logsExist = true;
+    };
+
+    handleDataLoading(event) {
+        this.logs.push(event.detail);
+        this.logsExist = true;
+    }
+
+    handleBatchJob(event) {
+        this.logs.push(event.detail);
+        this.logsExist = true;
+    };
+
+    handleScheduledjob(event) {
+        this.logs.push(event.detail);
+        this.logsExist = true;
+    };
+
     handleChange(event) {
         this.value = event.detail.value;
         if (this.value == 'Load Test Data') {
-            this.isTestFLSData = false;
             this.isDailyBatch = false;
             this.isRunBatch = false;
             this.isLoadData = true;
         }
         if (this.value == 'Set up Daily Batch') {
-            this.isTestFLSData = false;
             this.isDailyBatch = true;
             this.isRunBatch = false;
             this.isLoadData = false;
         }
         if (this.value == 'Run Batch') {
-            this.isTestFLSData = false;
             this.isDailyBatch = false;
             this.isRunBatch = true;
             this.isLoadData = false;
         }
         if (this.value == 'Clear') {
-            this.isTestFLSData = false;
             this.isDailyBatch = false;
             this.isRunBatch = false;
             this.isLoadData = false;
+            this.logs = [];
+            this.logsExist = false;
         }
     };
 }
-
-const STATUS_FAILED = '<span style="color:red">FAILED</span>';
-const STATUS_OK = '<span style="color:forestgreen">OK</span>';
-const STATUS_WARNING = '<span style="color:darkgoldenrod">WARNING</span>';
-const STATUS_DUPLICATE_VALUE = '<span style="color:red">DUPLICATED VALUE</span>';

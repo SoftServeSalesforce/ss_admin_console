@@ -8,7 +8,7 @@
 
 # Idea
 .idea/
-.IlluminatedCloud/
+IlluminatedCloud/
 
 # LWC VSCode autocomplete
 **/lwc/jsconfig.json

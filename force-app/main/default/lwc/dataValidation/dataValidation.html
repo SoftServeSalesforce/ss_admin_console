@@ -1,7 +1,13 @@
-<!--
- - Created by kkara on 05.08.2021.
- -->
-
-<!-- Data Validation -->
 <template>
+    <template if:true={isrun}>
+        <div class="slds-box slds-m-top_large">
+            <lightning-button
+                    label="Data Validation"
+                    title="Run Data Validation"
+                    variant="Brand"
+                    onclick={handleValidateData}
+                    class="slds-m-left_x-small">
+            </lightning-button>
+        </div>
+    </template>
 </template>

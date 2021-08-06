@@ -18,6 +18,11 @@
             isrun={isLoadData}
             onrundataloading={handleDataLoading}>
         </c-load-test-data>
+
+        <c-data-validation
+                isrun={isValidate}
+                onrunvalidation={handleValidation}>
+        </c-data-validation>
         
         <c-run-batch-job 
             isrun={isRunBatch}
@@ -26,7 +31,7 @@
         
         <c-run-daily-job 
             isrun={isDailyBatch}
-            onrunscheduledjob={handleScheduledjob}>
+            onrunscheduledjob={handleScheduledJob}>
         </c-run-daily-job>
         <c-logs-listener onlogslistener={handleLogs}></c-logs-listener>
         <template if:true={logsExist}>

@@ -1,9 +1,10 @@
-import { LightningElement, api, track } from 'lwc';
-import { subscribe } from 'lightning/empApi';
+import {LightningElement} from 'lwc';
+import {subscribe} from 'lightning/empApi';
 
 export default class LogsListener extends LightningElement {
     payload = {};
     channelName = '/event/JobLogEvent__e';
+
     connectedCallback() {
         this.handleSubscribe();
     };
@@ -12,36 +13,37 @@ export default class LogsListener extends LightningElement {
         const messageCallback = (response) => {
             let logs = [];
             this.payload = JSON.parse(JSON.stringify(response));
-            logs.push(this.handleMessageType(this.payload.data.payload.Message_Type__c));
-            logs.push(this.payload.data.payload.CreatedDate + ': ' + this.payload.data.payload.Message__c);
+            logs.push(this.handleMessage(this.payload.data.payload.Message_Type__c,
+                this.payload.data.payload.Message_Title__c,
+                this.payload.data.payload.Message__c,
+                this.payload.data.payload.CreatedDate));
             const logsEvent = new CustomEvent('logslistener', {
                 detail: logs
             });
             this.dispatchEvent(logsEvent);
         };
         subscribe(this.channelName, -1, messageCallback).then(response => {
-            this.subscription = response;            
+            this.subscription = response;
         });
-    }
-    
+    };
 
-    handleMessageType(messageType) {
-        if (messageType == "WARNING") {
-            return STATUS_WARNING;
+    handleMessage(messageType, messageTitle, message, messageDate) {
+        let log = messageDate + ': ';
+        if (messageType == 'DUPLICATED' || messageType == 'FAILED') {
+            log += this.setColor('red', messageTitle);
+        } else if (messageType == 'OK') {
+            log += this.setColor('green', messageTitle);
+        } else if (messageType == 'WARNING') {
+            log += this.setColor('darkgoldenrod', messageTitle);
         }
-        if (messageType == "FAILED") {
-            return STATUS_FAILED;
+        if (message) {
+            log += ' ' + message;
         }
-        if (messageType == "OK") {
-            return STATUS_OK;
-        }
-        if (messageType == "DUPLICATED") {
-            return STATUS_DUPLICATE_VALUE;
-        }
+
+        return log;
+    }
+
+    setColor(color, message) {
+        return '<p style="font-weight: bold; color:' + color + '">' + message + '</p>';
     }
 }
-
-const STATUS_FAILED = '<span style="color:red">FAILED</span>';
-const STATUS_OK = '<span style="color:forestgreen">OK</span>';
-const STATUS_WARNING = '<span style="color:darkgoldenrod">WARNING</span>';
-const STATUS_DUPLICATE_VALUE = '<span style="color:red">DUPLICATED VALUE</span>';

@@ -1,8 +1,8 @@
 <template>
-    <div class="slds-box slds-m-top--large slds-scrollable" 
-        style="height: 18rem; font-family: 'Source Code Pro',monospace; font-size: x-small">
+    <div class="slds-box slds-m-top--large slds-scrollable"
+         style="height: 18rem; font-family: 'Source Code Pro',monospace; font-size: x-small">
         <template for:each={logs} for:item="logsItem">
-            <div  key={logsItem}>
+            <div key={logsItem}>
                 <lightning-formatted-rich-text value={logsItem}></lightning-formatted-rich-text>
             </div>
         </template>

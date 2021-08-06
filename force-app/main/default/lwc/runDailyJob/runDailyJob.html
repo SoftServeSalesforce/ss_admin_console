@@ -3,34 +3,34 @@
         <div class="slds-box slds-m-top_large">
             <div class="slds-m-left_x-small">
                 <lightning-combobox
-                    name="scheduledClasses"
-                    label="Select a Scheduled class:"
-                    value={scheduledClassName}
-                    placeholder="Select a Scheduled class"
-                    options={scheduledClasses}
-                    required=true
-                    onchange={handleSelectClassName}>
+                        name="scheduledClasses"
+                        label="Select a Scheduled class:"
+                        value={scheduledClassName}
+                        placeholder="Select a Scheduled class"
+                        options={scheduledClasses}
+                        required=true
+                        onchange={handleSelectClassName}>
                 </lightning-combobox>
-                <lightning-input 
-                    type="time" 
-                    name="scheduledTime" 
-                    label="Enter scheduled Time"
-                    value={scheduledTime}
-                    required=true
-                    onchange={handleScheduledTime} >
+                <lightning-input
+                        type="time"
+                        name="scheduledTime"
+                        label="Enter scheduled Time"
+                        value={scheduledTime}
+                        required=true
+                        onchange={handleScheduledTime}>
                 </lightning-input>
             </div>
-            
+
             <div class="slds-m-top_x-small">
-                <lightning-button 
-                    label="Start" 
-                    title="Run Scheduled Job"
-                    variant="Brand"
-                    onclick={handleRunScheduledJob} 
-                    class="slds-m-left_x-small">
+                <lightning-button
+                        label="Start"
+                        title="Run Scheduled Job"
+                        variant="Brand"
+                        onclick={handleRunScheduledJob}
+                        class="slds-m-left_x-small">
                 </lightning-button>
             </div>
-            
+
         </div>
     </template>
 </template>

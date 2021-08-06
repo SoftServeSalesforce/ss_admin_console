@@ -1,4 +1,4 @@
-import { LightningElement, api, track } from 'lwc';
+import {LightningElement, api, track} from 'lwc';
 import runDataLoading from '@salesforce/apex/DiagnosticController.runDataLoading';
 
 export default class LoadTestData extends LightningElement {
@@ -11,9 +11,9 @@ export default class LoadTestData extends LightningElement {
                     detail: result
                 });
                 this.dispatchEvent(runDataLoading);
-        })
+            })
             .catch(error => {
                 console.log(error);
-        });
+            });
     }
 }

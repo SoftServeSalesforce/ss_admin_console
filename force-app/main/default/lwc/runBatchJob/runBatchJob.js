@@ -1,4 +1,4 @@
-import { LightningElement, track, api } from 'lwc';
+import {LightningElement, track, api} from 'lwc';
 import runBatch from '@salesforce/apex/DiagnosticController.runBatch';
 import obtainJobClasses from '@salesforce/apex/DiagnosticController.obtainJobClasses';
 
@@ -15,9 +15,9 @@ export default class RunBatchJob extends LightningElement {
     getBatchClasses(actions) {
         let result = [];
         for (let key in actions) {
-            result.push ({
-                'label' : actions[key],
-                'value' : actions[key]
+            result.push({
+                'label': actions[key],
+                'value': actions[key]
             });
         }
         return result;
@@ -41,19 +41,19 @@ export default class RunBatchJob extends LightningElement {
                     detail: result
                 });
                 this.dispatchEvent(runJobEvent);
-             })
-             .catch(error => {
-                 console.log(error);
-             })
+            })
+            .catch(error => {
+                console.log(error);
+            })
     };
 
     runBatchAction = () => {
         obtainJobClasses({interfaceName: 'Database.Batchable'})
             .then(result => {
                 this.batchClasses = this.getBatchClasses(result);
-        })
+            })
             .catch(error => {
                 console.log(error);
-        });
+            });
     };
 }

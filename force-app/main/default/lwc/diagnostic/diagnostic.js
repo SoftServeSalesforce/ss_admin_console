@@ -6,15 +6,17 @@ export default class Diagnostic extends LightningElement {
     @track isDailyBatch;
     @track isRunBatch;
     @track isLoadData;
+    @track isValidate;
     @track logs = [];
     @track logsExist = false;
-    
+
     get options() {
         return [
-            { label: 'Load Test Data', value: 'Load Test Data' },
-            { label: 'Set up Daily Batch', value: 'Set up Daily Batch' },
-            { label: 'Run Batch', value: 'Run Batch' },
-            { label: 'Clear', value: 'Clear' },
+            {label: 'Validation', value: 'Validation'},
+            {label: 'Load Test Data', value: 'Load Test Data'},
+            {label: 'Set up Daily Batch', value: 'Set up Daily Batch'},
+            {label: 'Run Batch', value: 'Run Batch'},
+            {label: 'Clear', value: 'Clear'},
         ];
     };
 
@@ -28,6 +30,11 @@ export default class Diagnostic extends LightningElement {
     handleDataLoading(event) {
         this.logs.push(event.detail);
         this.logsExist = true;
+    };
+
+    handleValidation(event) {
+        this.logs.push(event.detail);
+        this.logsExist = true;
     }
 
     handleBatchJob(event) {
@@ -35,7 +42,7 @@ export default class Diagnostic extends LightningElement {
         this.logsExist = true;
     };
 
-    handleScheduledjob(event) {
+    handleScheduledJob(event) {
         this.logs.push(event.detail);
         this.logsExist = true;
     };
@@ -45,22 +52,32 @@ export default class Diagnostic extends LightningElement {
         if (this.value == 'Load Test Data') {
             this.isDailyBatch = false;
             this.isRunBatch = false;
+            this.isValidate = false;
             this.isLoadData = true;
+        }
+        if (this.value == 'Validation') {
+            this.isDailyBatch = false;
+            this.isRunBatch = false;
+            this.isValidate = true;
+            this.isLoadData = false;
         }
         if (this.value == 'Set up Daily Batch') {
             this.isDailyBatch = true;
             this.isRunBatch = false;
+            this.isValidate = false;
             this.isLoadData = false;
         }
         if (this.value == 'Run Batch') {
             this.isDailyBatch = false;
             this.isRunBatch = true;
             this.isLoadData = false;
+            this.isValidate = false;
         }
         if (this.value == 'Clear') {
             this.isDailyBatch = false;
             this.isRunBatch = false;
             this.isLoadData = false;
+            this.isValidate = false;
             this.logs = [];
             this.logsExist = false;
         }

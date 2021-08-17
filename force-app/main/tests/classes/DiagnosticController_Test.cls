@@ -1,7 +1,7 @@
 @IsTest
 public with sharing class DiagnosticController_Test {
     
-    @IsTest
+    /*@IsTest
     static void checkDataTest(){
         String result = DiagnosticController.checkData();
         system.assert(result.contains('Validation started'));
@@ -24,5 +24,5 @@ public with sharing class DiagnosticController_Test {
         String result = DiagnosticController.runCountTimeBatch();
         //system.assert(result.contains('Service Appointments batch update'));
     }
-
+*/
 }

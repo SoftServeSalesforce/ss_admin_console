@@ -6,64 +6,42 @@
                 </lightning-spinner>
             </template>
         </div>
-        <div class="slds-grid slds-gutters">
-            <div class="slds-col">
-                <lightning-button variant="brand" label="Test FSL Data" onclick={testFslData}></lightning-button>
-            </div>
-            <div class="slds-col">
-                <lightning-button variant="destructive" label="Clear logs" onclick={handleClear}></lightning-button>
-            </div>
-            <div class="slds-col">
-                <lightning-button variant="brand" label="Set up Daily Batch" onclick={setUpBatch}></lightning-button>
-            </div>
-            <div class="slds-col">
-                <lightning-button variant="brand" label="Run CTBA Batch " onclick={runCountTimeBatch}></lightning-button>
-            </div>
-        </div>
-        <div>
-            <br>
-        </div>
-        <div class="slds-grid slds-gutters">
-            <div class="slds-col">
-                <lightning-button variant="brand" label="Populate Operating Hours" onclick={populateOperatingHours} disabled={isPopulateOpHoursDisabled}></lightning-button>
-            </div>
-            <div class="slds-col">
-                <lightning-button variant="brand" label="Populate Service Territories P1" onclick={populateServiceTerritoriesP1} disabled={isPopulateST1Disabled}></lightning-button>
-            </div>
-            <div class="slds-col">
-                <lightning-button variant="brand" label="Populate Service Territories P2" onclick={populateServiceTerritoriesP2} disabled={isPopulateST2Disabled}></lightning-button>
-            </div>
-            <div class="slds-col">
-                <lightning-button variant="brand" label="Populate Service Territories P3" onclick={populateServiceTerritoriesP3} disabled={isPopulateST3Disabled}></lightning-button>
-            </div>
-            <div class="slds-col">
-                <lightning-button variant="brand" label="Populate Service Territories P4" onclick={populateServiceTerritoriesP4} disabled={isPopulateST4Disabled}></lightning-button>
-            </div>
-        </div>
-        <div>
-            <br>
-        </div>
-        <div class="slds-grid slds-gutters">
-            <div class="slds-col">
-                <lightning-button variant="brand" label="Populate Work Types" onclick={populateWorkTypes} disabled={isPopulateWorkTypesDisabled}></lightning-button>
-            </div>
-            <div class="slds-col">
-                <lightning-button variant="brand" label="Populate Tenant Warnings" onclick={populateTenantWarnings} disabled={isPopulateTWarningsDisabled}></lightning-button>
-            </div>
-            <div class="slds-col">
-                <lightning-button variant="brand" label="Populate Questions" onclick={populateQuestions} disabled={isPopulateQuestionsDisabled}></lightning-button>
-            </div>
-            <div class="slds-col">
-                <lightning-button variant="brand" label="Populate Questions Lookup" onclick={populateQuestionsLookup} disabled={isPopulateQuestionsLookupDisabled}></lightning-button>
-            </div>
-        </div>
+        <lightning-combobox
+            name="actions"
+            label="Select an action:"
+            placeholder="Select an action"
+            options={options}
+            onchange={handleChange} >
+        </lightning-combobox>
 
-        <div if:true={logsExist} class="slds-box slds-m-top--large slds-scrollable" style="height: 18rem; font-family: 'Source Code Pro',monospace; font-size: x-small">
-            <template for:each={logs} for:item="logsItem">
-                <div  key={logsItem}>
-                    <lightning-formatted-rich-text value={logsItem}></lightning-formatted-rich-text>
-                </div>
-            </template>
-        </div>
+        <template if:true={isActionSelected}>
+            <div class="slds-box slds-m-top_large">
+                <lightning-button
+                        label="Test"
+                        title="Test"
+                        variant="Brand"
+                        onclick={handleTest}
+                        class="slds-m-left_x-small">
+                </lightning-button>
+                <lightning-button
+                        label="Execute"
+                        title="Execute"
+                        variant="Brand"
+                        onclick={handleExecute}
+                        class="slds-m-left_x-small">
+                </lightning-button>
+            </div>
+        </template>
+
+        <template if:true={logsExist}>
+            <div class="slds-box slds-m-top--large slds-scrollable"
+                 style="height: 18rem; font-family: 'Source Code Pro',monospace; font-size: x-small">
+                <template for:each={logs} for:item="logsItem">
+                    <div key={logsItem}>
+                        <lightning-formatted-rich-text value={logsItem}></lightning-formatted-rich-text>
+                    </div>
+                </template>
+            </div>
+        </template>
     </div>
 </template>

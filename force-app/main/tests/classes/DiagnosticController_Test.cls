@@ -1,28 +1,35 @@
 @IsTest
 public with sharing class DiagnosticController_Test {
     
-    /*@IsTest
-    static void checkDataTest(){
-        String result = DiagnosticController.checkData();
-        system.assert(result.contains('Validation started'));
-    }
-    
     @IsTest
-    static void populateDataTest(){
-        String result = DiagnosticController.populateData();
-        
-        String result1 = DiagnosticController.checkData();
+    static void testProductData(){
+        Test.startTest();
+        String result = DiagnosticController.test('PRODUCTS_DATA');
+        Test.stopTest();
+        System.assert(result.contains('Test Started'));
     }
-    
+
     @IsTest
-    static void setUpBatchTest(){
-       
+    static void executeProductData(){
+        Test.startTest();
+        String result = DiagnosticController.execute('PRODUCTS_DATA');
+        Test.stopTest();
+        System.assert(result.contains('Execution Started'));
     }
-    
+
     @IsTest
-    static void runCountTimeBatchTest(){
-        String result = DiagnosticController.runCountTimeBatch();
-        //system.assert(result.contains('Service Appointments batch update'));
+    static void testCustomerData(){
+        Test.startTest();
+        String result = DiagnosticController.test('CUSTOMERS_DATA');
+        Test.stopTest();
+        System.assert(result.contains('Test Started'));
     }
-*/
+
+    @IsTest
+    static void executeCustomerData(){
+        Test.startTest();
+        String result = DiagnosticController.execute('CUSTOMERS_DATA');
+        Test.stopTest();
+        System.assert(result.contains('Execution Started'));
+    }
 }

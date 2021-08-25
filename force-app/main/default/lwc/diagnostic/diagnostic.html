@@ -14,34 +14,32 @@
             onchange={handleChange} >
         </lightning-combobox>
 
-        <template if:true={isActionSelected}>
-            <div class="slds-box slds-m-top_large">
-                <lightning-button
-                        label="Test"
-                        title="Test"
-                        variant="Brand"
-                        onclick={handleTest}
-                        class="slds-m-left_x-small">
-                </lightning-button>
-                <lightning-button
-                        label="Execute"
-                        title="Execute"
-                        variant="Brand"
-                        onclick={handleExecute}
-                        class="slds-m-left_x-small">
-                </lightning-button>
-            </div>
-        </template>
+        <div class="slds-box slds-m-top_large">
+            <lightning-button
+                    disabled={actionDisabled}
+                    label="Test"
+                    title="Test"
+                    variant="Brand"
+                    onclick={handleTest}
+                    class="slds-m-left_x-small">
+            </lightning-button>
+            <lightning-button
+                    disabled={actionDisabled}
+                    label="Execute"
+                    title="Execute"
+                    variant="Brand"
+                    onclick={handleExecute}
+                    class="slds-m-left_x-small">
+            </lightning-button>
+        </div>
 
-        <template if:true={logsExist}>
-            <div class="slds-box slds-m-top--large slds-scrollable"
-                 style="height: 18rem; font-family: 'Source Code Pro',monospace; font-size: x-small">
-                <template for:each={logs} for:item="logsItem">
-                    <div key={logsItem}>
-                        <lightning-formatted-rich-text value={logsItem}></lightning-formatted-rich-text>
-                    </div>
-                </template>
-            </div>
-        </template>
+        <div class="slds-box slds-m-top--large slds-scrollable"
+                style="height: 18rem; font-family: 'Source Code Pro',monospace; font-size: x-small">
+            <template for:each={logs} for:item="logsItem">
+                <div key={logsItem}>
+                    <lightning-formatted-rich-text value={logsItem}></lightning-formatted-rich-text>
+                </div>
+            </template>
+        </div>
     </div>
 </template>

@@ -6,7 +6,7 @@ import {subscribe} from 'lightning/empApi';
 export default class Diagnostic extends LightningElement {
     @track isLoading = false;
     @track selectedAction;
-    @track isActionSelected;
+    @track actionDisabled = true;
     @track logs = [];
     @track logsExist = false;
     payload = {};
@@ -32,6 +32,9 @@ export default class Diagnostic extends LightningElement {
                 this.payload.data.payload.Message_Title__c,
                 this.payload.data.payload.Message__c,
                 this.payload.data.payload.CreatedDate));
+            this.logs.push(this.handleHeaderMessage(this.handleFinishMessage(
+                this.payload.data.payload.SObject_Type__c,
+                this.payload.data.payload.Action_Type__c)))
         };
         subscribe(this.channelName, -1, messageCallback).then(response => {
             this.subscription = response;
@@ -52,6 +55,10 @@ export default class Diagnostic extends LightningElement {
         }
 
         return log;
+    };
+
+    handleFinishMessage(objectType, actionType) {
+        return actionType + ' action was finished for SObject - ' + objectType;
     }
 
     setColor(color, message) {
@@ -61,7 +68,7 @@ export default class Diagnostic extends LightningElement {
     handleExecute = () => {
         execute({actionType: this.selectedAction})
             .then(result => {
-                this.logs.push(result);
+                this.logs.push(this.handleHeaderMessage(result));
             })
             .catch(error => {
                 console.log(error);
@@ -71,19 +78,23 @@ export default class Diagnostic extends LightningElement {
     handleTest = () => {
         test({actionType: this.selectedAction})
             .then(result => {
-                this.logs.push(result);
+                this.logs.push(this.handleHeaderMessage(result));
             })
             .catch(error => {
                 console.log(error);
             });
     };
 
+    handleHeaderMessage(message) {
+        return '<p style="font-weight:bold; font-size:150%">' + message + '</p>';
+    }
+
     handleChange(event) {
         this.selectedAction = event.detail.value;
-        this.isActionSelected = true;
+        this.actionDisabled = false;
         if (this.selectedAction == 'Clear') {
             this.logs = [];
-            this.isActionSelected = false;
+            this.actionDisabled = true;
         }
     };
 }

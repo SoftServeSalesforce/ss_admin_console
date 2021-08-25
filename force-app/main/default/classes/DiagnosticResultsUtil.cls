@@ -17,11 +17,10 @@ public with sharing class DiagnosticResultsUtil {
         List<DiagnosticResult> results = new List<DiagnosticResult>();
         for (Database.SaveResult result : saveResults) {
             if (result.isSuccess()) {
-                DiagnosticResult diagnosticResult = new DiagnosticResult()
+                results.add(new DiagnosticResult()
                         .setStatus(Constants.OK_STATUS)
                         .setRecordId(result.getId())
-                        .setSObjectApiName(sObjectApiName);
-                results.add(diagnosticResult);
+                        .setSObjectApiName(sObjectApiName));
             } else {
                 String errorMessage = '';
                 for (Database.Error err : result.getErrors()) {
@@ -30,9 +29,9 @@ public with sharing class DiagnosticResultsUtil {
                 }
                 results.add(new DiagnosticResult()
                         .setStatus(Constants.FAILED_STATUS)
-                        .setErrorMessage(errorMessage));
+                        .setErrorMessage(errorMessage)
+                        .setSObjectApiName(sObjectApiName));
             }
-
         }
         return results;
     }

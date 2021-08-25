@@ -22,15 +22,13 @@ public with sharing class ProductDataDiagnosticAction extends AsyncDiagnosticAct
     public override List<DiagnosticResult> execute() {
         List<DiagnosticResult> productResults = new SObjectDiagnosticAction(
                 ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA, ProductConstants.PRODUCT_CODE_API_NAME).execute();
-        List<DiagnosticResult> priceBookResult = new SObjectDiagnosticAction(
-                ProductConstants.PRICE_BOOK_API_NAME, ProductConstants.PRICE_BOOK_DATA, ProductConstants.NAME_API_NAME).execute();
-
-        Map<String, Pricebook2> priceBookByName = this.getPriceBookByName();
-        Set<String> productCodes = this.getProductCodes(ProductConstants.PRICE_BOOK_ENTRY_DATA);
-        Map<String, Product2> productByProductCode = this.getProductByProductCode(productCodes);
+        productResults.addAll(new SObjectDiagnosticAction(
+                ProductConstants.PRICE_BOOK_API_NAME,
+                ProductConstants.PRICE_BOOK_DATA, ProductConstants.NAME_API_NAME).execute());
 
         Map<Id, Map<String, PricebookEntry>> allEntriesByPriceBookId = this.generateEntries(
-                ProductConstants.PRICE_BOOK_ENTRY_DATA, priceBookByName, productByProductCode);
+                ProductConstants.PRICE_BOOK_ENTRY_DATA, this.getPriceBooks(), this.getProductByProductCode(
+                this.getProductCodes(ProductConstants.PRICE_BOOK_ENTRY_DATA)));
 
         for (Id i : allEntriesByPriceBookId.keySet()) {
             List<DiagnosticResult> entryResults = new SObjectDiagnosticAction(ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
@@ -39,7 +37,6 @@ public with sharing class ProductDataDiagnosticAction extends AsyncDiagnosticAct
             productResults.addAll(entryResults);
         }
 
-        productResults.addAll(priceBookResult);
         return productResults;
     }
 
@@ -86,12 +83,11 @@ public with sharing class ProductDataDiagnosticAction extends AsyncDiagnosticAct
     @TestVisible
     private Map<String, Product2> getProductByProductCode(Set<String> productCodes) {
         Map<String, Product2> productByProductCode = new Map<String, Product2>();
-        List<Product2> products = [
-                SELECT Id, ProductCode
-                FROM Product2
-                WHERE ProductCode IN :productCodes
-        ];
-        for (Product2 pr : products) {
+        for (Product2 pr : [
+            SELECT Id, ProductCode
+            FROM Product2
+            WHERE ProductCode IN :productCodes
+        ]) {
             productByProductCode.put(pr.ProductCode, pr);
         }
 
@@ -99,16 +95,15 @@ public with sharing class ProductDataDiagnosticAction extends AsyncDiagnosticAct
     }
 
     @TestVisible
-    private Map<String, Pricebook2> getPriceBookByName() {
-        Map<String, Pricebook2> priceBookByName = new Map<String, Pricebook2>();
-        List<Pricebook2> priceBooks = [
+    private Map<String, Pricebook2> getPriceBooks() {
+        Map<String, Pricebook2> priceBooks = new Map<String, Pricebook2>();
+        for (Pricebook2 pr : [
                 SELECT Name, Id
                 FROM Pricebook2
-        ];
-        for (Pricebook2 pr : priceBooks) {
-            priceBookByName.put(pr.Name, pr);
+        ]) {
+            priceBooks.put(pr.Name, pr);
         }
 
-        return priceBookByName;
+        return priceBooks;
     }
 }

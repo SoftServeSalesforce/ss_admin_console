@@ -1,211 +1,100 @@
-import {LightningElement, track} from 'lwc';
-import checkData from '@salesforce/apex/DiagnosticController.checkData';
-import setUpBatch from '@salesforce/apex/DiagnosticController.setUpBatch';
-import runCountTimeBatch from '@salesforce/apex/DiagnosticController.runCountTimeBatch';
-import populateOperatingHours from '@salesforce/apex/DiagnosticController.populateOperatingHours';
-import populateWorkTypes from '@salesforce/apex/DiagnosticController.populateWorkTypes';
-import populateTenantWarnings from '@salesforce/apex/DiagnosticController.populateTenantWarnings';
-import populateQuestions from '@salesforce/apex/DiagnosticController.populateQuestions';
-import populateQuestionsLookup from '@salesforce/apex/DiagnosticController.populateQuestionsLookup';
-import populateServiceTerritories from '@salesforce/apex/DiagnosticController.populateServiceTerritories';
+import {LightningElement, track, api} from 'lwc';
+import execute from '@salesforce/apex/DiagnosticController.execute';
+import test from '@salesforce/apex/DiagnosticController.test';
+import {subscribe} from 'lightning/empApi';
 
 export default class Diagnostic extends LightningElement {
-
-    @track isPopulateButtonDisabled = true;
-    @track isPopulateOpHoursDisabled = true;
     @track isLoading = false;
-    @track isPopulateST1Disabled = true;
-    @track isPopulateST2Disabled = true;
-    @track isPopulateST3Disabled = true;
-    @track isPopulateST4Disabled = true;
-    @track isPopulateWorkTypesDisabled = true;
-    @track isPopulateTWarningsDisabled = true;
-    @track isPopulateQuestionsDisabled = true;
-    @track isPopulateQuestionsLookupDisabled = true;
+    @track selectedAction;
+    @track actionDisabled = true;
     @track logs = [];
+    @track logsExist = false;
+    payload = {};
+    channelName = '/event/JobLogEvent__e';
 
-    testFslData = () => {
-        this.isLoading = true;
-        checkData()
-            .then(result => {
-                let log = result;
-                log = log.replace(new RegExp('(OK)', 'g'), STATUS_OK);
-                log = log.replace(new RegExp('(WARNING)', 'g'), STATUS_WARNING);
-                log = log.replace(new RegExp('(FAILED)', 'g'), STATUS_FAILED);
-                this.logs.push(log);
-                this.isClearButtonDisabled = false;
-                this.isPopulateOpHoursDisabled = false;
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.logs.push(`<span style="color:red">${error}</span>`)
-                this.isLoading = false;
-            })
+    get options() {
+        return [
+            {label: 'Customer Data', value: 'CUSTOMERS_DATA'},
+            {label: 'Product Data', value: 'PRODUCTS_DATA'},
+            {label: 'Clear', value: 'Clear'},
+        ];
     };
 
-    populateOperatingHours = () => {
-        this.isLoading = true;
-        populateOperatingHours()
-            .then(result => {
-                this.logs.push(result);
-                this.isPopulateST1Disabled = false;
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.logs.push(`<span style="color:red">${error}</span>`)
-                this.isLoading = false;
-            })
+    connectedCallback() {
+        this.handleSubscribe();
     };
 
-    populateServiceTerritoriesP1 = () => {
-        this.isLoading = true;
-        populateServiceTerritories()
-            .then(result => {
-                this.logs.push(result);
-                this.isPopulateST2Disabled = false;
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.logs.push(`<span style="color:red">${error}</span>`)
-                this.isLoading = false;
-            })
+    handleSubscribe() {
+        const messageCallback = (response) => {
+            this.payload = JSON.parse(JSON.stringify(response));
+            this.logsExist = true;
+            this.logs.push(this.handleMessage(this.payload.data.payload.Message_Type__c,
+                this.payload.data.payload.Message_Title__c,
+                this.payload.data.payload.Message__c,
+                this.payload.data.payload.CreatedDate));
+            this.logs.push(this.handleHeaderMessage(this.handleFinishMessage(
+                this.payload.data.payload.SObject_Type__c,
+                this.payload.data.payload.Action_Type__c)))
+        };
+        subscribe(this.channelName, -1, messageCallback).then(response => {
+            this.subscription = response;
+        });
     };
 
-    populateServiceTerritoriesP2 = () => {
-        this.isLoading = true;
-        populateServiceTerritories({toValidate : 'DiagnosticTerritoriesP2.serviceTerritories'})
-            .then(result => {
-                this.logs.push(result);
-                this.isPopulateST3Disabled = false;
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.logs.push(`<span style="color:red">${error}</span>`)
-                this.isLoading = false;
-            })
+    handleMessage(messageType, messageTitle, message, messageDate) {
+        let log = messageDate + ': ';
+        if (messageType == 'DUPLICATED' || messageType == 'FAILED') {
+            log += this.setColor('red', messageTitle);
+        } else if (messageType == 'OK') {
+            log += this.setColor('green', messageTitle);
+        } else if (messageType == 'WARNING') {
+            log += this.setColor('darkgoldenrod', messageTitle);
+        }
+        if (message) {
+            log += ' ' + message;
+        }
+
+        return log;
     };
 
-    populateServiceTerritoriesP3 = () => {
-        this.isLoading = true;
-        populateServiceTerritories({toValidate : 'DiagnosticTerritoriesP3.serviceTerritories'})
-            .then(result => {
-                this.logs.push(result);
-                this.isPopulateST4Disabled = false;
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.logs.push(`<span style="color:red">${error}</span>`)
-                this.isLoading = false;
-            })
-    };
-
-    populateServiceTerritoriesP4 = () => {
-        this.isLoading = true;
-        populateServiceTerritories({toValidate : 'DiagnosticTerritoriesP4.serviceTerritories'})
-            .then(result => {
-                this.logs.push(result);
-                this.isPopulateWorkTypesDisabled = false;
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.logs.push(`<span style="color:red">${error}</span>`)
-                this.isLoading = false;
-            })
-    };
-
-    populateWorkTypes = () => {
-        this.isLoading = true;
-        populateWorkTypes()
-            .then(result => {
-                this.logs.push(result);
-                this.isPopulateTWarningsDisabled = false;
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.logs.push(`<span style="color:red">${error}</span>`)
-                this.isLoading = false;
-            })
-    };
-
-    populateTenantWarnings = () => {
-        this.isLoading = true;
-        populateTenantWarnings()
-            .then(result => {
-                this.logs.push(result);
-                this.isPopulateQuestionsDisabled = false;
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.logs.push(`<span style="color:red">${error}</span>`)
-                this.isLoading = false;
-            })
-    };
-
-    populateQuestions = () => {
-        this.isLoading = true;
-        populateQuestions()
-            .then(result => {
-                this.logs.push(result);
-                this.isPopulateQuestionsLookupDisabled = false;
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.logs.push(`<span style="color:red">${error}</span>`)
-                this.isLoading = false;
-            })
-    };
-
-    populateQuestionsLookup = () => {
-        this.isLoading = true;
-        populateQuestionsLookup()
-            .then(result => {
-                this.logs.push(result);
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.logs.push(`<span style="color:red">${error}</span>`)
-                this.isLoading = false;
-            })
-    };
-
-    setUpBatch = () => {
-        this.isLoading = true;
-        setUpBatch()
-            .then(result => {
-                this.logs.push(result);
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.logs.push(`<span style="color:red">${error}</span>`)
-                this.isLoading = false;
-            })
-    };
-
-    runCountTimeBatch = () => {
-        this.isLoading = true;
-        runCountTimeBatch()
-            .then(result => {
-                this.logs.push(result);
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.logs.push(`<span style="color:red">${error}</span>`)
-                this.isLoading = false;
-            })
-    };
-
-    handleClear = () => {
-        this.logs = [];
-        this.isClearButtonDisabled = true;
-    };
-
-    get logsExist() {
-        return !(this.logs === undefined || this.logs === null || this.logs.length === 0);
+    handleFinishMessage(objectType, actionType) {
+        return actionType + ' action was finished for SObject - ' + objectType;
     }
 
-}
+    setColor(color, message) {
+        return '<p style="font-weight: bold; color:' + color + '">' + message + '</p>';
+    }
 
-const STATUS_FAILED = '<span style="color:red">FAILED</span>';
-const STATUS_OK = '<span style="color:forestgreen">OK</span>';
-const STATUS_WARNING = '<span style="color:darkgoldenrod">WARNING</span>';
-const STATUS_DUPLICATE_VALUE = '<span style="color:red">DUPLICATED VALUE</span>';
+    handleExecute = () => {
+        execute({actionType: this.selectedAction})
+            .then(result => {
+                this.logs.push(this.handleHeaderMessage(result));
+            })
+            .catch(error => {
+                console.log(error);
+            })
+    };
+
+    handleTest = () => {
+        test({actionType: this.selectedAction})
+            .then(result => {
+                this.logs.push(this.handleHeaderMessage(result));
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    };
+
+    handleHeaderMessage(message) {
+        return '<p style="font-weight:bold; font-size:150%">' + message + '</p>';
+    }
+
+    handleChange(event) {
+        this.selectedAction = event.detail.value;
+        this.actionDisabled = false;
+        if (this.selectedAction == 'Clear') {
+            this.logs = [];
+            this.actionDisabled = true;
+        }
+    };
+}

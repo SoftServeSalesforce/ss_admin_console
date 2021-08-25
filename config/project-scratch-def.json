@@ -1,4 +1,6 @@
 {
-  "orgName": "ovasch company",
-  "edition": "Developer"
+  "orgName": "diagnostic8",
+  "edition": "Developer",
+  "hasSampleData": false,
+  "features": []
 }

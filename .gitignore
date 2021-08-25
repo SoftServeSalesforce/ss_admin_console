@@ -6,6 +6,10 @@
 .sfdx/
 .localdevserver/
 
+# Idea
+.idea/
+IlluminatedCloud/
+
 # LWC VSCode autocomplete
 **/lwc/jsconfig.json
 

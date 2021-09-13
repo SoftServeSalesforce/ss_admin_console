@@ -1,4 +1,4 @@
-public with sharing class Logger {
+public with sharing class Logger { //TODO: Rename to DiagnosticLogger
     DiagnosticResultsUtil util;
     public Logger() {
         this.util = new DiagnosticResultsUtil();

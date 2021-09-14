@@ -9,14 +9,23 @@ export default class Diagnostic extends LightningElement {
     @track actionDisabled = true;
     @track logs = [];
     @track logsExist = false;
+    @track selectedDataType;
     payload = {};
     channelName = '/event/JobLogEvent__e';
 
-    get options() {
+    get actions() {
+        return [
+            {label: 'Run Schedule Job', value: 'RunScheduleJob'},
+            {label: 'Run Job', value: 'RunJob'},
+            {label: 'Load Data', value: 'LoadData'}
+        ];
+    };
+
+    get dataTypes() {
         return [
             {label: 'Customer Data', value: 'CUSTOMERS_DATA'},
             {label: 'Product Data', value: 'PRODUCTS_DATA'},
-            {label: 'Clear', value: 'Clear'},
+            {label: 'Opportunity Data', value: 'OPPORTUNITY_DATA'}
         ];
     };
 
@@ -66,7 +75,7 @@ export default class Diagnostic extends LightningElement {
     }
 
     handleExecute = () => {
-        execute({actionType: this.selectedAction})
+        execute({actionTypes: this.selectedDataType})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })
@@ -76,7 +85,7 @@ export default class Diagnostic extends LightningElement {
     };
 
     handleTest = () => {
-        test({actionType: this.selectedAction})
+        test({actionTypes: this.selectedDataType})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })
@@ -89,12 +98,28 @@ export default class Diagnostic extends LightningElement {
         return '<p style="font-weight:bold; font-size:150%">' + message + '</p>';
     }
 
-    handleChange(event) {
+    handleDataType(event) {
+        this.selectedDataType = event.detail.value;
+    };
+
+    handleActions(event) {
         this.selectedAction = event.detail.value;
         this.actionDisabled = false;
-        if (this.selectedAction == 'Clear') {
-            this.logs = [];
-            this.actionDisabled = true;
-        }
     };
+
+    handleClear() {
+        this.logs = [];
+    };
+
+    get isDataLoading() {
+        return this.selectedAction == 'LoadData';
+    }
+
+    get isJobScheduling() {
+        return this.selectedAction == 'RunScheduleJob';
+    }
+
+    get isJobRunning() {
+        return this.selectedAction == 'RunJob';
+    }
 }

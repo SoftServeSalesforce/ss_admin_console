@@ -6,8 +6,9 @@ public with sharing class DiagnosticController {
     };
 
     @AuraEnabled
-    public static String test(String actionType) {
-        IAction item = actions.get(actionType);
+    public static String test(String[] actionTypes) {
+        System.debug('!!!' + actionTypes);
+        IAction item = actions.get(actionTypes[0]);
         if (item instanceof AsyncDiagnosticAction) {
             ((AsyncDiagnosticAction) item).testAsync();
             return 'Test Started';
@@ -17,13 +18,13 @@ public with sharing class DiagnosticController {
     }
 
     @AuraEnabled
-    public static String execute(String actionType) {
-        IAction item = actions.get(actionType);
+    public static String execute(String[] actionTypes) {
+        /*IAction item = actions.get(actionTypes);
         if (item instanceof AsyncDiagnosticAction) {
             ((AsyncDiagnosticAction) item).executeAsync();
             return 'Execution Started';
         }
-        item.execute();
+        item.execute();*/
         return 'Execution Started';
     }
 }

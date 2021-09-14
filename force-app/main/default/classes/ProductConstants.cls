@@ -724,7 +724,7 @@ public with sharing class ProductConstants {
                     'TEST-0353' => new PricebookEntry(UnitPrice = 31.85),
                     'TEST-0354' => new PricebookEntry(UnitPrice = 30)
             },
-            'Test PriceBook1' => new Map<String, PricebookEntry> {
+            'Test PriceBook1' => new Map<String, PricebookEntry>{
                     'TEST-0001' => new PricebookEntry(UnitPrice = 16.01),
                     'TEST-0002' => new PricebookEntry(UnitPrice = 51.41),
                     'TEST-0003' => new PricebookEntry(UnitPrice = 30.63),

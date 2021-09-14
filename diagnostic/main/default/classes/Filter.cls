@@ -1,4 +1,4 @@
-public with sharing class Filter {
+public with sharing class Filter { // TODO: Rename to DiagnosticFilter
     private Map<String, SObject> records;
     private String externalIdApiName;
     private String sObjectApiName;

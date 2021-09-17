@@ -1,14 +1,23 @@
 public with sharing class DiagnosticController {
 
     private static Map<String, IAction> actions = new Map<String, IAction> {
-            'CUSTOMERS_DATA' => new CustomerDataDiagnosticAction(),
-            'PRODUCTS_DATA' => new ProductDataDiagnosticAction(),
-            'OPPORTUNITY_DATA' => new OpportunityDataDiagnosticAction()
+            Constants.CUSTOMERS_DATA => new CustomerDataDiagnosticAction(),
+            Constants.PRODUCTS_DATA => new ProductDataDiagnosticAction(),
+            Constants.OPPORTUNITY_DATA => new OpportunityDataDiagnosticAction()
     };
 
     @AuraEnabled
-    public static String test(String[] actionTypes) {
-        IAction item = actions.get(actionTypes[0]);
+    public static List<String> getDataTypes() {
+        List<String> types = new List<String>();
+        for (String str: actions.keySet()) {
+            types.add(str);
+        }
+        return types;
+    }
+
+    @AuraEnabled
+    public static String test(String actionType) {
+        IAction item = actions.get(actionType);
         if (item instanceof AsyncDiagnosticAction) {
             ((AsyncDiagnosticAction) item).testAsync();
             return 'Test Started';
@@ -18,8 +27,8 @@ public with sharing class DiagnosticController {
     }
 
     @AuraEnabled
-    public static String execute(String[] actionTypes) {
-        IAction item = actions.get(actionTypes[0]);
+    public static String execute(String actionType) {
+        IAction item = actions.get(actionType);
         if (item instanceof AsyncDiagnosticAction) {
             ((AsyncDiagnosticAction) item).executeAsync();
             return 'Execution Started';

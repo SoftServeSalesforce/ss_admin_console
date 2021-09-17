@@ -14,6 +14,14 @@ public with sharing class DiagnosticDataHandler {
         return result;
     }
 
+    public Map<String, SObject> wrappersToRecords(List<DiagnosticSObjectWrapper> wrappers) {
+        Map<String, SObject> records = new Map<String, SObject>();
+        for (DiagnosticSObjectWrapper wrapper : wrappers) {
+            records.put(wrapper.key, wrapper.sobj);
+        }
+        return records;
+    }
+
     public Map<String, SObject> getInvalidRecords(List<DiagnosticSObjectWrapper> wrappers,
             Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {
         Set<String> parentFields = this.getParentFields(wrappers);
@@ -43,8 +51,8 @@ public with sharing class DiagnosticDataHandler {
     private Map<String, Map<String, Id>> getParentIds(List<DiagnosticSObjectWrapper> wrappers, Set<String> parentFields,
             Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {
         Map<String, Map<String, Id>> result = new Map<String, Map<String, Id>>();
-        for (String parentField: parentFields) {
-            Set<String> keys = this.getParentKeys(wrappers,parentField);
+        for (String parentField : parentFields) {
+            Set<String> keys = this.getParentKeys(wrappers, parentField);
             Map<String, Id> idByKey = this.getIdByKey(keys, referenceFieldToSObjectName.get(parentField),
                     referenceFieldToKeyFields.get(parentField));
             result.put(parentField, idByKey);

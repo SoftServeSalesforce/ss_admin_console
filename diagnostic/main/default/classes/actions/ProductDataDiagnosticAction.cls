@@ -1,22 +1,20 @@
 public with sharing class ProductDataDiagnosticAction extends AsyncDiagnosticAction {
+
     public override List<DiagnosticResult> test() {
-        try {
-            List<DiagnosticResult> result = new SObjectDiagnosticAction(
-                    ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA, ProductConstants.PRODUCT_CODE_API_NAME).test();
-            result.addAll(new SObjectDiagnosticAction(
-                    ProductConstants.PRICE_BOOK_API_NAME, ProductConstants.PRICE_BOOK_DATA, ProductConstants.NAME_API_NAME).test());
-            for (String priceBookName : ProductConstants.PRICE_BOOK_ENTRY_DATA.keySet()) {
-                List<DiagnosticResult> entryResults = new SObjectDiagnosticAction(
-                        ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
-                        ProductConstants.PRICE_BOOK_ENTRY_DATA.get(priceBookName),
-                        ProductConstants.PRODUCT_CODE_API_NAME,
-                        'Pricebook2.Name = \'' + priceBookName + '\'').test();
-                result.addAll(entryResults);
-            }
-            return result;
-        } catch (Exception ex) {
-            return new List<DiagnosticResult>();
+        List<DiagnosticResult> result = new SObjectDiagnosticAction(
+                ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA, ProductConstants.PRODUCT_CODE_API_NAME).test();
+        result.addAll(new SObjectDiagnosticAction(
+                ProductConstants.PRICE_BOOK_API_NAME, ProductConstants.PRICE_BOOK_DATA, ProductConstants.NAME_API_NAME).test());
+        for (String priceBookName : ProductConstants.PRICE_BOOK_ENTRY_DATA.keySet()) {
+            List<DiagnosticResult> entryResults = new SObjectDiagnosticAction(
+                    ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
+                    ProductConstants.PRICE_BOOK_ENTRY_DATA.get(priceBookName),
+                    ProductConstants.PRODUCT_CODE_API_NAME,
+                    'Pricebook2.Name = \'' + priceBookName + '\'').test();
+            result.addAll(entryResults);
         }
+        new DiagnosticLogger().generateResultLog(Constants.PRODUCTS_DATA, 'Test');
+        return result;
     }
 
     public override List<DiagnosticResult> execute() {
@@ -28,7 +26,7 @@ public with sharing class ProductDataDiagnosticAction extends AsyncDiagnosticAct
 
         Map<Id, Map<String, PricebookEntry>> allEntriesByPriceBookId = this.generateEntries(
                 ProductConstants.PRICE_BOOK_ENTRY_DATA, this.getPriceBooks(), this.getProductByProductCode(
-                this.getProductCodes(ProductConstants.PRICE_BOOK_ENTRY_DATA)));
+                        this.getProductCodes(ProductConstants.PRICE_BOOK_ENTRY_DATA)));
 
         for (Id i : allEntriesByPriceBookId.keySet()) {
             List<DiagnosticResult> entryResults = new SObjectDiagnosticAction(ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
@@ -36,7 +34,7 @@ public with sharing class ProductDataDiagnosticAction extends AsyncDiagnosticAct
                     'Pricebook2Id = \'' + i + '\'').execute();
             productResults.addAll(entryResults);
         }
-
+        new DiagnosticLogger().generateResultLog(Constants.PRODUCTS_DATA, 'Execute');
         return productResults;
     }
 
@@ -84,9 +82,9 @@ public with sharing class ProductDataDiagnosticAction extends AsyncDiagnosticAct
     private Map<String, Product2> getProductByProductCode(Set<String> productCodes) {
         Map<String, Product2> productByProductCode = new Map<String, Product2>();
         for (Product2 pr : [
-            SELECT Id, ProductCode
-            FROM Product2
-            WHERE ProductCode IN :productCodes
+                SELECT Id, ProductCode
+                FROM Product2
+                WHERE ProductCode IN :productCodes
         ]) {
             productByProductCode.put(pr.ProductCode, pr);
         }

@@ -1,6 +1,7 @@
 import {LightningElement, track, api} from 'lwc';
 import execute from '@salesforce/apex/DiagnosticController.execute';
 import test from '@salesforce/apex/DiagnosticController.test';
+import getDataTypes from '@salesforce/apex/DiagnosticController.getDataTypes';
 import {subscribe} from 'lightning/empApi';
 
 export default class Diagnostic extends LightningElement {
@@ -9,9 +10,13 @@ export default class Diagnostic extends LightningElement {
     @track actionDisabled = true;
     @track logs = [];
     @track logsExist = false;
-    @track selectedDataType;
-    payload = {};
-    channelName = '/event/JobLogEvent__e';
+    @track selectedDataTypes;
+    @track actionNumber = 0;
+    @track types = [];
+    logPayload = {};
+    jobResultPayload = {};
+    logChannelName = '/event/JobLogEvent__e';
+    jobResultChannelName = '/event/JobResultEvent__e';
 
     get actions() {
         return [
@@ -21,31 +26,59 @@ export default class Diagnostic extends LightningElement {
         ];
     };
 
-    get dataTypes() {
-        return [
-            {label: 'Customer Data', value: 'CUSTOMERS_DATA'},
-            {label: 'Product Data', value: 'PRODUCTS_DATA'},
-            {label: 'Opportunity Data', value: 'OPPORTUNITY_DATA'}
-        ];
+    dataTypes() {
+        getDataTypes()
+            .then(result => {
+                for (let key in result) {
+                    this.types.push({
+                        label: result[key],
+                        value: result[key]
+                    })
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            })
     };
 
     connectedCallback() {
-        this.handleSubscribe();
+        this.dataTypes();
+        this.handleLogSubscribe();
+        this.handleJobResultSubscribe();
     };
 
-    handleSubscribe() {
+    handleLogSubscribe() {
         const messageCallback = (response) => {
-            this.payload = JSON.parse(JSON.stringify(response));
+            this.logPayload = JSON.parse(JSON.stringify(response));
             this.logsExist = true;
-            this.logs.push(this.handleMessage(this.payload.data.payload.Message_Type__c,
-                this.payload.data.payload.Message_Title__c,
-                this.payload.data.payload.Message__c,
-                this.payload.data.payload.CreatedDate));
+            this.logs.push(this.handleMessage(this.logPayload.data.payload.Message_Type__c,
+                this.logPayload.data.payload.Message_Title__c,
+                this.logPayload.data.payload.Message__c,
+                this.logPayload.data.payload.CreatedDate));
             this.logs.push(this.handleHeaderMessage(this.handleFinishMessage(
-                this.payload.data.payload.SObject_Type__c,
-                this.payload.data.payload.Action_Type__c)))
+                this.logPayload.data.payload.SObject_Type__c,
+                this.logPayload.data.payload.Action_Type__c)))
         };
-        subscribe(this.channelName, -1, messageCallback).then(response => {
+        subscribe(this.logChannelName, -1, messageCallback).then(response => {
+            this.subscription = response;
+        });
+    };
+
+    handleJobResultSubscribe() {
+        const messageCallback = (response) => {
+            this.jobResultPayload = JSON.parse(JSON.stringify(response));
+            if (this.selectedDataTypes.length != this.actionNumber) {
+                if (this.jobResultPayload.data.payload.Job_Action__c === 'Test') {
+                    this.handleTest();
+                } else if (this.jobResultPayload.data.payload.Job_Action__c === 'Execute') {
+                    this.handleExecute();
+                }
+            } else {
+                this.actionDisabled = false;
+                this.actionNumber = 0;
+            }
+        };
+        subscribe(this.jobResultChannelName, -1, messageCallback).then(response => {
             this.subscription = response;
         });
     };
@@ -75,7 +108,10 @@ export default class Diagnostic extends LightningElement {
     }
 
     handleExecute = () => {
-        execute({actionTypes: this.selectedDataType})
+        this.actionDisabled = true;
+        let type = this.selectedDataTypes[this.actionNumber];
+        this.actionNumber = this.actionNumber + 1;
+        execute({actionType: type})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })
@@ -85,7 +121,10 @@ export default class Diagnostic extends LightningElement {
     };
 
     handleTest = () => {
-        test({actionTypes: this.selectedDataType})
+        this.actionDisabled = true;
+        let type = this.selectedDataTypes[this.actionNumber];
+        this.actionNumber = this.actionNumber + 1;
+        test({actionType: type})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })
@@ -99,12 +138,12 @@ export default class Diagnostic extends LightningElement {
     }
 
     handleDataType(event) {
-        this.selectedDataType = event.detail.value;
+        this.selectedDataTypes = event.detail.value;
+        this.actionDisabled = !this.selectedDataTypes || this.selectedDataTypes.length <= 0
     };
 
     handleActions(event) {
         this.selectedAction = event.detail.value;
-        this.actionDisabled = false;
     };
 
     handleClear() {
@@ -112,14 +151,14 @@ export default class Diagnostic extends LightningElement {
     };
 
     get isDataLoading() {
-        return this.selectedAction == 'LoadData';
+        return this.selectedAction === 'LoadData';
     }
 
     get isJobScheduling() {
-        return this.selectedAction == 'RunScheduleJob';
+        return this.selectedAction === 'RunScheduleJob';
     }
 
     get isJobRunning() {
-        return this.selectedAction == 'RunJob';
+        return this.selectedAction === 'RunJob';
     }
 }

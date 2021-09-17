@@ -31,6 +31,15 @@ public with sharing class DiagnosticLogger {
         }
     }
 
+    public void generateResultLog(String jobName, String jobAction) {
+        JobResultEvent__e event = new JobResultEvent__e(
+                Job_Name__c = jobName,
+                Job_Completed__c = true,
+                Job_Action__c = jobAction
+        );
+        EventBus.publish(event);
+    }
+
     public void generateTestLog(List<DiagnosticResult> results) {
         if (results == null || results.isEmpty()) {
             return;

@@ -6,4 +6,8 @@ public with sharing class Constants { //TODO: Rename to DiagnosticConstants
 
     public static final String TEST_ACTION_TYPE = 'Test';
     public static final String EXECUTE_ACTION_TYPE = 'Execute';
+
+    public static final String CUSTOMERS_DATA = 'CUSTOMERS DATA';
+    public static final String PRODUCTS_DATA = 'PRODUCTS DATA';
+    public static final String OPPORTUNITY_DATA = 'OPPORTUNITY DATA';
 }

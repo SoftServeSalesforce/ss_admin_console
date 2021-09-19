@@ -16,11 +16,24 @@ public with sharing class DiagnosticController {
     }
 
     @AuraEnabled
+    public static List<String> getJobClasses(String interfaceName) {
+        return new DiagnosticUtil().getJobClasses(interfaceName);
+    }
+
+    @AuraEnabled
     public static String test(String actionType) {
         IAction item = actions.get(actionType);
-        if (item instanceof AsyncDiagnosticAction) {
+        if (item != null && item instanceof AsyncDiagnosticAction) {
             ((AsyncDiagnosticAction) item).testAsync();
             return 'Test Started';
+        }
+        if (Type.forName(actionType).newInstance() instanceof Database.Batchable<SObject>) {
+            new BatchableJobAction(actionType).test();
+            return 'Test for batch job ' + actionType + ' started';
+        }
+        if (Type.forName(actionType).newInstance() instanceof Schedulable) {
+            new ScheduledJobAction(actionType).test();
+            return 'Test for scheduled job ' + actionType + ' started';
         }
         item.test();
         return 'Test Started';
@@ -29,9 +42,17 @@ public with sharing class DiagnosticController {
     @AuraEnabled
     public static String execute(String actionType) {
         IAction item = actions.get(actionType);
-        if (item instanceof AsyncDiagnosticAction) {
+        if (item != null && item instanceof AsyncDiagnosticAction) {
             ((AsyncDiagnosticAction) item).executeAsync();
             return 'Execution Started';
+        }
+        if (Type.forName(actionType).newInstance() instanceof Database.Batchable<SObject>) {
+            new BatchableJobAction(actionType).execute();
+            return 'Execution for batch job ' + actionType + ' started';
+        }
+        if (Type.forName(actionType).newInstance() instanceof Schedulable) {
+            new ScheduledJobAction(actionType).execute();
+            return 'Execution for scheduled job ' + actionType + ' started';
         }
         item.execute();
         return 'Execution Started';

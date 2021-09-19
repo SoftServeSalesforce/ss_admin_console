@@ -25,15 +25,14 @@
             </lightning-dual-listbox>
         </template>
 
-        <template if:true={isJobScheduling}>
+        <template if:true={isJobScheduled}>
             <div class="slds-box slds-m-top_large">
                 <div class="slds-m-left_x-small">
                     <lightning-combobox
                             name="scheduledClasses"
                             label="Select a Scheduled class:"
-                            value={className}
                             placeholder="Select a Scheduled class"
-                            options={classes}
+                            options={scheduledClasses}
                             required=true
                             onchange={handleSelectClassName}>
                     </lightning-combobox>
@@ -41,13 +40,12 @@
             </div>
         </template>
 
-        <template if:true={isJobRunning}>
+        <template if:true={isJobBatchable}>
             <div class="slds-box slds-m-top_large">
                 <div class="slds-m-left_x-small">
                     <lightning-combobox
                             name="batchClasses"
                             label="Select a Batch class:"
-                            value={batchClassName}
                             placeholder="Select a Batch class"
                             options={batchClasses}
                             required=true

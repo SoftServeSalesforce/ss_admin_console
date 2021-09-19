@@ -66,6 +66,15 @@ public with sharing class DiagnosticLogger {
         }
     }
 
+    public void generateJobLog(String title, String message, String status) {
+        JobLogEvent__e event = new JobLogEvent__e (
+                Message__c = message,
+                Message_title__c = title,
+                Message_Type__c = status
+        );
+        EventBus.publish(event);
+    }
+
     @TestVisible
     private String handleValidRecordsMessageTitle(String sObjectApiName) {
         return 'The following ' + sObjectApiName + '\'s records should be inserted: ';

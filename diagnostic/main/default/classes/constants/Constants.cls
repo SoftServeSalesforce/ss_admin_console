@@ -10,4 +10,7 @@ public with sharing class Constants { //TODO: Rename to DiagnosticConstants
     public static final String CUSTOMERS_DATA = 'CUSTOMERS DATA';
     public static final String PRODUCTS_DATA = 'PRODUCTS DATA';
     public static final String OPPORTUNITY_DATA = 'OPPORTUNITY DATA';
+
+    public static final String CRON_EXPRESSION_NAME = 'Job_Cron_Expression';
+    public static final String SIZE_JOB_NAME = 'Job_Size';
 }

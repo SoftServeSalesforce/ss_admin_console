@@ -82,18 +82,14 @@ export default class Diagnostic extends LightningElement {
         const messageCallback = (response) => {
             this.logPayload = JSON.parse(JSON.stringify(response));
             this.logsExist = true;
-            this.logs.push(this.handleMessage(this.logPayload.data.payload.Message_Type__c,
+            this.logs.push(this.handleMessage(
+                this.logPayload.data.payload.Message_Type__c,
                 this.logPayload.data.payload.Message_Title__c,
                 this.logPayload.data.payload.Message__c,
                 this.logPayload.data.payload.CreatedDate));
-            if (this.logPayload.data.payload.SObject_Type__c) {
-                this.logs.push(this.handleHeaderMessage(this.handleFinishMessage(
-                    this.logPayload.data.payload.SObject_Type__c,
-                    this.logPayload.data.payload.Action_Type__c)));
-            } else {
-                this.actionNumber = 0;
-                this.actionDisabled = false;
-            }
+            this.logs.push(this.handleHeaderMessage(this.handleFinishMessage(
+                this.logPayload.data.payload.SObject_Type__c,
+                this.logPayload.data.payload.Action_Type__c)));
         };
         subscribe(this.logChannelName, -1, messageCallback).then(response => {
             this.subscription = response;
@@ -110,6 +106,13 @@ export default class Diagnostic extends LightningElement {
                     this.handleExecute();
                 }
             } else {
+                if (!this.jobResultPayload.data.payload.Job_Action__c) {
+                    this.logs.push(this.handleMessage(
+                        this.jobResultPayload.data.payload.Job_Status__c,
+                        this.jobResultPayload.data.payload.Job_Title__c,
+                        this.jobResultPayload.data.payload.Job_Message__c,
+                        this.jobResultPayload.data.payload.CreatedDate));
+                }
                 this.actionDisabled = false;
                 this.actionNumber = 0;
             }

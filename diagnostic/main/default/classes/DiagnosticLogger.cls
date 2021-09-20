@@ -67,10 +67,10 @@ public with sharing class DiagnosticLogger {
     }
 
     public void generateJobLog(String title, String message, String status) {
-        JobLogEvent__e event = new JobLogEvent__e (
-                Message__c = message,
-                Message_title__c = title,
-                Message_Type__c = status
+        JobResultEvent__e event = new JobResultEvent__e (
+                Job_Message__c = message,
+                Job_Title__c = title,
+                Job_Status__c = status
         );
         EventBus.publish(event);
     }

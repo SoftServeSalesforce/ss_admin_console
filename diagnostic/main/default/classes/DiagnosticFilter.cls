@@ -1,4 +1,4 @@
-public with sharing class Filter { // TODO: Rename to DiagnosticFilter
+public with sharing class DiagnosticFilter { // TODO: Rename to DiagnosticFilter
     private Map<String, SObject> records;
     private String externalIdApiName;
     private String sObjectApiName;
@@ -6,7 +6,7 @@ public with sharing class Filter { // TODO: Rename to DiagnosticFilter
     private Set<String> keys;
     private Set<String> existentKeys;
 
-    public Filter(String sObjectApiName, Map<String, SObject> records, String externalIdApiName) {
+    public DiagnosticFilter(String sObjectApiName, Map<String, SObject> records, String externalIdApiName) {
         this.records = records;
         this.sObjectApiName = sObjectApiName;
         this.externalIdApiName = externalIdApiName;
@@ -16,7 +16,7 @@ public with sharing class Filter { // TODO: Rename to DiagnosticFilter
         }
     }
 
-    public Filter(String sObjectApiName, Map<String, SObject> records, String externalIdApiName, String additionCondition) {
+    public DiagnosticFilter(String sObjectApiName, Map<String, SObject> records, String externalIdApiName, String additionCondition) {
         this.records = records;
         this.sObjectApiName = sObjectApiName;
         this.externalIdApiName = externalIdApiName;

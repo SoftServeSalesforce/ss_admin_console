@@ -1,6 +1,6 @@
-public with sharing class Logger { //TODO: Rename to DiagnosticLogger
+public with sharing class DiagnosticLogger {
     DiagnosticResultsUtil util;
-    public Logger() {
+    public DiagnosticLogger() {
         this.util = new DiagnosticResultsUtil();
     }
 
@@ -31,6 +31,15 @@ public with sharing class Logger { //TODO: Rename to DiagnosticLogger
         }
     }
 
+    public void generateResultLog(String jobName, String jobAction) {
+        JobResultEvent__e event = new JobResultEvent__e(
+                Job_Name__c = jobName,
+                Job_Completed__c = true,
+                Job_Action__c = jobAction
+        );
+        EventBus.publish(event);
+    }
+
     public void generateTestLog(List<DiagnosticResult> results) {
         if (results == null || results.isEmpty()) {
             return;
@@ -55,6 +64,15 @@ public with sharing class Logger { //TODO: Rename to DiagnosticLogger
                     Action_Type__c = Constants.TEST_ACTION_TYPE);
             EventBus.publish(validRecordsEvent);
         }
+    }
+
+    public void generateJobLog(String title, String message, String status) {
+        JobResultEvent__e event = new JobResultEvent__e (
+                Job_Message__c = message,
+                Job_Title__c = title,
+                Job_Status__c = status
+        );
+        EventBus.publish(event);
     }
 
     @TestVisible

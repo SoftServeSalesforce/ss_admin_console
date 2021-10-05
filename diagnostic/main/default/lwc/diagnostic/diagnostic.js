@@ -1,6 +1,8 @@
 import {LightningElement, track, api} from 'lwc';
 import execute from '@salesforce/apex/DiagnosticController.execute';
 import test from '@salesforce/apex/DiagnosticController.test';
+import getDataTypes from '@salesforce/apex/DiagnosticController.getDataTypes';
+import getJobClasses from '@salesforce/apex/DiagnosticController.getJobClasses';
 import {subscribe} from 'lightning/empApi';
 
 export default class Diagnostic extends LightningElement {
@@ -9,34 +11,113 @@ export default class Diagnostic extends LightningElement {
     @track actionDisabled = true;
     @track logs = [];
     @track logsExist = false;
-    payload = {};
-    channelName = '/event/JobLogEvent__e';
+    @track actionTypes = [];
+    @track actionNumber = 0;
+    @track types = [];
+    @track batchClasses = [];
+    @track scheduledClasses = [];
+    logPayload = {};
+    jobResultPayload = {};
+    logChannelName = '/event/JobLogEvent__e';
+    jobResultChannelName = '/event/JobResultEvent__e';
 
-    get options() {
+    get actions() {
         return [
-            {label: 'Customer Data', value: 'CUSTOMERS_DATA'},
-            {label: 'Product Data', value: 'PRODUCTS_DATA'},
-            {label: 'Clear', value: 'Clear'},
+            {label: 'Run Scheduled Job', value: 'RunScheduledJob'},
+            {label: 'Run Batchable Job', value: 'RunBatchableJob'},
+            {label: 'Load Data', value: 'LoadData'}
         ];
     };
 
-    connectedCallback() {
-        this.handleSubscribe();
+    dataTypes() {
+        getDataTypes()
+            .then(result => {
+                this.types = this.getOptions(result);
+            })
+            .catch(error => {
+                console.log(error);
+            })
     };
 
-    handleSubscribe() {
+    getBatchableClasses() {
+        getJobClasses({interfaceName: 'Database.Batchable'})
+            .then(result => {
+                this.batchClasses = this.getOptions(result);
+            })
+            .catch(error => {
+                console.log(error);
+            })
+    };
+
+    getScheduledClasses() {
+        getJobClasses({interfaceName: 'Schedulable'})
+            .then(result => {
+                this.scheduledClasses = this.getOptions(result);
+            })
+            .catch(error => {
+                console.log(error);
+            })
+    };
+
+    getOptions(result) {
+        let options = [];
+        for (let key in result) {
+            options.push({
+                label: result[key],
+                value: result[key]
+            });
+        }
+        return options;
+    };
+
+    connectedCallback() {
+        this.getBatchableClasses();
+        this.getScheduledClasses();
+        this.dataTypes();
+        this.handleLogSubscribe();
+        this.handleJobResultSubscribe();
+    };
+
+    handleLogSubscribe() {
         const messageCallback = (response) => {
-            this.payload = JSON.parse(JSON.stringify(response));
+            this.logPayload = JSON.parse(JSON.stringify(response));
             this.logsExist = true;
-            this.logs.push(this.handleMessage(this.payload.data.payload.Message_Type__c,
-                this.payload.data.payload.Message_Title__c,
-                this.payload.data.payload.Message__c,
-                this.payload.data.payload.CreatedDate));
+            this.logs.push(this.handleMessage(
+                this.logPayload.data.payload.Message_Type__c,
+                this.logPayload.data.payload.Message_Title__c,
+                this.logPayload.data.payload.Message__c,
+                this.logPayload.data.payload.CreatedDate));
             this.logs.push(this.handleHeaderMessage(this.handleFinishMessage(
-                this.payload.data.payload.SObject_Type__c,
-                this.payload.data.payload.Action_Type__c)))
+                this.logPayload.data.payload.SObject_Type__c,
+                this.logPayload.data.payload.Action_Type__c)));
         };
-        subscribe(this.channelName, -1, messageCallback).then(response => {
+        subscribe(this.logChannelName, -1, messageCallback).then(response => {
+            this.subscription = response;
+        });
+    };
+
+    handleJobResultSubscribe() {
+        const messageCallback = (response) => {
+            this.jobResultPayload = JSON.parse(JSON.stringify(response));
+            if (this.actionTypes.length != this.actionNumber) {
+                if (this.jobResultPayload.data.payload.Job_Action__c === 'Test') {
+                    this.handleTest();
+                } else if (this.jobResultPayload.data.payload.Job_Action__c === 'Execute') {
+                    this.handleExecute();
+                }
+            } else {
+                if (!this.jobResultPayload.data.payload.Job_Action__c) {
+                    this.logs.push(this.handleMessage(
+                        this.jobResultPayload.data.payload.Job_Status__c,
+                        this.jobResultPayload.data.payload.Job_Title__c,
+                        this.jobResultPayload.data.payload.Job_Message__c,
+                        this.jobResultPayload.data.payload.CreatedDate));
+                }
+                this.actionDisabled = false;
+                this.actionNumber = 0;
+            }
+        };
+        subscribe(this.jobResultChannelName, -1, messageCallback).then(response => {
             this.subscription = response;
         });
     };
@@ -66,7 +147,10 @@ export default class Diagnostic extends LightningElement {
     }
 
     handleExecute = () => {
-        execute({actionType: this.selectedAction})
+        this.actionDisabled = true;
+        let type = this.actionTypes[this.actionNumber];
+        this.actionNumber = this.actionNumber + 1;
+        execute({actionType: type})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })
@@ -76,7 +160,10 @@ export default class Diagnostic extends LightningElement {
     };
 
     handleTest = () => {
-        test({actionType: this.selectedAction})
+        this.actionDisabled = true;
+        let type = this.actionTypes[this.actionNumber];
+        this.actionNumber = this.actionNumber + 1;
+        test({actionType: type})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })
@@ -89,12 +176,36 @@ export default class Diagnostic extends LightningElement {
         return '<p style="font-weight:bold; font-size:150%">' + message + '</p>';
     }
 
-    handleChange(event) {
-        this.selectedAction = event.detail.value;
-        this.actionDisabled = false;
-        if (this.selectedAction == 'Clear') {
-            this.logs = [];
-            this.actionDisabled = true;
-        }
+    handleDataType(event) {
+        this.actionTypes = event.detail.value;
+        this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0
     };
+
+    handleActions(event) {
+        this.actionTypes = [];
+        this.actionNumber = 0;
+        this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0;
+        this.selectedAction = event.detail.value;
+    };
+
+    handleClear() {
+        this.logs = [];
+    };
+
+    handleSelectClassName(event) {
+        this.actionTypes.push(event.detail.value);
+        this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0
+    }
+
+    get isDataLoading() {
+        return this.selectedAction === 'LoadData';
+    }
+
+    get isJobScheduled() {
+        return this.selectedAction === 'RunScheduledJob';
+    }
+
+    get isJobBatchable() {
+        return this.selectedAction === 'RunBatchableJob';
+    }
 }

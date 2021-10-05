@@ -1,12 +1,12 @@
 public with sharing class SObjectDiagnosticAction implements IAction {
-    private Logger logger;
+    private DiagnosticLogger logger;
     private Map<String, SObject> records;
     private String externalIdApiName;
     private String sObjectApiName;
     private String additionCondition;
 
     public SObjectDiagnosticAction(String sObjectApiName, Map<String, SObject> records, String externalIdApiName) {
-        this.logger = new Logger();
+        this.logger = new DiagnosticLogger();
         this.records = records;
         this.externalIdApiName = externalIdApiName;
         this.sObjectApiName = sObjectApiName;
@@ -14,7 +14,7 @@ public with sharing class SObjectDiagnosticAction implements IAction {
 
     public SObjectDiagnosticAction(String sObjectApiName, Map<String, SObject> records,
             String externalIdApiName, String additionCondition) {
-        this.logger = new Logger();
+        this.logger = new DiagnosticLogger();
         this.records = records;
         this.externalIdApiName = externalIdApiName;
         this.sObjectApiName = sObjectApiName;
@@ -40,10 +40,10 @@ public with sharing class SObjectDiagnosticAction implements IAction {
         }
         List<DiagnosticResult> results;
         if (this.additionCondition != null) {
-            results = new Filter(this.sObjectApiName, this.records,
+            results = new DiagnosticFilter(this.sObjectApiName, this.records,
                     this.externalIdApiName, this.additionCondition).filter();
         } else {
-            results = new Filter(
+            results = new DiagnosticFilter(
                     this.sObjectApiName, this.records,
                     this.externalIdApiName).filter();
         }

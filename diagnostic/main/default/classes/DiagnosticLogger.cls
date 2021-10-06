@@ -66,7 +66,7 @@ public with sharing class DiagnosticLogger {
         }
     }
 
-    public void generateJobLog(String title, String message, String status) {
+    public void generateLog(String title, String message, String status) {
         JobResultEvent__e event = new JobResultEvent__e (
                 Job_Message__c = message,
                 Job_Title__c = title,

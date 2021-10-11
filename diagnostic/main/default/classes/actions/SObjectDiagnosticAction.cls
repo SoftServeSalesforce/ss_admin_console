@@ -38,16 +38,9 @@ public with sharing class SObjectDiagnosticAction implements IAction {
         if (this.records == null || this.records.isEmpty()) {
             return new List<DiagnosticResult>();
         }
-        List<DiagnosticResult> results;
-        if (this.additionCondition != null) {
-            results = new DiagnosticFilter(this.sObjectApiName, this.records,
+        List<DiagnosticResult> results = new DiagnosticFilter(this.sObjectApiName, this.records,
                     this.externalIdApiName, this.additionCondition).filter();
-        } else {
-            results = new DiagnosticFilter(
-                    this.sObjectApiName, this.records,
-                    this.externalIdApiName).filter();
-        }
-        this.logger.generateTestLog(results);
+        logger.generateTestLog(results);
         return results;
     }
 

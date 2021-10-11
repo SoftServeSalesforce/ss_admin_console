@@ -5,7 +5,7 @@ public with sharing class CustomerDataDiagnosticAction extends AsyncDiagnosticAc
                 CustomerConstants.ACCOUNT_API_NAME, CustomerConstants.ACCOUNT_DATA, CustomerConstants.NAME_API_NAME).test();
         result.addAll(new SObjectDiagnosticAction(
                 CustomerConstants.CONTACT_API_NAME, CustomerConstants.CONTACT_DATA, CustomerConstants.EMAIL_API_NAME).test());
-        new DiagnosticLogger().generateResultLog(Constants.CUSTOMERS_DATA, 'Test');
+        new DiagnosticLogger().publishResultLog(Constants.CUSTOMERS_DATA, 'Test');
         return result;
     }
 
@@ -19,7 +19,7 @@ public with sharing class CustomerDataDiagnosticAction extends AsyncDiagnosticAc
             contacts = this.setAccountId(contacts, successResults);
         }
         results.addAll(new SObjectDiagnosticAction(CustomerConstants.CONTACT_API_NAME, contacts, CustomerConstants.EMAIL_API_NAME).execute());
-        new DiagnosticLogger().generateResultLog(Constants.CUSTOMERS_DATA, 'Execute');
+        new DiagnosticLogger().publishResultLog(Constants.CUSTOMERS_DATA, 'Execute');
         return results;
     }
 

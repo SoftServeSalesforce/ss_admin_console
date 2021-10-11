@@ -22,22 +22,12 @@ public with sharing class DiagnosticLogger {
         if (!failedResults.isEmpty()) {
             JobLogEvent__e errorEvent = new JobLogEvent__e(
                     Message_Title__c = 'Error occurred: ',
-                    Message__c = this.util.errorsToString(failedResults),
+                    Message__c = util.errorsToString(failedResults),
                     Message_Type__c = Constants.FAILED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
                     Action_Type__c = Constants.EXECUTE_ACTION_TYPE);
             EventBus.publish(errorEvent);
-
         }
-    }
-
-    public void generateResultLog(String jobName, String jobAction) {
-        JobResultEvent__e event = new JobResultEvent__e(
-                Job_Name__c = jobName,
-                Job_Completed__c = true,
-                Job_Action__c = jobAction
-        );
-        EventBus.publish(event);
     }
 
     public void generateTestLog(List<DiagnosticResult> results) {
@@ -66,7 +56,16 @@ public with sharing class DiagnosticLogger {
         }
     }
 
-    public void generateLog(String title, String message, String status) {
+    public void publishResultLog(String jobName, String jobAction) {
+        JobResultEvent__e event = new JobResultEvent__e(
+                Job_Name__c = jobName,
+                Job_Completed__c = true,
+                Job_Action__c = jobAction
+        );
+        EventBus.publish(event);
+    }
+
+    public void publishLog(String title, String message, String status) {
         JobResultEvent__e event = new JobResultEvent__e (
                 Job_Message__c = message,
                 Job_Title__c = title,

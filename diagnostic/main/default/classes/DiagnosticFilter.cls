@@ -1,20 +1,10 @@
-public with sharing class DiagnosticFilter { // TODO: Rename to DiagnosticFilter
+public with sharing class DiagnosticFilter {
     private Map<String, SObject> records;
     private String externalIdApiName;
     private String sObjectApiName;
     private String additionCondition;
     private Set<String> keys;
     private Set<String> existentKeys;
-
-    public DiagnosticFilter(String sObjectApiName, Map<String, SObject> records, String externalIdApiName) {
-        this.records = records;
-        this.sObjectApiName = sObjectApiName;
-        this.externalIdApiName = externalIdApiName;
-        if (records != null && !records.isEmpty()) {
-            this.keys = records.keySet();
-            this.existentKeys = this.getExistentKeys();
-        }
-    }
 
     public DiagnosticFilter(String sObjectApiName, Map<String, SObject> records, String externalIdApiName, String additionCondition) {
         this.records = records;
@@ -38,7 +28,7 @@ public with sharing class DiagnosticFilter { // TODO: Rename to DiagnosticFilter
     private List<DiagnosticResult> getNonExistentRecords() {
         List<DiagnosticResult> results = new List<DiagnosticResult>();
         for (String recordKey : this.records.keySet()) {
-            if (!this.containsIgnoreCase(this.existentKeys, recordKey)) {
+            if (!existentKeys.contains(recordKey.toLowerCase())) {
                 results.add(new DiagnosticResult()
                         .setStatus(Constants.OK_STATUS)
                         .setRecordKey(recordKey)
@@ -52,7 +42,7 @@ public with sharing class DiagnosticFilter { // TODO: Rename to DiagnosticFilter
     private List<DiagnosticResult> getExistentRecords() {
         List<DiagnosticResult> results = new List<DiagnosticResult>();
         for (String recordKey : this.records.keySet()) {
-            if (this.containsIgnoreCase(this.existentKeys, recordKey)) {
+            if (existentKeys.contains(recordKey.toLowerCase())) {
                 results.add(new DiagnosticResult()
                         .setStatus(Constants.DUPLICATED_STATUS)
                         .setRecordKey(recordKey)
@@ -63,22 +53,12 @@ public with sharing class DiagnosticFilter { // TODO: Rename to DiagnosticFilter
     }
 
     @TestVisible
-    private Boolean containsIgnoreCase(Set<String> existentKeys, String key) {
-        for (String str : existentKeys) {
-            if (key.equalsIgnoreCase(str)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @TestVisible
     private Set<String> getExistentKeys() {
         Set<String> result = new Set<String>();
         String query = this.buildQuery();
         List<SObject> existentRecords = Database.query(query);
         for (SObject sObj : existentRecords) {
-            result.add(String.valueOf(sObj.get(this.externalIdApiName)));
+            result.add(String.valueOf(sObj.get(this.externalIdApiName)).toLowerCase());
         }
         return result;
     }

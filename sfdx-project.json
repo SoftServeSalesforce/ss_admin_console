@@ -1,11 +1,11 @@
 {
   "packageDirectories": [
     {
-      "path": "diagnostic",
+      "path": "ss_admin_console",
       "default": true
     }
   ],
-  "name": "DiagnosticComponent",
+  "name": "SS_Admin_Console",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "50.0"

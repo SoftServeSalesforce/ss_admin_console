@@ -1,9 +1,10 @@
 public with sharing class DiagnosticUtil {
 
     public List<String> getJobClasses(String interfaceName) {
+        Type interfaceType = Type.forName(interfaceName);
         List<String> result = new List<String>();
         for (ApexClass aClass : this.getApexClasses()) {
-            if (this.isImplementInterface(aClass, interfaceName)) {
+            if (interfaceType.isAssignableFrom(Type.forName(aClass.Name))) {
                 result.add(aClass.Name);
             }
         }
@@ -27,13 +28,5 @@ public with sharing class DiagnosticUtil {
                 SELECT Id, Name
                 FROM ApexClass
         ];
-    }
-
-    @TestVisible
-    private Boolean isImplementInterface(ApexClass apexClass, String interfaceName) {
-        Type apexClassType = Type.forName(apexClass.Name);
-        Type interfaceType = Type.forName(interfaceName);
-
-        return interfaceType.isAssignableFrom(apexClassType);
     }
 }

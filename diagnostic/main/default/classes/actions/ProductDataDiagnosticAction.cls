@@ -13,7 +13,7 @@ public with sharing class ProductDataDiagnosticAction extends AsyncDiagnosticAct
                     'Pricebook2.Name = \'' + priceBookName + '\'').test();
             result.addAll(entryResults);
         }
-        new DiagnosticLogger().generateResultLog(Constants.PRODUCTS_DATA, 'Test');
+        new DiagnosticLogger().publishResultLog(Constants.PRODUCTS_DATA, 'Test');
         return result;
     }
 
@@ -34,7 +34,7 @@ public with sharing class ProductDataDiagnosticAction extends AsyncDiagnosticAct
                     'Pricebook2Id = \'' + i + '\'').execute();
             productResults.addAll(entryResults);
         }
-        new DiagnosticLogger().generateResultLog(Constants.PRODUCTS_DATA, 'Execute');
+        new DiagnosticLogger().publishResultLog(Constants.PRODUCTS_DATA, 'Execute');
         return productResults;
     }
 

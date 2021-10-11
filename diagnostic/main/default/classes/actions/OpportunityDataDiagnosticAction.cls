@@ -12,7 +12,7 @@ public with sharing class OpportunityDataDiagnosticAction extends AsyncDiagnosti
         result.addAll(new SObjectDiagnosticAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, opportunityItemRecords,
                 OpportunityConstants.OPPORTUNITY_ITEM_KEY_FIELD_NAME).test());
-        new DiagnosticLogger().generateResultLog(Constants.OPPORTUNITY_DATA, 'Test');
+        new DiagnosticLogger().publishResultLog(Constants.OPPORTUNITY_DATA, 'Test');
         return result;
     }
 
@@ -34,7 +34,7 @@ public with sharing class OpportunityDataDiagnosticAction extends AsyncDiagnosti
         result.addAll(new SObjectDiagnosticAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, validOpportunityItemRecords,
                 OpportunityConstants.OPPORTUNITY_ITEM_KEY_FIELD_NAME).execute());
-        new DiagnosticLogger().generateResultLog(Constants.OPPORTUNITY_DATA, 'Execute');
+        new DiagnosticLogger().publishResultLog(Constants.OPPORTUNITY_DATA, 'Execute');
         return result;
     }
 

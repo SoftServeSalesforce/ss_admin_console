@@ -12,7 +12,7 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
         result.addAll(new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, opportunityItemRecords,
                 OpportunityConstants.OPPORTUNITY_ITEM_KEY_FIELD_NAME).test());
-        new SSACLogger().publishResultLog(Constants.OPPORTUNITY_DATA, 'Test');
+        new SSACLogger().publishResultLog(SSACConstants.OPPORTUNITY_DATA, 'Test');
         return result;
     }
 
@@ -34,7 +34,7 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
         result.addAll(new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, validOpportunityItemRecords,
                 OpportunityConstants.OPPORTUNITY_ITEM_KEY_FIELD_NAME).execute());
-        new SSACLogger().publishResultLog(Constants.OPPORTUNITY_DATA, 'Execute');
+        new SSACLogger().publishResultLog(SSACConstants.OPPORTUNITY_DATA, 'Execute');
         return result;
     }
 

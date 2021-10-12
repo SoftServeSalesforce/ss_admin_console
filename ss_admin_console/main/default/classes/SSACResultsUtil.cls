@@ -18,7 +18,7 @@ public with sharing class SSACResultsUtil {
         for (Database.SaveResult result : saveResults) {
             if (result.isSuccess()) {
                 results.add(new SSACResult()
-                        .setStatus(Constants.OK_STATUS)
+                        .setStatus(SSACConstants.OK_STATUS)
                         .setRecordId(result.getId())
                         .setSObjectApiName(sObjectApiName));
             } else {
@@ -28,7 +28,7 @@ public with sharing class SSACResultsUtil {
                             + sObjectApiName + ' fields that affected this error: ' + err.getFields() + '. ';
                 }
                 results.add(new SSACResult()
-                        .setStatus(Constants.FAILED_STATUS)
+                        .setStatus(SSACConstants.FAILED_STATUS)
                         .setErrorMessage(errorMessage)
                         .setSObjectApiName(sObjectApiName));
             }

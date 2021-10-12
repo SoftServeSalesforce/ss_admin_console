@@ -30,7 +30,7 @@ public with sharing class SSACFilter {
         for (String recordKey : this.records.keySet()) {
             if (!existentKeys.contains(recordKey.toLowerCase())) {
                 results.add(new SSACResult()
-                        .setStatus(Constants.OK_STATUS)
+                        .setStatus(SSACConstants.OK_STATUS)
                         .setRecordKey(recordKey)
                         .setSObjectApiName(this.sObjectApiName));
             }
@@ -44,7 +44,7 @@ public with sharing class SSACFilter {
         for (String recordKey : this.records.keySet()) {
             if (existentKeys.contains(recordKey.toLowerCase())) {
                 results.add(new SSACResult()
-                        .setStatus(Constants.DUPLICATED_STATUS)
+                        .setStatus(SSACConstants.DUPLICATED_STATUS)
                         .setRecordKey(recordKey)
                         .setSObjectApiName(this.sObjectApiName));
             }

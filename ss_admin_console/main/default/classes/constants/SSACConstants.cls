@@ -1,4 +1,4 @@
-public with sharing class Constants { //TODO: Rename to DiagnosticConstants
+public with sharing class SSACConstants { //TODO: Rename to DiagnosticConstants
     public static final String WARNING_STATUS = 'WARNING';
     public static final String FAILED_STATUS = 'FAILED';
     public static final String OK_STATUS = 'OK';

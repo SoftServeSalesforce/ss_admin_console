@@ -14,12 +14,12 @@ public with sharing class SSACCustomerDataAction extends SSACAsyncAction {
                 CustomerConstants.ACCOUNT_API_NAME, CustomerConstants.ACCOUNT_DATA, CustomerConstants.NAME_API_NAME).execute();
         Map<String, Contact> contacts = CustomerConstants.CONTACT_DATA;
         SSACResultsUtil util = new SSACResultsUtil();
-        List<SSACResult> successResults = util.getResultsByStatus(results, Constants.OK_STATUS);
+        List<SSACResult> successResults = util.getResultsByStatus(results, SSACConstants.OK_STATUS);
         if (!successResults.isEmpty()) {
             contacts = this.setAccountId(contacts, successResults);
         }
         results.addAll(new SSACSObjectAction(CustomerConstants.CONTACT_API_NAME, contacts, CustomerConstants.EMAIL_API_NAME).execute());
-        new SSACLogger().publishResultLog(Constants.CUSTOMERS_DATA, 'Execute');
+        new SSACLogger().publishResultLog(SSACConstants.CUSTOMERS_DATA, 'Execute');
         return results;
     }
 

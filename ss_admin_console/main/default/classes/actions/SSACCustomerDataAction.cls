@@ -5,7 +5,7 @@ public with sharing class SSACCustomerDataAction extends SSACAsyncAction {
                 CustomerConstants.ACCOUNT_API_NAME, CustomerConstants.ACCOUNT_DATA, CustomerConstants.NAME_API_NAME).test();
         result.addAll(new SSACSObjectAction(
                 CustomerConstants.CONTACT_API_NAME, CustomerConstants.CONTACT_DATA, CustomerConstants.EMAIL_API_NAME).test());
-        new SSACLogger().publishResultLog(Constants.CUSTOMERS_DATA, 'Test');
+        new SSACLogger().publishResultLog(SSACConstants.CUSTOMERS_DATA, 'Test');
         return result;
     }
 

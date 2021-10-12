@@ -42,6 +42,6 @@ public with sharing class SSACBatchableAction implements ISSACAction {
     private void generateEmptyBatchSizeLog() {
         this.logger.publishLog('Error for batchable ' + this.className,
                 'Error occurred: Job size is empty, ' +
-                        'please fill in job sine in Job Setting custom metadata: Job Size', Constants.FAILED_STATUS);
+                        'please fill in job sine in Job Setting custom metadata: Job Size', SSACConstants.FAILED_STATUS);
     }
 }

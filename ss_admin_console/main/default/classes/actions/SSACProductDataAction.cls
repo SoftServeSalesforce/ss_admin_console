@@ -13,7 +13,7 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
                     'Pricebook2.Name = \'' + priceBookName + '\'').test();
             result.addAll(entryResults);
         }
-        new SSACLogger().publishResultLog(Constants.PRODUCTS_DATA, 'Test');
+        new SSACLogger().publishResultLog(SSACConstants.PRODUCTS_DATA, 'Test');
         return result;
     }
 
@@ -34,7 +34,7 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
                     'Pricebook2Id = \'' + i + '\'').execute();
             productResults.addAll(entryResults);
         }
-        new SSACLogger().publishResultLog(Constants.PRODUCTS_DATA, 'Execute');
+        new SSACLogger().publishResultLog(SSACConstants.PRODUCTS_DATA, 'Execute');
         return productResults;
     }
 

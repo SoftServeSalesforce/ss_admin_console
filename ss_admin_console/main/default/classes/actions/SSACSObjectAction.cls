@@ -27,7 +27,7 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         }
         List<SSACResult> filterResults = this.test();
         SSACResultsUtil util = new SSACResultsUtil();
-        List<SSACResult> okResults = util.getResultsByStatus(filterResults, Constants.OK_STATUS);
+        List<SSACResult> okResults = util.getResultsByStatus(filterResults, SSACConstants.OK_STATUS);
         Database.SaveResult[] saveResults = Database.insert(this.getRecords(okResults), false);
         List<SSACResult> results = util.generateDiagnosticResults(saveResults, this.sObjectApiName);
         this.logger.generateLoadLog(results);

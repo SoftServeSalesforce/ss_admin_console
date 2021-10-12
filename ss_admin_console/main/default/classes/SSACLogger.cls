@@ -8,24 +8,24 @@ public with sharing class SSACLogger {
         if (results == null || results.isEmpty()) {
             return;
         }
-        List<SSACResult> failedResults = this.util.getResultsByStatus(results, Constants.FAILED_STATUS);
-        List<SSACResult> okResults = this.util.getResultsByStatus(results, Constants.OK_STATUS);
+        List<SSACResult> failedResults = this.util.getResultsByStatus(results, SSACConstants.FAILED_STATUS);
+        List<SSACResult> okResults = this.util.getResultsByStatus(results, SSACConstants.OK_STATUS);
         if (!okResults.isEmpty()) {
             SObjectLoadEvent__e successEvent = new SObjectLoadEvent__e(
                     Message__c = this.util.idsToString(okResults),
                     Message_Title__c = this.handleSuccessMessageTitle(okResults.get(0).sObjectApiName),
-                    Message_Type__c = Constants.OK_STATUS,
+                    Message_Type__c = SSACConstants.OK_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
-                    Action_Type__c = Constants.EXECUTE_ACTION_TYPE);
+                    Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE);
             EventBus.publish(successEvent);
         }
         if (!failedResults.isEmpty()) {
             SObjectLoadEvent__e errorEvent = new SObjectLoadEvent__e(
                     Message_Title__c = 'Error occurred: ',
                     Message__c = util.errorsToString(failedResults),
-                    Message_Type__c = Constants.FAILED_STATUS,
+                    Message_Type__c = SSACConstants.FAILED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
-                    Action_Type__c = Constants.EXECUTE_ACTION_TYPE);
+                    Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE);
             EventBus.publish(errorEvent);
         }
     }
@@ -34,24 +34,24 @@ public with sharing class SSACLogger {
         if (results == null || results.isEmpty()) {
             return;
         }
-        List<SSACResult> duplicatedResults = this.util.getResultsByStatus(results, Constants.DUPLICATED_STATUS);
-        List<SSACResult> okResults = this.util.getResultsByStatus(results, Constants.OK_STATUS);
+        List<SSACResult> duplicatedResults = this.util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS);
+        List<SSACResult> okResults = this.util.getResultsByStatus(results, SSACConstants.OK_STATUS);
         if (!duplicatedResults.isEmpty()) {
             SObjectLoadEvent__e duplicateEvent = new SObjectLoadEvent__e (
                     Message__c = this.util.keysToString(duplicatedResults),
                     Message_title__c = this.handleDuplicateMessageTitle(duplicatedResults.get(0).sObjectApiName),
-                    Message_Type__c = Constants.DUPLICATED_STATUS,
+                    Message_Type__c = SSACConstants.DUPLICATED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
-                    Action_Type__c = Constants.TEST_ACTION_TYPE);
+                    Action_Type__c = SSACConstants.TEST_ACTION_TYPE);
             EventBus.publish(duplicateEvent);
         }
         if (!okResults.isEmpty()) {
             SObjectLoadEvent__e validRecordsEvent = new SObjectLoadEvent__e (
                     Message__c = this.util.keysToString(okResults),
                     Message_title__c = this.handleValidRecordsMessageTitle(okResults.get(0).sObjectApiName),
-                    Message_Type__c = Constants.OK_STATUS,
+                    Message_Type__c = SSACConstants.OK_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
-                    Action_Type__c = Constants.TEST_ACTION_TYPE);
+                    Action_Type__c = SSACConstants.TEST_ACTION_TYPE);
             EventBus.publish(validRecordsEvent);
         }
     }

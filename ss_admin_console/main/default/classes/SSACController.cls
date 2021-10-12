@@ -1,9 +1,9 @@
 public with sharing class SSACController {
 
     private static Map<String, ISSACAction> actions = new Map<String, ISSACAction> {
-            Constants.CUSTOMERS_DATA => new SSACCustomerDataAction(),
-            Constants.PRODUCTS_DATA => new SSACProductDataAction(),
-            Constants.OPPORTUNITY_DATA => new SSACOpportunityDataAction()
+            SSACConstants.CUSTOMERS_DATA => new SSACCustomerDataAction(),
+            SSACConstants.PRODUCTS_DATA => new SSACProductDataAction(),
+            SSACConstants.OPPORTUNITY_DATA => new SSACOpportunityDataAction()
     };
 
     @AuraEnabled

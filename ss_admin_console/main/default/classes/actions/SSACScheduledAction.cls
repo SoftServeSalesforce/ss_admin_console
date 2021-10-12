@@ -11,7 +11,7 @@ public with sharing class SSACScheduledAction implements ISSACAction {
     public List<SSACResult> test() {
         CronTrigger cronTrigger = this.getCronTriggers();
         if (cronTrigger == null) {
-            Job_Setting__mdt setting = new SSACUtil().getJobSetting(Constants.CRON_EXPRESSION_NAME);
+            Job_Setting__mdt setting = new SSACUtil().getJobSetting(SSACConstants.CRON_EXPRESSION_NAME);
             if (setting == null || setting.Job_Cron_Expression__c == null
                     || String.isBlank(setting.Job_Cron_Expression__c)) {
                 this.generateEmptyCronLog();
@@ -19,10 +19,10 @@ public with sharing class SSACScheduledAction implements ISSACAction {
             this.logger.publishLog('Job ' + this.className + ' is not scheduled yet',
                     'You can run job by this schedule: ' + setting.Job_Cron_Expression__c
                             + '. Or you can change scheduled time in Job Setting custom metadata',
-                    Constants.OK_STATUS);
+                    SSACConstants.OK_STATUS);
         } else {
             this.logger.publishLog('Job ' + this.className + ' is already scheduled',
-                    'Next fire time is ' + cronTrigger.NextFireTime, Constants.FAILED_STATUS);
+                    'Next fire time is ' + cronTrigger.NextFireTime, SSACConstants.FAILED_STATUS);
         }
 
         return new List<SSACResult>();
@@ -31,7 +31,7 @@ public with sharing class SSACScheduledAction implements ISSACAction {
     public List<SSACResult> execute() {
         CronTrigger cronTrigger = this.getCronTriggers();
         if (cronTrigger == null) {
-            Job_Setting__mdt setting = new SSACUtil().getJobSetting(Constants.CRON_EXPRESSION_NAME);
+            Job_Setting__mdt setting = new SSACUtil().getJobSetting(SSACConstants.CRON_EXPRESSION_NAME);
             if (String.isBlank(setting?.Job_Cron_Expression__c)) {
                 this.generateEmptyCronLog();
             }
@@ -41,14 +41,14 @@ public with sharing class SSACScheduledAction implements ISSACAction {
                         (Schedulable) Type.forName(this.className).newInstance());
                 this.logger.publishLog('Job ' + this.className + ' was successfully scheduled',
                         null,
-                        Constants.OK_STATUS);
+                        SSACConstants.OK_STATUS);
             } catch (Exception ex) {
                 this.logger.publishLog('Error for scheduled ' + this.className,
-                        'Error occurred: ' + ex.getMessage(), Constants.FAILED_STATUS);
+                        'Error occurred: ' + ex.getMessage(), SSACConstants.FAILED_STATUS);
             }
         } else {
             this.logger.publishLog('Job ' + this.className + ' is already scheduled',
-                    'Next fire time is ' + cronTrigger.NextFireTime, Constants.FAILED_STATUS);
+                    'Next fire time is ' + cronTrigger.NextFireTime, SSACConstants.FAILED_STATUS);
         }
 
         return new List<SSACResult>();
@@ -73,6 +73,6 @@ public with sharing class SSACScheduledAction implements ISSACAction {
     private void generateEmptyCronLog() {
         this.logger.publishLog('Error for scheduled ' + this.className,
                 'Error occurred: Cron Expression is empty, ' +
-                        'please fill in cron expression in Job Setting custom metadata', Constants.FAILED_STATUS);
+                        'please fill in cron expression in Job Setting custom metadata', SSACConstants.FAILED_STATUS);
     }
 }

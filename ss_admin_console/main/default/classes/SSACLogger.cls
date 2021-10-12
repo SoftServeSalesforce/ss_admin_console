@@ -81,7 +81,7 @@ public with sharing class SSACLogger {
 
     @TestVisible
     private String handleDuplicateMessageTitle(String sObjectApiName) {
-        return 'The following ' + sObjectApiName + '\'s records they already exist: ';
+        return 'The following ' + sObjectApiName + '\'s records already exist: ';
     }
 
     @TestVisible

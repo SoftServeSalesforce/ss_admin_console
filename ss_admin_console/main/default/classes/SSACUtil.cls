@@ -4,13 +4,9 @@ public with sharing class SSACUtil {
         List<String> result = new List<String>();
         List<ApexClass> classes = this.getApexClasses();
         for (ApexClass aClass : classes) {
-            try {
-                Type classType = Type.forName(aClass.Name);
-                if (interfaceType.isAssignableFrom(classType)) {
-                    result.add(aClass.Name);
-                }
-            } catch (Exception e) {
-                continue;
+            Type classType = Type.forName(aClass.Name);
+            if ((classType != null) && (interfaceType.isAssignableFrom(classType))) {
+                result.add(aClass.Name);
             }
         }
         return result;
@@ -25,6 +21,6 @@ public with sharing class SSACUtil {
     }
 
     private List<ApexClass> getApexClasses() {
-        return [SELECT Id, Name FROM ApexClass];
+        return [SELECT Id, Name FROM ApexClass WHERE isValid = TRUE];
     }
 }

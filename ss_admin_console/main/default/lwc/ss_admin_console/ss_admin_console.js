@@ -99,7 +99,7 @@ export default class Diagnostic extends LightningElement {
     handleJobResultSubscribe() {
         const messageCallback = (response) => {
             this.jobResultPayload = JSON.parse(JSON.stringify(response));
-            if (this.actionTypes.length != this.actionNumber) {
+            if (this.actionTypes.length != this.actionNumber && this.jobResultPayload.data.payload.Action_Type__c) {
                 if (this.jobResultPayload.data.payload.Action_Type__c === 'Test') {
                     this.handleTest();
                 } else if (this.jobResultPayload.data.payload.Action_Type__c === 'Execute') {

@@ -15,10 +15,8 @@
         </lightning-combobox>
         <template if:true={isDataLoading}>
             <lightning-dual-listbox name="languages"
-                                    label="Data Types"
                                     source-label="Available"
                                     selected-label="Selected"
-                                    field-level-help="This is a dual listbox"
                                     options={types}
                                     onchange={handleDataType}
                                     value={values}>

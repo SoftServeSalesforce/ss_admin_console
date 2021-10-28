@@ -4,24 +4,27 @@ public with sharing class SSACSObjectAction implements ISSACAction {
     private String externalIdApiName;
     private String sObjectApiName;
     private String additionCondition;
+    private Boolean generateTestLog;
 
     public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, String externalIdApiName) {
         this.logger = new SSACLogger();
         this.records = records;
         this.externalIdApiName = externalIdApiName;
         this.sObjectApiName = sObjectApiName;
+        this.generateTestLog = true;
     }
 
-    public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records,
-            String externalIdApiName, String additionCondition) {
+    public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, String externalIdApiName, String additionCondition) {
         this.logger = new SSACLogger();
         this.records = records;
         this.externalIdApiName = externalIdApiName;
         this.sObjectApiName = sObjectApiName;
         this.additionCondition = additionCondition;
+        this.generateTestLog = true;
     }
 
     public List<SSACResult> execute() {
+        this.generateTestLog = false;
         if (this.records == null || this.records.isEmpty()) {
             return new List<SSACResult>();
         }
@@ -38,9 +41,10 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         if (this.records == null || this.records.isEmpty()) {
             return new List<SSACResult>();
         }
-        List<SSACResult> results = new SSACFilter(this.sObjectApiName, this.records,
-                this.externalIdApiName, this.additionCondition).filter();
-        logger.generateTestLog(results);
+        List<SSACResult> results = new SSACFilter(this.sObjectApiName, this.records, this.externalIdApiName, this.additionCondition).filter();
+        if (this.generateTestLog) {
+            logger.generateTestLog(results);
+        }
         return results;
     }
 

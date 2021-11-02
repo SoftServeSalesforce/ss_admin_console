@@ -99,6 +99,11 @@ export default class Diagnostic extends LightningElement {
     handleJobResultSubscribe() {
         const messageCallback = (response) => {
             this.jobResultPayload = JSON.parse(JSON.stringify(response));
+            if (this.jobResultPayload.data.payload.Action_Type__c) {
+                this.logs.push(this.handleHeaderMessage(this.handleFinishMessage(
+                    this.jobResultPayload.data.payload.Action_Name__c,
+                    this.jobResultPayload.data.payload.Action_Type__c)));
+            }
             if (this.actionTypes.length != this.actionNumber && this.jobResultPayload.data.payload.Action_Type__c) {
                 if (this.jobResultPayload.data.payload.Action_Type__c === 'Test') {
                     this.handleTest();
@@ -139,7 +144,7 @@ export default class Diagnostic extends LightningElement {
     };
 
     handleFinishMessage(objectType, actionType) {
-        return actionType + ' action was finished for SObject - ' + objectType;
+        return actionType + ' action was finished - ' + objectType;
     }
 
     setColor(color, message) {

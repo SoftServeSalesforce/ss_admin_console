@@ -3,6 +3,7 @@ import execute from '@salesforce/apex/SSACController.execute';
 import test from '@salesforce/apex/SSACController.test';
 import getDataTypes from '@salesforce/apex/SSACController.getDataTypes';
 import getJobClasses from '@salesforce/apex/SSACController.getJobClasses';
+import userId from '@salesforce/user/Id';
 import {subscribe} from 'lightning/empApi';
 
 export default class Diagnostic extends LightningElement {
@@ -81,6 +82,9 @@ export default class Diagnostic extends LightningElement {
     handleLogSubscribe() {
         const messageCallback = (response) => {
             this.logPayload = JSON.parse(JSON.stringify(response));
+            if (this.logPayload.data.payload.CreatedById !== userId) {
+                return;
+            }
             this.logsExist = true;
             this.logs.push(this.handleMessage(
                 this.logPayload.data.payload.Message_Type__c,
@@ -99,6 +103,9 @@ export default class Diagnostic extends LightningElement {
     handleJobResultSubscribe() {
         const messageCallback = (response) => {
             this.jobResultPayload = JSON.parse(JSON.stringify(response));
+            if (this.jobResultPayload.data.payload.CreatedById !== userId) {
+                return;
+            }
             if (this.jobResultPayload.data.payload.Action_Type__c) {
                 this.logs.push(this.handleHeaderMessage(this.handleFinishMessage(
                     this.jobResultPayload.data.payload.Action_Name__c,

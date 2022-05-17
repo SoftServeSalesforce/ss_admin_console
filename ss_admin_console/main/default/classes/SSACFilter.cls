@@ -21,6 +21,7 @@ public with sharing class SSACFilter {
         List<SSACResult> result = new List<SSACResult>();
         result.addAll(this.getNonExistentRecords());
         result.addAll(this.getExistentRecords());
+        result.addAll(this.getExistentChangedRecords());
         return result;
     }
 
@@ -50,6 +51,24 @@ public with sharing class SSACFilter {
             }
         }
         return results;
+    }
+    
+    @TestVisible
+    private List<SSACResult> getExistentChangedRecords() {
+        List<SSACResult> results = new List<SSACResult>();
+        if(existentKeys.isEmpty()) {
+            return new List<SSACResult>();
+        } else {
+            for (String recordKey : this.records.keySet()) {
+                if (!existentKeys.contains(String.valueOf(this.records.get(recordKey).get(this.externalIdApiName)).toLowerCase())) {
+                    results.add(new SSACResult()
+                        .setStatus(SSACConstants.CHANGED_STATUS)
+                        .setRecordKey(recordKey)
+                        .setSObjectApiName(this.sObjectApiName));
+                }
+            }
+        return results;
+        }
     }
 
     @TestVisible

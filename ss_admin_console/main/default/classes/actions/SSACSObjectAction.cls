@@ -22,7 +22,7 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         this.additionCondition = additionCondition;
         this.generateTestLog = true;
     }
-
+    //TODO Add update/upsert feature 
     public List<SSACResult> execute() {
         this.generateTestLog = false;
         if (this.records == null || this.records.isEmpty()) {
@@ -41,6 +41,7 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         this.logger.generateLoadLog(results);
         return results;
     }
+
 
     public List<SSACResult> test() {
         if (this.records == null || this.records.isEmpty()) {

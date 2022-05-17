@@ -7,7 +7,7 @@ public with sharing class CustomerConstants {
     public static final String CONTACT_API_NAME = 'Contact';
 
     public static Map<String, Account> ACCOUNT_DATA = new Map<String, Account> {
-            'Social Software' => new Account(Name = 'Social Software'),
+            'Social Software' => new Account(Name = 'Test Software'),
             'Adept Software' => new Account(Name = 'Adept Software'),
             'Boss Software' => new Account(Name = 'Boss Software'),
             'Scope Software' => new Account(Name = 'Scope Software'),

@@ -1,0 +1,99 @@
+<template>
+    <div class="slds-box slds-theme_default">
+        <div class="spinner">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+                </lightning-spinner>
+            </template>
+        </div>
+        <lightning-combobox
+                name="actions"
+                label="Select an action:"
+                placeholder="Select an action"
+                options={actions}
+                onchange={handleActions}>
+        </lightning-combobox>
+        <template if:true={isDataLoading}>
+            <lightning-dual-listbox name="languages"
+                                    source-label="Available"
+                                    selected-label="Selected"
+                                    options={types}
+                                    onchange={handleDataType}
+                                    value={values}>
+            </lightning-dual-listbox>
+        </template>
+
+        <template if:true={isJobScheduled}>
+            <div class="slds-box slds-m-top_large">
+                <div class="slds-m-left_x-small">
+                    <lightning-combobox
+                            name="scheduledClasses"
+                            label="Select a Scheduled class:"
+                            placeholder="Select a Scheduled class"
+                            options={scheduledClasses}
+                            required=true
+                            onchange={handleSelectClassName}>
+                    </lightning-combobox>
+                </div>
+            </div>
+        </template>
+
+        <template if:true={isJobBatchable}>
+            <div class="slds-box slds-m-top_large">
+                <div class="slds-m-left_x-small">
+                    <lightning-combobox
+                            name="batchClasses"
+                            label="Select a Batch class:"
+                            placeholder="Select a Batch class"
+                            options={batchClasses}
+                            required=true
+                            onchange={handleSelectClassName}>
+                    </lightning-combobox>
+                </div>
+            </div>
+        </template>
+
+        <div class="slds-grid slds-grid_align-spread">
+            <div class="slds-col">
+                <div class="slds-m-top_large">
+                    <lightning-button
+                            disabled={actionDisabled}
+                            label="Test"
+                            title="Test"
+                            variant="brand"
+                            onclick={handleTest}
+                            class="slds-m-left_x-small">
+                    </lightning-button>
+                    <lightning-button
+                            disabled={actionDisabled}
+                            label="Execute"
+                            title="Execute"
+                            variant="brand"
+                            onclick={handleExecute}
+                            class="slds-m-left_x-small">
+                    </lightning-button>
+                </div>
+            </div>
+            <div class="slds-col">
+                <div class="slds-m-top_large">
+                    <lightning-button
+                            label="Clear"
+                            title="Clear"
+                            variant="destructive"
+                            onclick={handleClear}
+                            class="slds-m-left_x-small">
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <div class="slds-box slds-m-top--large slds-scrollable"
+             style="height: 18rem; font-family: 'Source Code Pro',monospace; font-size: x-small">
+            <template for:each={logs} for:item="logsItem">
+                <div key={logsItem}>
+                    <lightning-formatted-rich-text value={logsItem}></lightning-formatted-rich-text>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

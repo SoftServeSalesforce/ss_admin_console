@@ -3,6 +3,9 @@ public with sharing class SSACFilter {
     private String externalIdApiName;
     private String sObjectApiName;
     private String additionCondition;
+
+    private Map<String, Set<String>> additionConditions;
+
     private Set<String> keys;
     private Set<String> existentKeys;
 
@@ -16,6 +19,18 @@ public with sharing class SSACFilter {
             this.existentKeys = this.getExistentKeys();
         }
     }
+
+    public SSACFilter(String sObjectApiName, Map<String, SObject> records, String externalIdApiName, Map<String, Set<String>> additionConditions) {
+        this.records = records;
+        this.sObjectApiName = sObjectApiName;
+        this.externalIdApiName = externalIdApiName;
+        this.additionConditions = additionConditions;
+        if (records != null && !records.isEmpty()) {
+            this.keys = records.keySet();
+            this.existentKeys = this.getExistentKeys();
+        }
+    }
+
 
     public List<SSACResult> filter() {
         List<SSACResult> result = new List<SSACResult>();
@@ -56,6 +71,7 @@ public with sharing class SSACFilter {
     private Set<String> getExistentKeys() {
         Set<String> result = new Set<String>();
         String query = this.buildQuery();
+
         List<SObject> existentRecords = Database.query(query);
         for (SObject sObj : existentRecords) {
             result.add(String.valueOf(sObj.get(this.externalIdApiName)).toLowerCase());
@@ -65,15 +81,33 @@ public with sharing class SSACFilter {
 
     @TestVisible
     private String buildQuery() {
-        String result = 'SELECT Id, ' + this.externalIdApiName + ' FROM ' + this.sObjectApiName + ' WHERE '
-                + this.externalIdApiName + ' IN (';
-        for (String externalId : this.keys) {
-            result += '\'' + externalId + '\',';
+        String fields = '';
+        String condition = '';
+
+        if (this.additionConditions != null) {
+            
+            for(String field: this.additionConditions.keySet()){
+                fields += field + ' ,';
+                String values = '';
+                for(String value: this.additionConditions.get(field)){
+                    values +=  '\'' + value + '\',';
+                }
+                condition += ' (' + field + ' IN ( ' + values.removeEnd(values.right(1))  + '))  AND'; 
+            }
+            fields =  fields.removeEnd(fields.right(1));
+            condition = condition.removeEnd(condition.right(3));
+
+        } else {
+
+            fields = this.externalIdApiName;
+            condition += fields + ' IN (';
+            for (String externalId : this.keys) {
+                condition += '\'' + externalId + '\',';
+            }
+            condition = condition.removeEnd(condition.right(1)) + ')';
         }
-        result = result.removeEnd(result.right(1)) + ')';
-        if (this.additionCondition != null) {
-            result += ' AND (' + this.additionCondition + ')';
-        }
+
+        String result = 'SELECT Id, ' + fields + ' FROM ' + this.sObjectApiName + ' WHERE ' + condition;
 
         return result;
     }

@@ -6,11 +6,18 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
         result.addAll(new SSACSObjectAction(
                 ProductConstants.PRICE_BOOK_API_NAME, ProductConstants.PRICE_BOOK_DATA, ProductConstants.NAME_API_NAME).test());
         for (String priceBookName : ProductConstants.PRICE_BOOK_ENTRY_DATA.keySet()) {
+            // List<SSACResult> entryResults = new SSACSObjectAction(
+            //         ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
+            //         ProductConstants.PRICE_BOOK_ENTRY_DATA.get(priceBookName),
+            //         ProductConstants.PRODUCT_CODE_API_NAME,
+            //         'Pricebook2.Name = \'' + priceBookName + '\'').test();
+            
             List<SSACResult> entryResults = new SSACSObjectAction(
                     ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
                     ProductConstants.PRICE_BOOK_ENTRY_DATA.get(priceBookName),
                     ProductConstants.PRODUCT_CODE_API_NAME,
-                    'Pricebook2.Name = \'' + priceBookName + '\'').test();
+                    getExternalApiValues()).test();
+
             result.addAll(entryResults);
         }
         new SSACLogger().publishResultLog(SSACConstants.PRODUCTS_DATA, 'Test');
@@ -103,5 +110,15 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
         }
 
         return priceBooks;
+    }
+
+    @TestVisible
+    private Map<String, Set<String>> getExternalApiValues(){
+        Map<String, Set<String>> externalApiKeyValues = new Map<String, Set<String>>();
+        externalApiKeyValues.put(ProductConstants.PRICEBOOK_NAME_API_NAME, ProductConstants.PRICE_BOOK_ENTRY_DATA.keySet());
+
+        externalApiKeyValues.put(ProductConstants.PRODUCT_CODE_API_NAME, getProductCodes(ProductConstants.PRICE_BOOK_ENTRY_DATA));
+        return externalApiKeyValues;
+
     }
 }

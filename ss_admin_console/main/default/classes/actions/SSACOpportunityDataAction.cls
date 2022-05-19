@@ -12,6 +12,9 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
         result.addAll(new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, opportunityItemRecords,
                 OpportunityConstants.OPPORTUNITY_ITEM_KEY_FIELD_NAME).test());
+                result.addAll(new SSACSObjectAction(
+                    OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, opportunityItemRecords,
+                    OpportunityConstants.OPPORTUNITY_ITEM_KEY_FIELD_NAME, this.getAdditionFields()).test());
         new SSACLogger().publishResultLog(SSACConstants.OPPORTUNITY_DATA, 'Test');
         return result;
     }
@@ -89,5 +92,14 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
             return priceBooks.get(0).Name;
         }
         return null;
+    }
+    //TODO need to fix method
+    @TestVisible
+    private Set<String> getAdditionFields() {
+        Set<String> result = new Set<String>();
+        for(String item : OpportunityConstants.REFERENCE_FIELD_TO_KEY_FILED.keySet()){
+            result.add(item);
+        }
+        return result;
     }
 }

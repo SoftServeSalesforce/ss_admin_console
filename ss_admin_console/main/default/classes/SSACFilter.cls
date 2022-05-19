@@ -2,18 +2,20 @@ public with sharing class SSACFilter {
     private Map<String, SObject> records;
     private String externalIdApiName;
     private String sObjectApiName;
-    private String additionCondition;
+    private Set<String> additionCondition;
     private Set<String> keys;
     private Set<String> existentKeys;
+    private List<SObject> existentSObjects;
 
-    public SSACFilter(String sObjectApiName, Map<String, SObject> records, String externalIdApiName, String additionCondition) {
+    public SSACFilter(String sObjectApiName, Map<String, SObject> records, String externalIdApiName, Set<String> additionCondition) {
         this.records = records;
         this.sObjectApiName = sObjectApiName;
         this.externalIdApiName = externalIdApiName;
         this.additionCondition = additionCondition;
         if (records != null && !records.isEmpty()) {
             this.keys = records.keySet();
-            this.existentKeys = this.getExistentKeys();
+            this.existentKeys = this.getExistentSObjects().keySet();
+            this.existentSObjects = this.getExistentSObjects().values();
         }
     }
 
@@ -58,42 +60,46 @@ public with sharing class SSACFilter {
         List<SSACResult> results = new List<SSACResult>();
         if(existentKeys.isEmpty()) {
             return new List<SSACResult>();
-        } else {
-            for (String recordKey : this.records.keySet()) {
-                if (!existentKeys.contains(String.valueOf(this.records.get(recordKey).get(this.externalIdApiName)).toLowerCase())) {
-                    results.add(new SSACResult()
-                        .setStatus(SSACConstants.CHANGED_STATUS)
-                        .setRecordKey(recordKey)
-                        .setSObjectApiName(this.sObjectApiName));
-                }
-            }
-        return results;
         }
+        for (String recordKey : this.records.keySet()) {
+            //need to replace condition
+            if (!existentKeys.contains(String.valueOf(this.records.get(recordKey).get(this.externalIdApiName)).toLowerCase())) {
+                results.add(new SSACResult()
+                    .setStatus(SSACConstants.CHANGED_STATUS)
+                    .setRecordKey(recordKey)
+                    .setSObjectApiName(this.sObjectApiName));
+            }
+        }
+        return results;
     }
 
     @TestVisible
-    private Set<String> getExistentKeys() {
-        Set<String> result = new Set<String>();
+    public Map<String, SObject> getExistentSObjects() {
+        Map<String, SObject> result = new Map<String, SObject>();
         String query = this.buildQuery();
         List<SObject> existentRecords = Database.query(query);
         for (SObject sObj : existentRecords) {
-            result.add(String.valueOf(sObj.get(this.externalIdApiName)).toLowerCase());
+            result.put((String.valueOf(sObj.get(this.externalIdApiName)).toLowerCase()), sObj);
         }
         return result;
     }
 
     @TestVisible
     private String buildQuery() {
-        String result = 'SELECT Id, ' + this.externalIdApiName + ' FROM ' + this.sObjectApiName + ' WHERE '
-                + this.externalIdApiName + ' IN (';
-        for (String externalId : this.keys) {
-            result += '\'' + externalId + '\',';
+        String result = 'SELECT Id,'+ this.externalIdApiName+ ',';
+        if(this.additionCondition != null){
+            for (String additionCondition : this.additionCondition) {
+                result += additionCondition + ',';
+            }
         }
-        result = result.removeEnd(result.right(1)) + ')';
-        if (this.additionCondition != null) {
-            result += ' AND (' + this.additionCondition + ')';
-        }
-
+            result = result.removeEnd(result.right(1));
+        result += ' FROM '+ this.sObjectApiName + ' WHERE ';
+            result += this.externalIdApiName + ' IN (';
+            for (String externalId : this.keys) {
+                result += '\'' + externalId + '\',';
+            }
+            result = result.removeEnd(result.right(1)) + ')';
+            System.debug(result);
         return result;
     }
 }

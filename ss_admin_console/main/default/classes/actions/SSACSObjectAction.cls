@@ -3,7 +3,7 @@ public with sharing class SSACSObjectAction implements ISSACAction {
     private Map<String, SObject> records;
     private String externalIdApiName;
     private String sObjectApiName;
-    private String additionCondition;
+    private Set<String> additionCondition;
     private Boolean generateTestLog;
 
     public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, String externalIdApiName) {
@@ -14,7 +14,7 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         this.generateTestLog = true;
     }
 
-    public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, String externalIdApiName, String additionCondition) {
+    public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, String externalIdApiName, Set<String> additionCondition) {
         this.logger = new SSACLogger();
         this.records = records;
         this.externalIdApiName = externalIdApiName;

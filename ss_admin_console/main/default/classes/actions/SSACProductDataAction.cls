@@ -2,15 +2,20 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
 
     public override List<SSACResult> test() {
         List<SSACResult> result = new SSACSObjectAction(
-                ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA, ProductConstants.PRODUCT_CODE_API_NAME).test();
+                ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA,
+                ProductConstants.PRODUCT_CODE_API_NAME,
+                ProductConstants.EXTERNAL_IDS_API_NAMES_PRODUCT).test();
         result.addAll(new SSACSObjectAction(
-                ProductConstants.PRICE_BOOK_API_NAME, ProductConstants.PRICE_BOOK_DATA, ProductConstants.NAME_API_NAME).test());
+                ProductConstants.PRICE_BOOK_API_NAME, ProductConstants.PRICE_BOOK_DATA,
+                ProductConstants.NAME_API_NAME,
+                ProductConstants.EXTERNAL_IDS_API_NAMES_PRICE_BOOK).test());
         for (String priceBookName : ProductConstants.PRICE_BOOK_ENTRY_DATA.keySet()) {
             List<SSACResult> entryResults = new SSACSObjectAction(
                     ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
                     ProductConstants.PRICE_BOOK_ENTRY_DATA.get(priceBookName),
                     ProductConstants.PRODUCT_CODE_API_NAME,
-                    this.getAdditionFields()).test();
+                    ProductConstants.EXTERNAL_IDS_API_NAMES_PRICE_BOOK_ENTRY,
+                    'Pricebook2.Name = \'' + priceBookName + '\'').test();
             result.addAll(entryResults);
         }
         new SSACLogger().publishResultLog(SSACConstants.PRODUCTS_DATA, 'Test');
@@ -19,21 +24,26 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
 
     public override List<SSACResult> execute() {
         List<SSACResult> productResults = new SSACSObjectAction(
-                ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA, ProductConstants.PRODUCT_CODE_API_NAME).execute();
+                ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA,
+                ProductConstants.PRODUCT_CODE_API_NAME,
+                ProductConstants.EXTERNAL_IDS_API_NAMES_PRODUCT).execute();
         productResults.addAll(new SSACSObjectAction(
                 ProductConstants.PRICE_BOOK_API_NAME,
-                ProductConstants.PRICE_BOOK_DATA, ProductConstants.NAME_API_NAME).execute());
-
+                ProductConstants.PRICE_BOOK_DATA,
+                ProductConstants.NAME_API_NAME,
+                ProductConstants.EXTERNAL_IDS_API_NAMES_PRICE_BOOK).execute());
         Map<Id, Map<String, PricebookEntry>> allEntriesByPriceBookId = this.generateEntries(
                 ProductConstants.PRICE_BOOK_ENTRY_DATA, this.getPriceBooks(), this.getProductByProductCode(
                         this.getProductCodes(ProductConstants.PRICE_BOOK_ENTRY_DATA)));
 
-        /*for (Id i : allEntriesByPriceBookId.keySet()) {
+        for (Id i : allEntriesByPriceBookId.keySet()) {
             List<SSACResult> entryResults = new SSACSObjectAction(ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
-                    allEntriesByPriceBookId.get(i), ProductConstants.PRODUCT_CODE_API_NAME,
+                    allEntriesByPriceBookId.get(i),
+                    ProductConstants.PRODUCT_CODE_API_NAME,
+                    ProductConstants.EXTERNAL_IDS_API_NAMES_PRICE_BOOK_ENTRY,
                     'Pricebook2Id = \'' + i + '\'').execute();
             productResults.addAll(entryResults);
-        }*/
+        }
         new SSACLogger().publishResultLog(SSACConstants.PRODUCTS_DATA, 'Execute');
         return productResults;
     }
@@ -103,15 +113,6 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
         }
 
         return priceBooks;
-    }
-
-    @TestVisible
-    private Set<String> getAdditionFields() {
-        Set<String> result = new Set<String>();
-        for(String item : ProductConstants.PRICE_BOOK_DATA.keySet()){
-            result.add(item);
-        }
-        return result;
     }
     
 }

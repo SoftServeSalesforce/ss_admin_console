@@ -6,15 +6,14 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
                 OpportunityConstants.OPPORTUNITY_DATA);
         List<SSACResult> result = new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_API_NAME, opportunityRecords,
-                OpportunityConstants.OPPORTUNITY_KEY_FIELD_NAME).test();
+                OpportunityConstants.OPPORTUNITY_KEY_FIELD_NAME,
+                OpportunityConstants.EXTERNAL_IDS_API_NAMES_OPPORTUNITY).test();
         Map<String, SObject> opportunityItemRecords = handler.wrappersToRecords(
                 OpportunityConstants.OPPORTUNITY_ITEM_DATA);
         result.addAll(new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, opportunityItemRecords,
-                OpportunityConstants.OPPORTUNITY_ITEM_KEY_FIELD_NAME).test());
-                result.addAll(new SSACSObjectAction(
-                    OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, opportunityItemRecords,
-                    OpportunityConstants.OPPORTUNITY_ITEM_KEY_FIELD_NAME, this.getAdditionFields()).test());
+                OpportunityConstants.OPPORTUNITY_ITEM_KEY_FIELD_NAME,
+                OpportunityConstants.EXTERNAL_IDS_API_NAMES_OPPORTUNITY_ITEM).test());
         new SSACLogger().publishResultLog(SSACConstants.OPPORTUNITY_DATA, 'Test');
         return result;
     }
@@ -28,7 +27,8 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
 
         List<SSACResult> result = new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_API_NAME, validOpportunityRecords,
-                OpportunityConstants.OPPORTUNITY_KEY_FIELD_NAME).execute();
+                OpportunityConstants.OPPORTUNITY_KEY_FIELD_NAME,
+                OpportunityConstants.EXTERNAL_IDS_API_NAMES_OPPORTUNITY).execute();
 
         Map<String, SObject> validOpportunityItemRecords = this.addPriceBookEntry(handler.getValidRecords(OpportunityConstants.OPPORTUNITY_ITEM_DATA,
                 OpportunityConstants.REFERENCE_FIELD_TO_KEY_FILED,
@@ -36,7 +36,8 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
         this.addPriceBookEntry(validOpportunityItemRecords);
         result.addAll(new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, validOpportunityItemRecords,
-                OpportunityConstants.OPPORTUNITY_ITEM_KEY_FIELD_NAME).execute());
+                OpportunityConstants.OPPORTUNITY_ITEM_KEY_FIELD_NAME,
+                OpportunityConstants.EXTERNAL_IDS_API_NAMES_OPPORTUNITY_ITEM).execute());
         new SSACLogger().publishResultLog(SSACConstants.OPPORTUNITY_DATA, 'Execute');
         return result;
     }

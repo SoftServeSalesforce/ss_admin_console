@@ -2,21 +2,24 @@ public with sharing class SSACSObjectAction implements ISSACAction {
     private SSACLogger logger;
     private Map<String, SObject> records;
     private String externalIdApiName;
+    private Set<String> externalFields;
     private String sObjectApiName;
-    private Set<String> additionCondition;
+    private String additionCondition;
     private Boolean generateTestLog;
 
-    public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, String externalIdApiName) {
+    public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, String externalIdApiName, Set<String> externalFields) {
         this.logger = new SSACLogger();
         this.records = records;
+        this.externalFields = externalFields;
         this.externalIdApiName = externalIdApiName;
         this.sObjectApiName = sObjectApiName;
         this.generateTestLog = true;
     }
 
-    public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, String externalIdApiName, Set<String> additionCondition) {
+    public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, String externalIdApiName, Set<String> externalFields, String additionCondition) {
         this.logger = new SSACLogger();
         this.records = records;
+        this.externalFields = externalFields;
         this.externalIdApiName = externalIdApiName;
         this.sObjectApiName = sObjectApiName;
         this.additionCondition = additionCondition;
@@ -47,7 +50,7 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         if (this.records == null || this.records.isEmpty()) {
             return new List<SSACResult>();
         }
-        List<SSACResult> results = new SSACFilter(this.sObjectApiName, this.records, this.externalIdApiName, this.additionCondition).filter();
+        List<SSACResult> results = new SSACFilter(this.sObjectApiName, this.records, this.externalIdApiName, this.externalFields, this.additionCondition).filter();
         if (this.generateTestLog) {
             logger.generateTestLog(results);
         }

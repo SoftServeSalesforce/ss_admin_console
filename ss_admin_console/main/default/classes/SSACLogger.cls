@@ -19,7 +19,7 @@ public with sharing class SSACLogger {
         List<SSACResult> failedResults = this.util.getResultsByStatus(results, SSACConstants.FAILED_STATUS);
         List<SSACResult> okResults = this.util.getResultsByStatus(results, SSACConstants.OK_STATUS);
         List<SSACResult> duplicateResults = this.util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS);
-        //List<SSACResult> upsertedResults = this.util.getResultsByStatus(results, SSACConstants.UPSERT_OK_STATUS);
+        List<SSACResult> updatedResults = this.util.getResultsByStatus(results, SSACConstants.UPDATED_STATUS);
         if (!duplicateResults.isEmpty()) {
             SObjectLoadEvent__e duplicateEvent = new SObjectLoadEvent__e(
                     Message__c = this.util.keysToString(duplicateResults),
@@ -39,17 +39,17 @@ public with sharing class SSACLogger {
                     Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
             );
             EventBus.publish(successEvent);
-        }/*
-        if (!upsertedResults.isEmpty()) {
+        }
+        if (!updatedResults.isEmpty()) {
             SObjectLoadEvent__e successEvent = new SObjectLoadEvent__e(
-                    Message__c = this.util.idsToString(upsertedResults),
-                    Message_Title__c = this.handleSuccessUpsertMessageTitle(upsertedResults.get(0).sObjectApiName),
-                    Message_Type__c = SSACConstants.UPSERT_OK_STATUS,
+                    Message__c = this.util.idsToString(updatedResults),
+                    Message_Title__c = this.handleSuccessUpdateMessageTitle(updatedResults.get(0).sObjectApiName),
+                    Message_Type__c = SSACConstants.UPDATED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
                     Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
             );
             EventBus.publish(successEvent);
-        }*/
+        }
         if (!failedResults.isEmpty()) {
             SObjectLoadEvent__e errorEvent = new SObjectLoadEvent__e(
                     Message_Title__c = 'Error occurred: ',
@@ -125,10 +125,10 @@ public with sharing class SSACLogger {
     private String handleSuccessMessageTitle(String sObjectApiName) {
         return 'Successfully inserted ' + sObjectApiName + '`s records. ';
     }
-    /*@TestVisible
-    private String handleSuccessUpsertMessageTitle(String sObjectApiName) {
-        return 'Successfully upserted ' + sObjectApiName + '`s records. ';
-    }*/
+    @TestVisible
+    private String handleSuccessUpdateMessageTitle(String sObjectApiName) {
+        return 'Successfully updated ' + sObjectApiName + '`s records. ';
+    }
     @TestVisible
     private String handleChangedMessageTitle(String sObjectApiName) {
         return 'The following ' + sObjectApiName + '`s records could be updated: ';

@@ -46,7 +46,7 @@ public with sharing class CustomerConstants {
     };
 
     public static Map<String, Contact> CONTACT_DATA = new Map<String, Contact> {
-            'OliviaSmith@testmail.com' => new Contact(LastName = 'Sith', FirstName = 'Olivia', Email = 'OliviaSmith@testmail.com'),
+            'OliviaSmith@testmail.com' => new Contact(LastName = 'Smith', FirstName = 'Olivia', Email = 'OliviaSmith@testmail.com'),
             'EmmaBrown@testmail.com' => new Contact(LastName = 'Brown', FirstName = 'Emma', Email = 'EmmaBrown@testmail.com'),
             'AmeliaWilson@testmail.com' => new Contact(LastName = 'Wilson', FirstName = 'Amelia', Email = 'AmeliaWilson@testmail.com'),
             'AvaThomson@testmail.com' => new Contact(LastName = 'Thomson', FirstName = 'Ava', Email = 'AvaThomson@testmail.com'),

@@ -34,10 +34,15 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         List<SSACResult> filterResults = this.test();
         SSACResultsUtil util = new SSACResultsUtil();
         List<SSACResult> okResults = util.getResultsByStatus(filterResults, SSACConstants.OK_STATUS);
+        List<SSACResult> changedResults = util.getResultsByStatus(filterResults, SSACConstants.CHANGED_STATUS);
         List<SSACResult> results = new List<SSACResult>();
+        System.debug(changedResults);
         if (!okResults.isEmpty()) {
             Database.SaveResult[] saveResults = Database.insert(this.getRecords(okResults), false);
-            results = util.generateDiagnosticResults(saveResults, this.sObjectApiName);
+            results = util.generateDiagnosticResultsInsert(saveResults, this.sObjectApiName);
+        } else if (!changedResults.isEmpty()) {
+            Database.SaveResult[] updateResults = Database.update(this.setId(changedResults), false);
+            results = util.generateDiagnosticResultsUpdated(updateResults, this.sObjectApiName);
         } else {
             results = util.getResultsByStatus(filterResults, SSACConstants.DUPLICATED_STATUS);
         }
@@ -63,6 +68,23 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         for (SSACResult result : results) {
             records.add(this.records.get(result.recordKey));
         }
+        System.debug(records);
         return records;
+    }
+
+    private List<SObject> setId(List<SSACResult> results) {
+        Map<String, SObject> records = new Map<String, SObject>();
+        Integer accountCounter = 0;
+        for (SSACResult result : results) {
+            for (String item : this.records.keySet()) {
+                if(item == result.recordKey) {
+                    this.records.get(item).put('Id', results.get(accountCounter).recordId);
+                    accountCounter = results.size() - 1 > accountCounter ? ++accountCounter : 0;
+                    records.put(item, this.records.get(item));
+                }
+            }
+        }
+        System.debug(records);
+        return records.values();
     }
 }

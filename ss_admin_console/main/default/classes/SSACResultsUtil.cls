@@ -13,7 +13,7 @@ public with sharing class SSACResultsUtil {
         return diagnosticResults;
     }
 
-    public List<SSACResult> generateDiagnosticResults(Database.SaveResult[] saveResults, String sObjectApiName) {
+    public List<SSACResult> generateDiagnosticResultsInsert(Database.SaveResult[] saveResults, String sObjectApiName) {
         List<SSACResult> results = new List<SSACResult>();
         for (Database.SaveResult result : saveResults) {
             if (result.isSuccess()) {
@@ -22,20 +22,39 @@ public with sharing class SSACResultsUtil {
                         .setRecordId(result.getId())
                         .setSObjectApiName(sObjectApiName));
             } else {
-                String errorMessage = '';
-                for (Database.Error err : result.getErrors()) {
-                    errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage()
-                            + sObjectApiName + ' fields that affected this error: ' + err.getFields() + '. ';
-                }
-                results.add(new SSACResult()
-                        .setStatus(SSACConstants.FAILED_STATUS)
-                        .setErrorMessage(errorMessage)
-                        .setSObjectApiName(sObjectApiName));
+                results = this.generateDiagnosticError(result, sObjectApiName);
             }
         }
         return results;
     }
 
+    public List<SSACResult> generateDiagnosticResultsUpdated(Database.SaveResult[] saveResults, String sObjectApiName) {
+        List<SSACResult> results = new List<SSACResult>();
+        for (Database.SaveResult result : saveResults) {
+            if (result.isSuccess()) {
+                results.add(new SSACResult()
+                        .setStatus(SSACConstants.UPDATED_STATUS)
+                        .setRecordId(result.getId())
+                        .setSObjectApiName(sObjectApiName));
+            } else {
+                results = this.generateDiagnosticError(result, sObjectApiName);
+            }
+        }
+        return results;
+    }
+    public List<SSACResult> generateDiagnosticError(Database.SaveResult result, String sObjectApiName) {
+        List<SSACResult> results = new List<SSACResult>();
+            String errorMessage = '';
+            for (Database.Error err : result.getErrors()) {
+                errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage()
+                        + sObjectApiName + ' fields that affected this error: ' + err.getFields() + '. ';
+            }
+            results.add(new SSACResult()
+                    .setStatus(SSACConstants.FAILED_STATUS)
+                    .setErrorMessage(errorMessage)
+                    .setSObjectApiName(sObjectApiName));
+        return results;
+    }
     public String keysToString(List<SSACResult> results) {
         String message = '';
         for (SSACResult result : results) {

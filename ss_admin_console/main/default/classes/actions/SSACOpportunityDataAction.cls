@@ -94,13 +94,4 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
         }
         return null;
     }
-    //TODO need to fix method
-    @TestVisible
-    private Set<String> getAdditionFields() {
-        Set<String> result = new Set<String>();
-        for(String item : OpportunityConstants.REFERENCE_FIELD_TO_KEY_FILED.keySet()){
-            result.add(item);
-        }
-        return result;
-    }
 }

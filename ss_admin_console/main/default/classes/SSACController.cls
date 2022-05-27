@@ -54,4 +54,16 @@ public with sharing class SSACController {
         item.execute();
         return 'Execution Started';
     }
+
+    @AuraEnabled
+    public static Boolean getProductionOrgToggle(){
+        Toggle__mdt productionOrgToggle = Toggle__mdt.getInstance('ProductionOrgToggle');
+        return productionOrgToggle.ProductionOrgToggle__c;
+    }
+
+    @AuraEnabled
+    public static void showActionDropdown(){
+        System.debug('showActionDropdown >> Production Org Toggle value: ' + SSACController.getProductionOrgToggle() );
+    }
+
 }

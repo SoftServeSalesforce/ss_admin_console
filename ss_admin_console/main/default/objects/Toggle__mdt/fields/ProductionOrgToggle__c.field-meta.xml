@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ProductionOrgToggle__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>This toggle controls appearance of &quot;Data Loading&quot; item in the drop down list based upon TRUE/FALSE</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Production Org Toggle</label>
+    <type>Checkbox</type>
+</CustomField>

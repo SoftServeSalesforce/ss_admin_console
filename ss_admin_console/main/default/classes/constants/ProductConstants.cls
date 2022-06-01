@@ -6,11 +6,14 @@ public with sharing class ProductConstants {
     public final static String PRICE_BOOK_ENTRY_API_NAME = 'PricebookEntry';
     public final static String STANDARD_PRICE_BOOK_NAME = 'Standard Price Book';
 
-    public static final Set<String> EXTERNAL_IDS_API_NAMES_PRODUCT = new Set<String>{'ProductCode', 'Name'};
+    public static final Set<String> EXTERNAL_IDS_API_NAMES_PRODUCT = new Set<String>{'ProductCode'};
+	public static final Set<String> ALL_FIELDS_API_NAMES_PRODUCT = new Set<String>{'ProductCode', 'Name'};
 
-    public static final Set<String> EXTERNAL_IDS_API_NAMES_PRICE_BOOK = new Set<String>{'Name', 'IsActive'};
+    public static final Set<String> EXTERNAL_IDS_API_NAMES_PRICE_BOOK = new Set<String>{'Name'};
+	public static final Set<String> ALL_FIELDS_API_NAMES_PRICE_BOOK = new Set<String>{'IsActive', 'Name'};
 
-    public static final Set<String> EXTERNAL_IDS_API_NAMES_PRICE_BOOK_ENTRY = new Set<String>{'UnitPrice'};
+    public static final Set<String> EXTERNAL_IDS_API_NAMES_PRICE_BOOK_ENTRY = new Set<String>{'Pricebook2Id'};
+	public static final Set<String> ALL_FIELDS_API_NAMES_PRICE_BOOK_ENTRY = new Set<String>{'Pricebook2Id'};
 
     public final static Map<String, Pricebook2> PRICE_BOOK_DATA = new Map<String, Pricebook2>{
             'Test PriceBook1' => new Pricebook2(Name = 'Test PriceBook1', IsActive = true),

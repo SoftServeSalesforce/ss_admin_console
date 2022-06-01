@@ -5,11 +5,13 @@ public with sharing class OpportunityConstants {
     public static final String OPPORTUNITY_ITEM_API_NAME = 'OpportunityLineItem';
     public static final String OPPORTUNITY_ITEM_KEY_FIELD_NAME = 'ProductCode';
 
-    public static final Set<String> EXTERNAL_IDS_API_NAMES_OPPORTUNITY = new Set<String>{'Name', 'StageName'};
+    public static final Set<String> EXTERNAL_IDS_API_NAMES_OPPORTUNITY = new Set<String>{'Name'};
+	public static final Set<String> ALL_IDS_API_NAMES_OPPORTUNITY = new Set<String>{'Name', 'StageName'};
 
-    public static final Set<String> EXTERNAL_IDS_API_NAMES_OPPORTUNITY_ITEM = new Set<String>{'TotalPrice', 'Quantity'};
-
-    public final static Map<String, String> REFERENCE_FIELD_TO_KEY_FILED = new Map<String, String>{
+    public static final Set<String> EXTERNAL_IDS_API_NAMES_OPPORTUNITY_ITEM = new Set<String>{'Product2Id'};
+	public static final Set<String> ALL_IDS_API_NAMES_OPPORTUNITY_ITEM = new Set<String>{'Product2Id','TotalPrice', 'Quantity'};
+	
+    public final static Map<String, String> REFERENCE_FIELD_TO_KEY_FIELD = new Map<String, String>{
             'AccountId' => 'Name',
             'Pricebook2Id' => 'Name',
             'Product2Id' => 'ProductCode',
@@ -24,7 +26,7 @@ public with sharing class OpportunityConstants {
     };
 
     public final static List<SSACSObjectWrapper> OPPORTUNITY_DATA = new List<SSACSObjectWrapper>{
-        	new SSACSObjectWrapper('OPP_TEST-0001', new Opportunity(Name = 'OPP_TEST-0001', StageName = 'Qualification', Amount = 72.1, CloseDate = Date.today() + 91), new Map<String, String>{
+        	new SSACSObjectWrapper('OPP_TEST-0001', new Opportunity(Name = 'OPP_TEST-0001', StageName = 'Prospecting', Amount = 72.1, CloseDate = Date.today() + 91), new Map<String, String>{
 					'AccountId' => 'Social Software'
 			}),
 			new SSACSObjectWrapper('OPP_TEST-0002', new Opportunity(Name = 'OPP_TEST-0002', StageName = 'Prospecting', Amount = 15.24, CloseDate = Date.today() + 145), new Map<String, String>{

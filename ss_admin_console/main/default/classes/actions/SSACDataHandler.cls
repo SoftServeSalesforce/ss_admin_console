@@ -22,6 +22,17 @@ public with sharing class SSACDataHandler {
         return records;
     }
 
+	public Map<String, SObject> wrappersToRecordsItem(List<SSACSObjectWrapper> wrappers) {
+        Map<String, SObject> records = this.wrappersToRecords(wrappers);
+		Integer counter = 0;
+		for(String obj: records.keySet()){
+			records.get(obj).put('Product2Id', wrappers.get(counter).keyByReferenceFields.get('Product2Id'));
+			counter = wrappers.size() - 1 > counter ? ++counter : 0;
+			records.put(obj, records.get(obj));
+		}
+		return records;
+    }
+
     public Map<String, SObject> getInvalidRecords(List<SSACSObjectWrapper> wrappers,
             Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {
         Set<String> parentFields = this.getParentFields(wrappers);

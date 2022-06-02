@@ -82,17 +82,14 @@ public with sharing class SSACFilter {
             Integer flag = 0;
             for (String key: this.allFields){
                 String existentSetValues = String.valueOf(this.records.get(recordKey).get(key)).toLowerCase();
-				//TODO need to be redone
-                if (!existentFieldValues.get(key).contains(existentSetValues) && !this.keyFields.contains(key)){
+                if (existentFieldValues.get(key).contains(existentSetValues)){
                     flag += 1;
 				}
             }
-            if (flag != 0){
-				System.debug(flag);
-				System.debug(recordKey);
+            if (flag > 0 && flag < this.allFields.size()){
                 results.add(new SSACResult()
                         .setStatus(SSACConstants.CHANGED_STATUS)
-                       //.setRecordId(String.valueOf(this.existentSObjects.get(recordKey.toLowerCase()).Id))
+                       	.setRecordId(String.valueOf(this.existentSObjects.get(recordKey.toLowerCase()).Id))
                         .setRecordKey(recordKey)
                         .setSObjectApiName(this.sObjectApiName));
             }

@@ -29,22 +29,18 @@ public with sharing class SSACSObjectAction implements ISSACAction {
     }
  
     public List<SSACResult> execute() {
+		List<SSACResult> results = new List<SSACResult>();
+		SSACResultsUtil util = new SSACResultsUtil();
         this.generateTestLog = false;
         if (this.records == null || this.records.isEmpty()) {
             return new List<SSACResult>();
         }
-        List<SSACResult> filterResults = this.test();
-        SSACResultsUtil util = new SSACResultsUtil();
-        List<SSACResult> okResults = util.getResultsByStatus(filterResults, SSACConstants.OK_STATUS);
-        List<SSACResult> changedResults = util.getResultsByStatus(filterResults, SSACConstants.CHANGED_STATUS);
-        List<SSACResult> results = new List<SSACResult>();
-        if (!okResults.isEmpty()) {
-            Database.SaveResult[] saveResults = Database.insert(this.getRecords(okResults), false);
-            results = util.generateDiagnosticResultsInsert(saveResults, this.sObjectApiName);
-        } else if (!changedResults.isEmpty()) {
-            Database.SaveResult[] updateResults = Database.update(this.setId(changedResults), false);
-            results = util.generateDiagnosticResultsUpdated(updateResults, this.sObjectApiName);
-        } else {
+		List<SSACResult> filterResults = this.test();
+		List<SSACResult> allResults = this.getAllResults(util, filterResults);
+		if (!allResults.isEmpty()) {
+			Database.UpsertResult[] upsertResults = Database.upsert(this.setId(allResults), false);
+			results = util.generateDiagnosticResultsUpsert(upsertResults, this.sObjectApiName);
+		}else {
             results = util.getResultsByStatus(filterResults, SSACConstants.DUPLICATED_STATUS);
         }
         this.logger.generateLoadLog(results);
@@ -69,9 +65,9 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         for (SSACResult result : results) {
             records.add(this.records.get(result.recordKey));
         }
-        System.debug(records);
         return records;
     }
+
 	@TestVisible
     private List<SObject> setId(List<SSACResult> results) {
         Map<String, SObject> records = new Map<String, SObject>();
@@ -87,4 +83,14 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         }
         return records.values();
     }
+
+	@TestVisible
+	private List<SSACResult> getAllResults(SSACResultsUtil util, List<SSACResult> filterResults){
+		List<SSACResult> allResults = new List<SSACResult>();
+        List<SSACResult> okResults = util.getResultsByStatus(filterResults, SSACConstants.OK_STATUS);
+        List<SSACResult> changedResults = util.getResultsByStatus(filterResults, SSACConstants.CHANGED_STATUS);
+		allResults.addAll(okResults);
+        allResults.addAll(changedResults);
+		return allResults;
+	}
 }

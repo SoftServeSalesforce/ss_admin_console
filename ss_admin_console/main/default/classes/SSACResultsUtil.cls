@@ -13,12 +13,12 @@ public with sharing class SSACResultsUtil {
         return diagnosticResults;
     }
 
-    public List<SSACResult> generateDiagnosticResultsInsert(Database.SaveResult[] saveResults, String sObjectApiName) {
+	public List<SSACResult> generateDiagnosticResultsUpsert(Database.UpsertResult[] upsertResults, String sObjectApiName) {
         List<SSACResult> results = new List<SSACResult>();
-        for (Database.SaveResult result : saveResults) {
+        for (Database.UpsertResult result : upsertResults) {
             if (result.isSuccess()) {
                 results.add(new SSACResult()
-                        .setStatus(SSACConstants.OK_STATUS)
+                        .setStatus(SSACConstants.UPSERTED_STATUS)
                         .setRecordId(result.getId())
                         .setSObjectApiName(sObjectApiName));
             } else {
@@ -28,21 +28,7 @@ public with sharing class SSACResultsUtil {
         return results;
     }
 
-    public List<SSACResult> generateDiagnosticResultsUpdated(Database.SaveResult[] saveResults, String sObjectApiName) {
-        List<SSACResult> results = new List<SSACResult>();
-        for (Database.SaveResult result : saveResults) {
-            if (result.isSuccess()) {
-                results.add(new SSACResult()
-                        .setStatus(SSACConstants.UPDATED_STATUS)
-                        .setRecordId(result.getId())
-                        .setSObjectApiName(sObjectApiName));
-            } else {
-                results = this.generateDiagnosticError(result, sObjectApiName);
-            }
-        }
-        return results;
-    }
-    public List<SSACResult> generateDiagnosticError(Database.SaveResult result, String sObjectApiName) {
+    public List<SSACResult> generateDiagnosticError(Database.UpsertResult result, String sObjectApiName) {
         List<SSACResult> results = new List<SSACResult>();
             String errorMessage = '';
             for (Database.Error err : result.getErrors()) {
@@ -55,6 +41,7 @@ public with sharing class SSACResultsUtil {
                     .setSObjectApiName(sObjectApiName));
         return results;
     }
+
     public String keysToString(List<SSACResult> results) {
         String message = '';
         for (SSACResult result : results) {

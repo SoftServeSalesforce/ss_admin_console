@@ -144,7 +144,7 @@ export default class Diagnostic extends LightningElement {
             log += this.setColor('darkgoldenrod', messageTitle);
         } else if (messageType == 'CHANGED') {
             log += this.setColor('brown', messageTitle);
-        } else if (messageType == 'UPDATED') {
+        } else if (messageType == 'UPSERTED') {
             log += this.setColor('blue', messageTitle);
         }
         if (message) {

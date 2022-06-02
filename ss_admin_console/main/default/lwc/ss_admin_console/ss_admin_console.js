@@ -3,6 +3,7 @@ import execute from '@salesforce/apex/SSACController.execute';
 import test from '@salesforce/apex/SSACController.test';
 import getDataTypes from '@salesforce/apex/SSACController.getDataTypes';
 import getJobClasses from '@salesforce/apex/SSACController.getJobClasses';
+import getProductionOrgToggle from '@salesforce/apex/SSACController.getProductionOrgToggle';
 import userId from '@salesforce/user/Id';
 import {subscribe} from 'lightning/empApi';
 
@@ -17,19 +18,40 @@ export default class Diagnostic extends LightningElement {
     @track types = [];
     @track batchClasses = [];
     @track scheduledClasses = [];
+    @track value = false;
     logPayload = {};
     jobResultPayload = {};
     sObjectLoadLog = '/event/SObjectLoadEvent__e';
     resultLog = '/event/ResultLogEvent__e';
 
+    get labelValue(){
+        //return "Select an action: " + getProductionOrgToggle() + " - " + this.value;
+        return "Select an action:";
+    }
+
     get actions() {
 
-        return [
-            {label: 'Run Scheduled Job', value: 'RunScheduledJob'},
-            {label: 'Run Batchable Job', value: 'RunBatchableJob'},
-            {label: 'Load Data', value: 'LoadData'}
-        ];
+        let arrList = [];
+
+        arrList.push( {label: 'Run Scheduled Job', value: 'RunScheduledJob'} );
+        arrList.push( {label: 'Run Batchable Job', value: 'RunBatchableJob'} );
+/**/
+        if( this.value === false ){
+            arrList.push( {label: 'Load Data', value: 'LoadData'} );
+        }
+
+        return arrList;
          
+    };
+
+    productionOrgToggle() {
+        getProductionOrgToggle()
+            .then(result => {
+                this.value = result;
+            })
+            .catch(error => {
+                console.log(error);
+            })
     };
 
     dataTypes() {
@@ -79,6 +101,7 @@ export default class Diagnostic extends LightningElement {
         this.dataTypes();
         this.handleLogSubscribe();
         this.handleJobResultSubscribe();
+        this.productionOrgToggle();
     };
 
     handleLogSubscribe() {

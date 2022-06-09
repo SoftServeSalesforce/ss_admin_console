@@ -1,163 +1,157 @@
 public with sharing class SSACFilter {
+	private String sObjectApiName;
     private Map<String, SObject> records;
-	private String keyFieldApiName;
-    private Set<String> keyFields;
-    private Set<String> allFields;
-    private String sObjectApiName;
+    private List<String> keyFields;
+    private List<String> allFields;
     private String additionCondition;
-    private Set<String> keys;
-    private Map<String, SObject> existentSObjects;
-    private Map<String, Set<String>> existentFieldValues;
+	private List<SObject> constantSObjects;
     private Map<String, Set<Object>> constantFields;
+	private List<SObject> existentSObjects;
 
-    public SSACFilter(String sObjectApiName, Map<String, SObject> records, String keyFieldApiName, Set<String> keyFields, Set<String> allFields, String additionCondition) {
+    public SSACFilter(String sObjectApiName, Map<String, SObject> records, List<String> keyFields, List<String> allFields, String additionCondition) {
+		this.sObjectApiName = sObjectApiName;
         this.records = records;
-        this.sObjectApiName = sObjectApiName;
-		this.keyFieldApiName = keyFieldApiName;
+		this.keyFields = keyFields;
         this.allFields = allFields;
-        this.keyFields = keyFields;
         this.additionCondition = additionCondition;
-        if (records != null && !records.isEmpty()) {
-            this.keys = records.keySet();
-            this.constantFields = this.getConstantFields();
-            this.existentSObjects = this.getExistentSObjects();
-            this.existentFieldValues = this.getExistentFieldValues();
-        }
+		this.constantSObjects = this.recordsToList();
+		this.constantFields = this.getConstantFields();
+		this.existentSObjects = this.getExistentSObjectsv2();
     }
 
-    public List<SSACResult> filter() {
+	public List<SSACResult> filter() {
         List<SSACResult> result = new List<SSACResult>();
-        result.addAll(this.getNonExistentRecords());
-        result.addAll(this.getExistentRecords());
-        result.addAll(this.getExistentChangedRecords());
+		result.addAll(this.getFilteredRecords());
         return result;
     }
 
-    @TestVisible
-    private List<SSACResult> getNonExistentRecords() {
-        List<SSACResult> results = new List<SSACResult>();
-        for (String recordKey: this.records.keySet()){
-            Integer flag = 0;
-            for (String keyField: this.keyFields){
-                String existentSetValues = String.valueOf(this.records.get(recordKey).get(keyField)).toLowerCase();
-                if (!existentFieldValues.get(keyField).contains(existentSetValues)){
-                    flag += 1;
-                }    
-            }          
-            if (flag != 0){
-                results.add(new SSACResult()
-                        .setStatus(SSACConstants.OK_STATUS)
-                        .setRecordKey(recordKey)
-                        .setSObjectApiName(this.sObjectApiName));
-            }
-        }
-        return results;
-    }
+	public List<SObject> recordsToList(){
+		List<SObject> result = new List<SObject>();
+		for(String item : this.records.keySet()){
+			result.add(this.records.get(item));
+		}
+		return result;
+	}
 
-    @TestVisible
-    private List<SSACResult> getExistentRecords() {
-        List<SSACResult> results = new List<SSACResult>();
-        for (String recordKey: this.records.keySet()){
-            Integer flag = 0;
-            for (String key: this.allFields){
-                String existentSetValues = String.valueOf(this.records.get(recordKey).get(key)).toLowerCase();
-                if (existentFieldValues.get(key).contains(existentSetValues)){
-                    flag += 1;
-                }
-            }
-            if (flag == this.allFields.size()){
-                results.add(new SSACResult()
-                        .setStatus(SSACConstants.DUPLICATED_STATUS)
-                        .setRecordKey(recordKey)
-                        .setSObjectApiName(this.sObjectApiName));
-            }
-        }
-        return results;
-    }
-
-    @TestVisible
-    private List<SSACResult> getExistentChangedRecords() {
-        List<SSACResult> results = new List<SSACResult>();
-        for (String recordKey: this.records.keySet()){
-            Integer flag = 0;
-            for (String key: this.allFields){
-                String existentSetValues = String.valueOf(this.records.get(recordKey).get(key)).toLowerCase();
-                if (existentFieldValues.get(key).contains(existentSetValues)){
-                    flag += 1;
+	@TestVisible
+	private List<SSACResult> getFilteredRecords() {
+		List<SSACResult> results = new List<SSACResult>();
+		Set<String> nonKeyFields = new Set<String>(this.allFields.clone());
+        nonKeyFields.removeAll(this.keyFields);
+       
+        for (SObject constSObj: this.constantSObjects){
+			String recordId;
+			String status = '';
+            String recordKey = '';
+			Integer matchedKeyFields = 0;
+			Integer matchedNonKeyFields = 0;
+			for (SObject existSObj : this.existentSObjects){
+				for (String field: this.keyFields) {
+					if (field.contains('.')){
+						List<String> splittedField = field.split('\\.');
+						SObject cObj = constSObj.getSObject(splittedField[0]);
+						SObject eObj = existSObj.getSObject(splittedField[0]);
+						String nextField = splittedField[1];
+						if (cObj.get(nextField) == eObj.get(nextField)){
+							matchedKeyFields += 1;
+						} else {
+							status = SSACConstants.OK_STATUS;
+							break;
+						}
+					} else {
+						if (constSObj.get(field) == existSObj.get(field)){
+							matchedKeyFields += 1;
+						} else {
+							status = SSACConstants.OK_STATUS;
+							break;
+						}
+					}
 				}
-            }
-            if (flag > 0 && flag < this.allFields.size()){
-                results.add(new SSACResult()
-                        .setStatus(SSACConstants.CHANGED_STATUS)
-                       	.setRecordId(String.valueOf(this.existentSObjects.get(recordKey.toLowerCase()).Id))
-                        .setRecordKey(recordKey)
-                        .setSObjectApiName(this.sObjectApiName));
-            }
-        }
-        return results;
-    }
+				if (matchedKeyFields == this.keyFields.size()){
+					for (String nonKeyField: nonKeyFields){
+						if (constSObj.get(nonKeyField) == existSObj.get(nonKeyField)){
+							matchedNonKeyFields += 1;
+						}
+					}
+					if (matchedNonKeyFields == nonKeyFields.size()){
+						status = SSACConstants.DUPLICATED_STATUS;
+						break;
+					} else {
+						status = SSACConstants.CHANGED_STATUS;
+						recordId = existSObj.Id;
+						break;
+					}
+				}
+			}
+			for (String keyField: this.keyFields){
+				if (keyField.contains('.')){
+					List<String> splittedField = keyField.split('\\.');
+					constSObj = constSObj.getSObject(splittedField[0]);
+					keyField = splittedField[1];
+				}
+				recordKey += String.valueOf(constSObj.get(keyField));
+				break;
+			}
+			if (recordId != null){
+				results.add(new SSACResult()
+						.setStatus(status)
+						.setRecordId(recordId)
+						.setRecordKey(recordKey) 
+						.setSObjectApiName(this.sObjectApiName));
+			} else {
+				results.add(new SSACResult()
+						.setStatus(status)
+						.setRecordKey(recordKey)
+						.setSObjectApiName(this.sObjectApiName));
+			}
+		}
+	return results;
+	}
 
-    @TestVisible
-    private Map<String, SObject> getExistentSObjects(){
+	@TestVisible
+	private List<SObject> getExistentSObjectsv2(){
         String query = this.buildQuery();
 		Map<String, SObject> result = new Map<String, SObject>();
         List<SObject> existentRecords = Database.query(query);
-		for (SObject obj : existentRecords) {
-            result.put(String.valueOf(obj.get(this.keyFieldApiName)).toLowerCase(), obj);
-		}
-        return result;
-    }
-
-    @TestVisible
-    private Map<String, Set<String>> getExistentFieldValues() {
-        Map<String, Set<String>> result = new Map<String, Set<String>>();
-        for (String key: this.allFields){
-            Set<String> testSet = new Set<String>();
-            for (SObject obj: this.existentSObjects.values()){
-                testSet.add(String.valueOf(obj.get(key)).toLowerCase());
-            }
-            result.put(key, testSet);
-        }
-        return result;
+        return existentRecords;
     }
 
 	@TestVisible
     private Map<String, Set<Object>> getConstantFields(){
-        Map<String, Set<Object>> mp = new Map<String, Set<Object>>();
+        Map<String, Set<Object>> constantValues = new Map<String, Set<Object>>();
         for(String field: this.allFields){
             Set<Object> values = new Set<Object>();
-            for(SObject obj: this.records.values()){
-                values.add(obj.get(field));
+            for(SObject obj: this.constantSObjects){
+				if(field.contains('.')){
+					System.debug(obj);
+					List<String> splittedField = field.split('\\.');
+					values.add(obj.getSObject(splittedField[0]).get(splittedField[1]));
+					System.debug(obj.getSObject(splittedField[0]).get(splittedField[1]));
+				}else {
+					values.add(obj.get(field));
+				}
+              
             }
-            mp.put(field, values);
+            constantValues.put(field, values);
         }
-        return mp;
+        return constantValues;
     }
 
     @TestVisible
-    public String buildQuery() {
-		Schema.DescribeSObjectResult objRes = Schema.getGlobalDescribe().get(this.sObjectApiName).getDescribe();
+    private String buildQuery() {
         String result = 'SELECT Id,';
         if (this.allFields != null){
             for (String item : this.allFields) {
-				if(String.valueOf(objRes.fields.getMap().get(item).getDescribe().getType()) == SSACConstants.REFERENCE_NAME){
-					result += item.removeEnd(item.right(2)) + '.Name'+ ',';
-				} else {
-                	result += item + ',';
-				}
+				result += item + ',';
             }
         }
         result = result.removeEnd(result.right(1));         
         result += ' FROM '+ this.sObjectApiName + ' WHERE ';
         for (String field: this.keyFields){
-			if(String.valueOf(objRes.fields.getMap().get(String.valueOf(field)).getDescribe().getType()) == SSACConstants.REFERENCE_NAME){
-				result += String.valueOf(field).removeEnd(String.valueOf(field).right(2)) + '.Name' + ' IN (';
-			} else {
-            	result += field + ' IN (';
+				result += field + ' IN (';
+			for (Object value : this.constantFields.get(field)) {
+				result += (value instanceof String) ? '\'' + value + '\',' :  value + ',';
 			}
-            for (Object value : this.constantFields.get(field)) {
-                result += (value instanceof String) ? '\'' + value + '\',' :  value + ',';
-            }
         result = result.removeEnd(result.right(1)) + ') AND ';
         } result = result.removeEnd(result.right(4));
         if (this.additionCondition != null) {
@@ -165,6 +159,4 @@ public with sharing class SSACFilter {
         }
         return result;
     }
-
-    
 }

@@ -5,11 +5,11 @@ public with sharing class OpportunityConstants {
     public static final String OPPORTUNITY_ITEM_API_NAME = 'OpportunityLineItem';
     public static final String OPPORTUNITY_ITEM_KEY_FIELD_NAME = 'ProductCode';
 
-    public static final Set<String> EXTERNAL_IDS_API_NAMES_OPPORTUNITY = new Set<String>{'Name'};
-	public static final Set<String> ALL_IDS_API_NAMES_OPPORTUNITY = new Set<String>{'Name', 'StageName'};
+    public static final List<String> EXTERNAL_IDS_API_NAMES_OPPORTUNITY = new List<String>{'Name'};
+	public static final List<String> ALL_IDS_API_NAMES_OPPORTUNITY = new List<String>{'Name', 'StageName'};
 
-    public static final Set<String> EXTERNAL_IDS_API_NAMES_OPPORTUNITY_ITEM = new Set<String>{'Product2Id'};
-	public static final Set<String> ALL_IDS_API_NAMES_OPPORTUNITY_ITEM = new Set<String>{'Product2Id','TotalPrice', 'Quantity'};
+    public static final List<String> EXTERNAL_IDS_API_NAMES_OPPORTUNITY_ITEM = new List<String>{'Product2.ProductCode'};
+	public static final List<String> ALL_IDS_API_NAMES_OPPORTUNITY_ITEM = new List<String>{'Product2.ProductCode', 'Quantity'};
 	
     public final static Map<String, String> REFERENCE_FIELD_TO_KEY_FIELD = new Map<String, String>{
             'AccountId' => 'Name',

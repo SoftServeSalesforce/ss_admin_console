@@ -1,24 +1,22 @@
 public with sharing class SSACSObjectAction implements ISSACAction {
     private SSACLogger logger;
     private Map<String, SObject> records;
-	private String keyFieldApiName;
-    private Set<String> externalIdApiNames;
-    private Set<String> externalFields;
+    private List<String> externalIdApiNames;
+    private List<String> externalFields;
     private String sObjectApiName;
     private String additionCondition;
     private Boolean generateTestLog;
 
-    public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, String keyFieldApiName, Set<String> externalIdApiNames, Set<String> externalFields) {
+    public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, List<String> externalIdApiNames, List<String> externalFields) {
         this.logger = new SSACLogger();
         this.records = records;
-		this.keyFieldApiName = keyFieldApiName;
         this.externalFields = externalFields;
         this.externalIdApiNames = externalIdApiNames;
         this.sObjectApiName = sObjectApiName;
         this.generateTestLog = true;
     }
 
-    public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, String keyFieldApiName, Set<String> externalIdApiNames, Set<String> externalFields, String additionCondition) {
+    public SSACSObjectAction(String sObjectApiName, Map<String, SObject> records, List<String> externalIdApiNames, List<String> externalFields, String additionCondition) {
         this.logger = new SSACLogger();
         this.records = records;
         this.externalFields = externalFields;
@@ -52,20 +50,11 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         if (this.records == null || this.records.isEmpty()) {
             return new List<SSACResult>();
         }
-        List<SSACResult> results = new SSACFilter(this.sObjectApiName, this.records, this.keyFieldApiName, this.externalIdApiNames, this.externalFields, this.additionCondition).filter();
+        List<SSACResult> results = new SSACFilter(this.sObjectApiName, this.records, this.externalIdApiNames, this.externalFields, this.additionCondition).filter();
         if (this.generateTestLog) {
             logger.generateTestLog(results);
         }
         return results;
-    }
-
-    @TestVisible
-    private List<SObject> getRecords(List<SSACResult> results) {
-        List<SObject> records = new List<SObject>();
-        for (SSACResult result : results) {
-            records.add(this.records.get(result.recordKey));
-        }
-        return records;
     }
 
 	@TestVisible
@@ -73,13 +62,11 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         Map<String, SObject> records = new Map<String, SObject>();
         Integer counter = 0;
         for (SSACResult result : results) {
-            for (String item : this.records.keySet()) {
-                if(item == result.recordKey) {
-                    this.records.get(item).put('Id', results.get(counter).recordId);
-                    counter = results.size() - 1 > counter ? ++counter : 0;
-                    records.put(item, this.records.get(item));
-                }
-            }
+			if(result.recordKey != null){
+				this.records.get(result.recordKey).put('Id', results.get(counter).recordId);
+				counter = results.size() - 1 > counter ? ++counter : 0;
+				records.put(result.recordKey, this.records.get(result.recordKey));
+			}
         }
         return records.values();
     }

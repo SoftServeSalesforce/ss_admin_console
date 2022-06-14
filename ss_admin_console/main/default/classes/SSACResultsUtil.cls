@@ -13,26 +13,32 @@ public with sharing class SSACResultsUtil {
         return diagnosticResults;
     }
 
-    public List<SSACResult> generateDiagnosticResults(Database.SaveResult[] saveResults, String sObjectApiName) {
+	public List<SSACResult> generateDiagnosticResultsUpsert(Database.UpsertResult[] upsertResults, String sObjectApiName) {
         List<SSACResult> results = new List<SSACResult>();
-        for (Database.SaveResult result : saveResults) {
+        for (Database.UpsertResult result : upsertResults) {
             if (result.isSuccess()) {
                 results.add(new SSACResult()
-                        .setStatus(SSACConstants.OK_STATUS)
+                        .setStatus(SSACConstants.UPSERTED_STATUS)
                         .setRecordId(result.getId())
                         .setSObjectApiName(sObjectApiName));
             } else {
-                String errorMessage = '';
-                for (Database.Error err : result.getErrors()) {
-                    errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage()
-                            + sObjectApiName + ' fields that affected this error: ' + err.getFields() + '. ';
-                }
-                results.add(new SSACResult()
-                        .setStatus(SSACConstants.FAILED_STATUS)
-                        .setErrorMessage(errorMessage)
-                        .setSObjectApiName(sObjectApiName));
+                results = this.generateDiagnosticError(result, sObjectApiName);
             }
         }
+        return results;
+    }
+
+    public List<SSACResult> generateDiagnosticError(Database.UpsertResult result, String sObjectApiName) {
+        List<SSACResult> results = new List<SSACResult>();
+            String errorMessage = '';
+            for (Database.Error err : result.getErrors()) {
+                errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage()
+                        + sObjectApiName + ' fields that affected this error: ' + err.getFields() + '. ';
+            }
+            results.add(new SSACResult()
+                    .setStatus(SSACConstants.FAILED_STATUS)
+                    .setErrorMessage(errorMessage)
+                    .setSObjectApiName(sObjectApiName));
         return results;
     }
 

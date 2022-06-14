@@ -17,7 +17,7 @@ public with sharing class SSACLogger {
             return;
         }
         List<SSACResult> failedResults = this.util.getResultsByStatus(results, SSACConstants.FAILED_STATUS);
-        List<SSACResult> okResults = this.util.getResultsByStatus(results, SSACConstants.OK_STATUS);
+        List<SSACResult> upsertedResults = this.util.getResultsByStatus(results, SSACConstants.UPSERTED_STATUS);
         List<SSACResult> duplicateResults = this.util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS);
         if (!duplicateResults.isEmpty()) {
             SObjectLoadEvent__e duplicateEvent = new SObjectLoadEvent__e(
@@ -29,11 +29,11 @@ public with sharing class SSACLogger {
             );
             EventBus.publish(duplicateEvent);
         }
-        if (!okResults.isEmpty()) {
+        if (!upsertedResults.isEmpty()) {
             SObjectLoadEvent__e successEvent = new SObjectLoadEvent__e(
-                    Message__c = this.util.idsToString(okResults),
-                    Message_Title__c = this.handleSuccessMessageTitle(okResults.get(0).sObjectApiName),
-                    Message_Type__c = SSACConstants.OK_STATUS,
+                    Message__c = this.util.idsToString(upsertedResults),
+					Message_Title__c = this.handleSuccessUpsertMessageTitle(upsertedResults.get(0).sObjectApiName),
+                    Message_Type__c = SSACConstants.UPSERTED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
                     Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
             );
@@ -57,6 +57,7 @@ public with sharing class SSACLogger {
         }
         List<SSACResult> duplicateResults = this.util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS);
         List<SSACResult> okResults = this.util.getResultsByStatus(results, SSACConstants.OK_STATUS);
+        List<SSACResult> changedResults = this.util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS);
         if (!duplicateResults.isEmpty()) {
             SObjectLoadEvent__e duplicateEvent = new SObjectLoadEvent__e(
                     Message__c = this.util.keysToString(duplicateResults),
@@ -76,6 +77,16 @@ public with sharing class SSACLogger {
                     Action_Type__c = SSACConstants.TEST_ACTION_TYPE
             );
             EventBus.publish(validRecordsEvent);
+        }
+        if (!changedResults.isEmpty()) {
+            SObjectLoadEvent__e changedEvent = new SObjectLoadEvent__e(
+                    Message__c = this.util.keysToString(changedResults),
+                    Message_title__c = this.handleChangedMessageTitle(changedResults.get(0).sObjectApiName),
+                    Message_Type__c = SSACConstants.CHANGED_STATUS,
+                    SObject_Type__c = results.get(0).sObjectApiName,
+                    Action_Type__c = SSACConstants.TEST_ACTION_TYPE
+            );
+            EventBus.publish(changedEvent);
         }
     }
 
@@ -100,7 +111,11 @@ public with sharing class SSACLogger {
     }
 
     @TestVisible
-    private String handleSuccessMessageTitle(String sObjectApiName) {
-        return 'Successfully inserted ' + sObjectApiName + '`s records. ';
+    private String handleChangedMessageTitle(String sObjectApiName) {
+        return 'The following ' + sObjectApiName + '`s records could be updated: ';
+    }
+	@TestVisible
+    private String handleSuccessUpsertMessageTitle(String sObjectApiName) {
+        return 'Successfully upserted ' + sObjectApiName + '`s records. ';
     }
 }

@@ -184,6 +184,11 @@ export default class Diagnostic extends LightningElement {
     }
 
     handleExecute = () => {
+        //console.log( 'TEST handleExecute >> this.actionTypes.length = ' + this.actionTypes.length );
+        if (this.actionTypes.length <= 0){
+            window.location.reload();
+        }
+
         this.actionDisabled = true;
         let type = this.actionTypes[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
@@ -197,6 +202,11 @@ export default class Diagnostic extends LightningElement {
     };
 
     handleTest = () => {
+        //console.log( 'TEST handleTest >> this.actionTypes.length = ' + this.actionTypes.length );
+        if (this.actionTypes.length <= 0){
+            window.location.reload();
+        }
+
         this.actionDisabled = true;
         let type = this.actionTypes[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
@@ -215,7 +225,8 @@ export default class Diagnostic extends LightningElement {
 
     handleDataType(event) {
         this.actionTypes = event.detail.value;
-        this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0
+        this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0;
+        console.log( 'TEST this.actionTypes.length = ' + this.actionTypes.length );
     };
 
     handleActions(event) {
@@ -227,6 +238,9 @@ export default class Diagnostic extends LightningElement {
 
     handleClear() {
         this.logs = [];
+        //console.log( 'TEST handleClear >> this.actionTypes.length = ' + this.actionTypes.length );
+        //window.location.reload();
+        //console.log( 'TEST handleClear after reload >> this.actionTypes.length = ' + this.actionTypes.length );
     };
 
     handleSelectClassName(event) {

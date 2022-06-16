@@ -38,7 +38,7 @@ public with sharing class SSACSObjectAction implements ISSACAction {
 		if (!allResults.isEmpty()) {
 			Database.UpsertResult[] upsertResults = Database.upsert(this.setId(allResults), false);
 			results = util.generateDiagnosticResultsUpsert(upsertResults, this.sObjectApiName);
-		}else {
+		} else {
             results = util.getResultsByStatus(filterResults, SSACConstants.DUPLICATED_STATUS);
         }
         this.logger.generateLoadLog(results);
@@ -59,16 +59,28 @@ public with sharing class SSACSObjectAction implements ISSACAction {
 
 	@TestVisible
     private List<SObject> setId(List<SSACResult> results) {
-        Map<String, SObject> records = new Map<String, SObject>();
+        List<SObject> records = new List<SObject>();
         Integer counter = 0;
-        for (SSACResult result : results) {
-			if(result.recordKey != null){
-				this.records.get(result.recordKey).put('Id', results.get(counter).recordId);
-				counter = results.size() - 1 > counter ? ++counter : 0;
-				records.put(result.recordKey, this.records.get(result.recordKey));
+		for (SObject item : this.records.values()){
+			String concatenatedString = '';
+			for (String keyField: this.externalIdApiNames){
+				if (keyField.contains('.')){
+					List<String> splittedField = keyField.split('\\.');
+					String nextField = splittedField[1];
+					concatenatedString += String.valueOf(item.getSObject(splittedField[0]).get(nextField)).toLowerCase()+'_';	
+				} else {
+                	concatenatedString += String.valueOf(item.get(keyField)).toLowerCase()+'_';	
+				}
 			}
-        }
-        return records.values();
+			concatenatedString = concatenatedString.removeEnd(concatenatedString.right(1));
+			for (SSACResult result : results) {
+				if(concatenatedString == result.recordKey) {
+					item.put('Id', result.recordId);
+					records.add(item);
+				}
+			}
+		}
+        return records;
     }
 
 	@TestVisible

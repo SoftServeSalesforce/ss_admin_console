@@ -35,15 +35,14 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
         Map<Id, Map<String, PricebookEntry>> allEntriesByPriceBookId = this.generateEntries(
                 ProductConstants.PRICE_BOOK_ENTRY_DATA, this.getPriceBooks(), this.getProductByProductCode(
                         this.getProductCodes(ProductConstants.PRICE_BOOK_ENTRY_DATA)));
-        /*for (Id i : allEntriesByPriceBookId.keySet()) {
+        for (Id i : allEntriesByPriceBookId.keySet()) {
             List<SSACResult> entryResults = new SSACSObjectAction(ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
                     allEntriesByPriceBookId.get(i),
-					ProductConstants.PRODUCT_CODE_API_NAME,
                     ProductConstants.EXTERNAL_IDS_API_NAMES_PRICE_BOOK_ENTRY,
                     ProductConstants.ALL_FIELDS_API_NAMES_PRICE_BOOK_ENTRY,
-                    'Pricebook2Id = \'' + i + '\'');/*.execute();
+                    'Pricebook2Id = \'' + i + '\'').execute();
             productResults.addAll(entryResults);
-        }*/
+        }
         new SSACLogger().publishResultLog(SSACConstants.PRODUCTS_DATA, 'Execute');
         return productResults;
     }

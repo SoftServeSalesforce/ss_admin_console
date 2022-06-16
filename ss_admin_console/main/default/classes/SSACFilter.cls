@@ -6,6 +6,7 @@ public with sharing class SSACFilter {
     private String additionCondition;
 	private List<SObject> constantSObjects;
     private Map<String, Set<Object>> constantFields;
+	private Map<String, Set<String>> existentKeyFields;
 	private List<SObject> existentSObjects;
 
     public SSACFilter(String sObjectApiName, Map<String, SObject> records, List<String> keyFields, List<String> allFields, String additionCondition) {
@@ -16,7 +17,7 @@ public with sharing class SSACFilter {
         this.additionCondition = additionCondition;
 		this.constantSObjects = this.recordsToList();
 		this.constantFields = this.getConstantFields();
-		this.existentSObjects = this.getExistentSObjectsv2();
+		this.existentSObjects = this.getExistentSObjects();
     }
 
 	public List<SSACResult> filter() {
@@ -36,82 +37,71 @@ public with sharing class SSACFilter {
 	@TestVisible
 	private List<SSACResult> getFilteredRecords() {
 		List<SSACResult> results = new List<SSACResult>();
+		Map<String, SObject> existentMap = new Map<String, SObject>();
 		Set<String> nonKeyFields = new Set<String>(this.allFields.clone());
         nonKeyFields.removeAll(this.keyFields);
        
-        for (SObject constSObj: this.constantSObjects){
-			String recordId;
-			String status = '';
-            String recordKey = '';
-			Integer matchedKeyFields = 0;
-			Integer matchedNonKeyFields = 0;
-			for (SObject existSObj : this.existentSObjects){
-				for (String field: this.keyFields) {
-					if (field.contains('.')){
-						List<String> splittedField = field.split('\\.');
-						SObject cObj = constSObj.getSObject(splittedField[0]);
-						SObject eObj = existSObj.getSObject(splittedField[0]);
-						String nextField = splittedField[1];
-						if (cObj.get(nextField) == eObj.get(nextField)){
-							matchedKeyFields += 1;
-						} else {
-							status = SSACConstants.OK_STATUS;
-							break;
-						}
-					} else {
-						if (constSObj.get(field) == existSObj.get(field)){
-							matchedKeyFields += 1;
-						} else {
-							status = SSACConstants.OK_STATUS;
-							break;
-						}
-					}
-				}
-				if (matchedKeyFields == this.keyFields.size()){
-					for (String nonKeyField: nonKeyFields){
-						if (constSObj.get(nonKeyField) == existSObj.get(nonKeyField)){
-							matchedNonKeyFields += 1;
-						}
-					}
-					if (matchedNonKeyFields == nonKeyFields.size()){
-						status = SSACConstants.DUPLICATED_STATUS;
-						break;
-					} else {
-						status = SSACConstants.CHANGED_STATUS;
-						recordId = existSObj.Id;
-						break;
-					}
-				}
-			}
-			for (String keyField: this.keyFields){
+        for (SObject existSObj: this.existentSObjects){
+            String concatenatedString = '';
+            for (String keyField: this.keyFields){
 				if (keyField.contains('.')){
 					List<String> splittedField = keyField.split('\\.');
-					constSObj = constSObj.getSObject(splittedField[0]);
-					keyField = splittedField[1];
+					String nextField = splittedField[1];
+					concatenatedString += String.valueOf(existSObj.getSObject(splittedField[0]).get(nextField)).toLowerCase() +'_';	
+				} else {
+                concatenatedString += String.valueOf(existSObj.get(keyField)).toLowerCase()+'_';	
 				}
-				recordKey += String.valueOf(constSObj.get(keyField));
-				break;
-			}
-			if (recordId != null){
-				results.add(new SSACResult()
-						.setStatus(status)
-						.setRecordId(recordId)
-						.setRecordKey(recordKey) 
-						.setSObjectApiName(this.sObjectApiName));
-			} else {
-				results.add(new SSACResult()
-						.setStatus(status)
-						.setRecordKey(recordKey)
-						.setSObjectApiName(this.sObjectApiName));
-			}
-		}
-	return results;
+            }
+			concatenatedString = concatenatedString.removeEnd(concatenatedString.right(1));
+            existentMap.put(concatenatedString, existSObj);
+        }
+
+		for (SObject record: this.constantSObjects){
+            Integer matchedNonKeyFields = 0;
+            String concatenatedString = '';
+            for (String keyField: this.keyFields){
+				if (keyField.contains('.')){
+					List<String> splittedField = keyField.split('\\.');
+					String nextField = splittedField[1];
+					concatenatedString += String.valueOf(record.getSObject(splittedField[0]).get(nextField)).toLowerCase()+'_';	
+				} else {
+                concatenatedString += String.valueOf(record.get(keyField)).toLowerCase()+'_';	
+				}
+            }
+			concatenatedString = concatenatedString.removeEnd(concatenatedString.right(1));
+            if (existentMap.get(concatenatedString) != null){ 
+               for (String nonKeyField: nonKeyFields){
+                    if (record.get(nonKeyField) == existentMap.get(concatenatedString).get(nonKeyField)){
+                        matchedNonKeyFields += 1;
+                    }
+                    else {
+                        results.add(new SSACResult()
+                            .setStatus(SSACConstants.CHANGED_STATUS)
+                            .setRecordKey(concatenatedString)
+                            .setRecordId(existentMap.get(concatenatedString).Id)
+                            .setSObjectApiName(this.sObjectApiName));
+                        break;
+                    }
+                }
+                if (matchedNonKeyFields == nonKeyFields.size()){
+                    results.add(new SSACResult()
+                    .setStatus(SSACConstants.DUPLICATED_STATUS)
+                    .setRecordKey(concatenatedString)
+                    .setSObjectApiName(this.sObjectApiName));
+                }
+            } else {
+                results.add(new SSACResult()
+				.setStatus(SSACConstants.OK_STATUS)
+				.setRecordKey(concatenatedString)
+				.setSObjectApiName(this.sObjectApiName));
+            }
+        }
+		return results;
 	}
 
 	@TestVisible
-	private List<SObject> getExistentSObjectsv2(){
+	private List<SObject> getExistentSObjects(){
         String query = this.buildQuery();
-		Map<String, SObject> result = new Map<String, SObject>();
         List<SObject> existentRecords = Database.query(query);
         return existentRecords;
     }
@@ -119,18 +109,15 @@ public with sharing class SSACFilter {
 	@TestVisible
     private Map<String, Set<Object>> getConstantFields(){
         Map<String, Set<Object>> constantValues = new Map<String, Set<Object>>();
-        for(String field: this.allFields){
+        for (String field: this.allFields){
             Set<Object> values = new Set<Object>();
-            for(SObject obj: this.constantSObjects){
-				if(field.contains('.')){
-					System.debug(obj);
+            for (SObject obj: this.constantSObjects){
+				if (field.contains('.')){
 					List<String> splittedField = field.split('\\.');
 					values.add(obj.getSObject(splittedField[0]).get(splittedField[1]));
-					System.debug(obj.getSObject(splittedField[0]).get(splittedField[1]));
-				}else {
+				} else {
 					values.add(obj.get(field));
 				}
-              
             }
             constantValues.put(field, values);
         }

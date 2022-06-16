@@ -32,13 +32,11 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
                 OpportunityConstants.REFERENCE_FIELD_TO_KEY_FIELD,
                 OpportunityConstants.REFERENCE_FIELD_TO_SOBJECT_NAME));
         this.addPriceBookEntry(validOpportunityItemRecords);
-
-		//TODO replace the functionality
+		System.debug(validOpportunityItemRecords);
         result.addAll(new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, validOpportunityItemRecords,
-				OpportunityConstants.OPPORTUNITY_ITEM_KEY_FIELD_NAME,
                 OpportunityConstants.EXTERNAL_IDS_API_NAMES_OPPORTUNITY_ITEM,
-                OpportunityConstants.ALL_IDS_API_NAMES_OPPORTUNITY_ITEM)).execute();
+                OpportunityConstants.ALL_IDS_API_NAMES_OPPORTUNITY_ITEM).execute());
         new SSACLogger().publishResultLog(SSACConstants.OPPORTUNITY_DATA, 'Execute');
         return result;
     }

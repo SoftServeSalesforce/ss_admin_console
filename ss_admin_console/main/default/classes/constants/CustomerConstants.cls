@@ -48,11 +48,11 @@ public with sharing class CustomerConstants {
     };
 
     public static Map<String, Contact> CONTACT_DATA = new Map<String, Contact> {
-            'OliviaSmith@testmail.com' => new Contact(LastName = 'Smith', FirstName = 'Olivia', Email = 'OliviaSmith@testmail.com'),
+            'OliviaSmith@testmail.com' => new Contact(LastName = 'Test', FirstName = 'Olivia', Email = 'OliviaSmith@testmail.com'),
             'EmmaBrown@testmail.com' => new Contact(LastName = 'Brown', FirstName = 'Emma', Email = 'EmmaBrown@testmail.com'),
             'AmeliaWilson@testmail.com' => new Contact(LastName = 'Wilson', FirstName = 'Amelia', Email = 'AmeliaWilson@testmail.com'),
-            'AvaThomson@testmail.com' => new Contact(LastName = 'Test', FirstName = 'Ava', Email = 'AvaThomson@testmail.com'),
-            'SophiaRobertson@testmail.com' => new Contact(LastName = 'Robertson', FirstName = 'Test', Email = 'SophiaRobertson@testmail.com'),
+            'AvaThomson@testmail.com' => new Contact(LastName = 'Thomson', FirstName = 'Ava', Email = 'AvaThomson@testmail.com'),
+            'SophiaRobertson@testmail.com' => new Contact(LastName = 'Robertson', FirstName = 'Sophia', Email = 'SophiaRobertson@testmail.com'),
             'CharlotteCampbell@testmail.com' => new Contact(LastName = 'Campbell', FirstName = 'Charlotte', Email = 'CharlotteCampbell@testmail.com'),
             'IsabellaStewart@testmail.com' => new Contact(LastName = 'Stewart', FirstName = 'Isabella', Email = 'IsabellaStewart@testmail.com'),
             'MiaAnderson@testmail.com' => new Contact(LastName = 'Anderson', FirstName = 'Mia', Email = 'MiaAnderson@testmail.com'),

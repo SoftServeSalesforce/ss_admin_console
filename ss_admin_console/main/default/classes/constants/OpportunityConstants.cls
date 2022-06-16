@@ -26,7 +26,7 @@ public with sharing class OpportunityConstants {
     };
 
     public final static List<SSACSObjectWrapper> OPPORTUNITY_DATA = new List<SSACSObjectWrapper>{
-        	new SSACSObjectWrapper('OPP_TEST-0001', new Opportunity(Name = 'OPP_TEST-0001', StageName = 'Prospecting', Amount = 72.1, CloseDate = Date.today() + 91), new Map<String, String>{
+        	new SSACSObjectWrapper('OPP_TEST-0001', new Opportunity(Name = 'OPP_TEST-0001', StageName = 'Qualification', Amount = 72.1, CloseDate = Date.today() + 91), new Map<String, String>{
 					'AccountId' => 'Social Software'
 			}),
 			new SSACSObjectWrapper('OPP_TEST-0002', new Opportunity(Name = 'OPP_TEST-0002', StageName = 'Prospecting', Amount = 15.24, CloseDate = Date.today() + 145), new Map<String, String>{
@@ -125,7 +125,7 @@ public with sharing class OpportunityConstants {
         };
 
     public final static List<SSACSObjectWrapper> OPPORTUNITY_ITEM_DATA = new List<SSACSObjectWrapper>{
-            new SSACSObjectWrapper('TEST-0001', new OpportunityLineItem(TotalPrice = 578, Quantity = 84.00), new Map<String, String>{
+            new SSACSObjectWrapper('TEST-0001', new OpportunityLineItem(TotalPrice = 578, Quantity = 85.00), new Map<String, String>{
                     'Product2Id' => 'TEST-0001', 'OpportunityId' => 'OPP_TEST-0001'
             }),
             new SSACSObjectWrapper('TEST-0002', new OpportunityLineItem(TotalPrice = 442, Quantity = 91.00), new Map<String, String>{

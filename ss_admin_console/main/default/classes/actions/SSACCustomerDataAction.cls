@@ -4,7 +4,7 @@ public with sharing class SSACCustomerDataAction extends SSACAsyncAction {
         List<SSACResult> result = new SSACSObjectAction(
                 CustomerConstants.ACCOUNT_API_NAME, CustomerConstants.ACCOUNT_DATA, CustomerConstants.EXTERNAL_IDS_API_NAMES_ACCOUNT, CustomerConstants.ALL_FIELDS_API_NAMES_ACCOUNT).test();
         result.addAll(new SSACSObjectAction(
-                CustomerConstants.CONTACT_API_NAME, CustomerConstants.CONTACT_DATA,CustomerConstants.EXTERNAL_IDS_API_NAMES_CONTACT, CustomerConstants.ALL_FIELDS_API_NAMES_CONTACT).test());
+                CustomerConstants.CONTACT_API_NAME, CustomerConstants.CONTACT_DATA, CustomerConstants.EXTERNAL_IDS_API_NAMES_CONTACT, CustomerConstants.ALL_FIELDS_API_NAMES_CONTACT).test());
         new SSACLogger().publishResultLog(SSACConstants.CUSTOMERS_DATA, 'Test');
         return result;
     }

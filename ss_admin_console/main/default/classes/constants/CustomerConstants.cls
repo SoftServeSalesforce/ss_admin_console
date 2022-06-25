@@ -13,7 +13,7 @@ public with sharing class CustomerConstants {
 	public static final List<String> ALL_FIELDS_API_NAMES_CONTACT = new List<String> {'Email', 'LastName', 'FirstName'};
  
     public static Map<String, Account> ACCOUNT_DATA = new Map<String, Account> {
-            'Social Software' => new Account(Name = 'Test Software'),
+            'Social Software' => new Account(Name = 'Social Software'),
             'Adept Software' => new Account(Name = 'Adept Software'),
             'Boss Software' => new Account(Name = 'Boss Software'),
             'Scope Software' => new Account(Name = 'Scope Software'),
@@ -48,7 +48,7 @@ public with sharing class CustomerConstants {
     };
 
     public static Map<String, Contact> CONTACT_DATA = new Map<String, Contact> {
-            'OliviaSmith@testmail.com' => new Contact(LastName = 'Test', FirstName = 'Olivia', Email = 'OliviaSmith@testmail.com'),
+            'OliviaSmith@testmail.com' => new Contact(LastName = 'Smith', FirstName = 'Olivia', Email = 'OliviaSmith@testmail.com'),
             'EmmaBrown@testmail.com' => new Contact(LastName = 'Brown', FirstName = 'Emma', Email = 'EmmaBrown@testmail.com'),
             'AmeliaWilson@testmail.com' => new Contact(LastName = 'Wilson', FirstName = 'Amelia', Email = 'AmeliaWilson@testmail.com'),
             'AvaThomson@testmail.com' => new Contact(LastName = 'Thomson', FirstName = 'Ava', Email = 'AvaThomson@testmail.com'),

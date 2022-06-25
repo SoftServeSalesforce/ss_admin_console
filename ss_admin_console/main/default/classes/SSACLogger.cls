@@ -32,7 +32,7 @@ public with sharing class SSACLogger {
         if (!upsertedResults.isEmpty()) {
             SObjectLoadEvent__e successEvent = new SObjectLoadEvent__e(
                     Message__c = this.util.idsToString(upsertedResults),
-					Message_Title__c = this.handleSuccessUpsertMessageTitle(upsertedResults.get(0).sObjectApiName),
+                    Message_Title__c = this.handleSuccessUpsertMessageTitle(upsertedResults.get(0).sObjectApiName),
                     Message_Type__c = SSACConstants.UPSERTED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
                     Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
@@ -114,7 +114,7 @@ public with sharing class SSACLogger {
     private String handleChangedMessageTitle(String sObjectApiName) {
         return 'The following ' + sObjectApiName + '`s records could be updated: ';
     }
-	@TestVisible
+    @TestVisible
     private String handleSuccessUpsertMessageTitle(String sObjectApiName) {
         return 'Successfully upserted ' + sObjectApiName + '`s records. ';
     }

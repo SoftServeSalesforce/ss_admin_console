@@ -7,13 +7,13 @@ public with sharing class ProductConstants {
     public final static String STANDARD_PRICE_BOOK_NAME = 'Standard Price Book';
 
     public static final List<String> EXTERNAL_IDS_API_NAMES_PRODUCT = new List<String>{'ProductCode'};
-	public static final List<String> ALL_FIELDS_API_NAMES_PRODUCT = new List<String>{'ProductCode', 'Name'};
+    public static final List<String> ALL_FIELDS_API_NAMES_PRODUCT = new List<String>{'ProductCode', 'Name'};
 
     public static final List<String> EXTERNAL_IDS_API_NAMES_PRICE_BOOK = new List<String>{'Name'};
-	public static final List<String> ALL_FIELDS_API_NAMES_PRICE_BOOK = new List<String>{'IsActive', 'Name'};
+    public static final List<String> ALL_FIELDS_API_NAMES_PRICE_BOOK = new List<String>{'IsActive', 'Name'};
 
     public static final List<String> EXTERNAL_IDS_API_NAMES_PRICE_BOOK_ENTRY = new List<String>{'Product2.ProductCode'};
-	public static final List<String> ALL_FIELDS_API_NAMES_PRICE_BOOK_ENTRY = new List<String>{'Product2.ProductCode', 'UnitPrice','IsActive'};
+    public static final List<String> ALL_FIELDS_API_NAMES_PRICE_BOOK_ENTRY = new List<String>{'Product2.ProductCode', 'UnitPrice','IsActive'};
 
     public final static Map<String, Pricebook2> PRICE_BOOK_DATA = new Map<String, Pricebook2>{
             'Test PriceBook1' => new Pricebook2(Name = 'Test PriceBook1', IsActive = true),

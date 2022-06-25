@@ -13,7 +13,7 @@ public with sharing class SSACResultsUtil {
         return diagnosticResults;
     }
 
-	public List<SSACResult> generateDiagnosticResultsUpsert(Database.UpsertResult[] upsertResults, String sObjectApiName) {
+    public List<SSACResult> generateDiagnosticResultsUpsert(Database.UpsertResult[] upsertResults, String sObjectApiName) {
         List<SSACResult> results = new List<SSACResult>();
         for (Database.UpsertResult result : upsertResults) {
             if (result.isSuccess()) {

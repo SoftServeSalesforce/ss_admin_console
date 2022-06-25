@@ -61,20 +61,20 @@ public with sharing class SSACSObjectAction implements ISSACAction {
     private List<SObject> setId(List<SSACResult> results) {
         List<SObject> records = new List<SObject>();
         Integer counter = 0;
-		for (SObject item : this.records.values()){
+		for (SObject item : this.records.values()) {
 			String concatenatedString = '';
-			for (String keyField: this.externalIdApiNames){
-				if (keyField.contains('.')){
+			for (String keyField: this.externalIdApiNames) {
+				if (keyField.contains('.')) {
 					List<String> splittedField = keyField.split('\\.');
 					String nextField = splittedField[1];
-					concatenatedString += String.valueOf(item.getSObject(splittedField[0]).get(nextField)).toLowerCase()+'_';	
+					concatenatedString += String.valueOf(item.getSObject(splittedField[0]).get(nextField)).toLowerCase() + '_';	
 				} else {
-                	concatenatedString += String.valueOf(item.get(keyField)).toLowerCase()+'_';	
+                	concatenatedString += String.valueOf(item.get(keyField)).toLowerCase() + '_';	
 				}
 			}
 			concatenatedString = concatenatedString.removeEnd(concatenatedString.right(1));
 			for (SSACResult result : results) {
-				if(concatenatedString == result.recordKey) {
+				if (concatenatedString == result.recordKey) {
 					item.put('Id', result.recordId);
 					records.add(item);
 				}

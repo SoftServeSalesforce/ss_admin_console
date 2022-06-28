@@ -159,7 +159,7 @@ export default class Diagnostic extends LightningElement {
     }
 
     setColor(color, message) {
-        return '<p style="font-weight: bold; color:' + color + '">' + message +'</p>';
+        return '<p style="font-weight: bold; color:' + color + '">' + message + '</p>';
     }
 
     handleExecute = () => {

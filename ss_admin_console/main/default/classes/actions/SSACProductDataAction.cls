@@ -2,20 +2,19 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
 
     public override List<SSACResult> test() {
         List<SSACResult> result = new SSACSObjectAction(
-            ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA,
-            ProductConstants.EXTERNAL_IDS_API_NAMES_PRODUCT,
-            ProductConstants.ALL_FIELDS_API_NAMES_PRODUCT).test();
+            ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA.values(),
+            ProductConstants.PRODUCT_KEYFIELDS,
+            ProductConstants.PRODUCT_ALLFIELDS).test();
         result.addAll(new SSACSObjectAction(
-            ProductConstants.PRICE_BOOK_API_NAME, ProductConstants.PRICE_BOOK_DATA,
-            ProductConstants.EXTERNAL_IDS_API_NAMES_PRICE_BOOK,
-            ProductConstants.ALL_FIELDS_API_NAMES_PRICE_BOOK).test());
+            ProductConstants.PRICE_BOOK_API_NAME, ProductConstants.PRICE_BOOK_DATA.values(),
+            ProductConstants.PRICEBOOK_KEYFIELDS,
+            ProductConstants.PRICEBOOK_ALLFIELDS).test());
         for (String priceBookName : ProductConstants.PRICE_BOOK_ENTRY_DATA.keySet()) {
             List<SSACResult> entryResults = new SSACSObjectAction(
                 ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
-                this.generateTestEntries(priceBookName),
-                ProductConstants.EXTERNAL_IDS_API_NAMES_PRICE_BOOK_ENTRY,
-                ProductConstants.ALL_FIELDS_API_NAMES_PRICE_BOOK_ENTRY
-                /*'Pricebook2.Name = \'' + priceBookName + '\''*/).test();
+                this.generateTestEntries(priceBookName).values(),
+                ProductConstants.PRICEBOOK_ENTRY_KEYFIELDS,
+                ProductConstants.PRICEBOOK_ENTRY_ALLFIELDS).test();
             result.addAll(entryResults);
         }
         new SSACLogger().publishResultLog(SSACConstants.PRODUCTS_DATA, 'Test');
@@ -24,23 +23,23 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
 
     public override List<SSACResult> execute() {
         List<SSACResult> productResults = new SSACSObjectAction(
-            ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA,
-            ProductConstants.EXTERNAL_IDS_API_NAMES_PRODUCT,
-            ProductConstants.ALL_FIELDS_API_NAMES_PRODUCT).execute();
+            ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA.values(),
+            ProductConstants.PRODUCT_KEYFIELDS,
+            ProductConstants.PRODUCT_ALLFIELDS).execute();
         productResults.addAll(new SSACSObjectAction(
             ProductConstants.PRICE_BOOK_API_NAME,
-            ProductConstants.PRICE_BOOK_DATA,
-            ProductConstants.EXTERNAL_IDS_API_NAMES_PRICE_BOOK,
-            ProductConstants.ALL_FIELDS_API_NAMES_PRICE_BOOK).execute());
+            ProductConstants.PRICE_BOOK_DATA.values(),
+            ProductConstants.PRICEBOOK_KEYFIELDS,
+            ProductConstants.PRICEBOOK_ALLFIELDS).execute());
         Map<Id, Map<String, PricebookEntry>> allEntriesByPriceBookId = this.generateEntries(
             ProductConstants.PRICE_BOOK_ENTRY_DATA, this.getPriceBooks(), this.getProductByProductCode(
                 this.getProductCodes(ProductConstants.PRICE_BOOK_ENTRY_DATA)));
         for (Id i : allEntriesByPriceBookId.keySet()) {
-            List<SSACResult> entryResults = new SSACSObjectAction(ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
-                allEntriesByPriceBookId.get(i),
-                ProductConstants.EXTERNAL_IDS_API_NAMES_PRICE_BOOK_ENTRY,
-                ProductConstants.ALL_FIELDS_API_NAMES_PRICE_BOOK_ENTRY,
-                'Pricebook2Id = \'' + i + '\'').execute();
+            List<SSACResult> entryResults = new SSACSObjectAction(
+                ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
+                allEntriesByPriceBookId.get(i).values(),
+                ProductConstants.PRICEBOOK_ENTRY_KEYFIELDS,
+                ProductConstants.PRICEBOOK_ENTRY_ALLFIELDS).execute();
             productResults.addAll(entryResults);
         }
         new SSACLogger().publishResultLog(SSACConstants.PRODUCTS_DATA, 'Execute');

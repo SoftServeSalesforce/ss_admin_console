@@ -1,19 +1,19 @@
 public with sharing class ProductConstants {
     public final static String NAME_API_NAME = 'Name';
     public final static String PRODUCT_CODE_API_NAME = 'ProductCode';
-    public final static String PRICE_BOOK_API_NAME = 'Pricebook2';
-    public final static String PRODUCT_API_NAME = 'Product2';
-    public final static String PRICE_BOOK_ENTRY_API_NAME = 'PricebookEntry';
+    public static final SObjectType PRODUCT_API_NAME = Schema.Product2.getSObjectType();
+    public static final SObjectType PRICE_BOOK_API_NAME = Schema.Pricebook2.getSObjectType();
+    public static final SObjectType PRICE_BOOK_ENTRY_API_NAME = Schema.PricebookEntry.getSObjectType();
     public final static String STANDARD_PRICE_BOOK_NAME = 'Standard Price Book';
 
-    public static final List<String> EXTERNAL_IDS_API_NAMES_PRODUCT = new List<String>{'ProductCode'};
-    public static final List<String> ALL_FIELDS_API_NAMES_PRODUCT = new List<String>{'ProductCode', 'Name'};
+    public static final List<SObjectField> PRODUCT_KEYFIELDS = new List<SObjectField>{Product2.ProductCode};
+    public static final List<SObjectField> PRODUCT_ALLFIELDS = new List<SObjectField>{Product2.ProductCode, Product2.Name};
 
-    public static final List<String> EXTERNAL_IDS_API_NAMES_PRICE_BOOK = new List<String>{'Name'};
-    public static final List<String> ALL_FIELDS_API_NAMES_PRICE_BOOK = new List<String>{'IsActive', 'Name'};
+    public static final List<SObjectField> PRICEBOOK_KEYFIELDS = new List<SObjectField>{Pricebook2.Name};
+    public static final List<SObjectField> PRICEBOOK_ALLFIELDS = new List<SObjectField>{Pricebook2.IsActive, Pricebook2.Name};
 
-    public static final List<String> EXTERNAL_IDS_API_NAMES_PRICE_BOOK_ENTRY = new List<String>{'Product2.ProductCode'};
-    public static final List<String> ALL_FIELDS_API_NAMES_PRICE_BOOK_ENTRY = new List<String>{'Product2.ProductCode', 'UnitPrice','IsActive'};
+    public static final List<SObjectField> PRICEBOOK_ENTRY_KEYFIELDS = new List<SObjectField>{PricebookEntry.Product2.ProductCode};
+    public static final List<SObjectField> PRICEBOOK_ENTRY_ALLFIELDS = new List<SObjectField>{PricebookEntry.Product2.ProductCode, PricebookEntry.UnitPrice, PricebookEntry.IsActive};
 
     public final static Map<String, Pricebook2> PRICE_BOOK_DATA = new Map<String, Pricebook2>{
             'Test PriceBook1' => new Pricebook2(Name = 'Test PriceBook1', IsActive = true),

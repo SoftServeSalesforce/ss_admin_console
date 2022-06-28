@@ -3,14 +3,14 @@ public with sharing class CustomerConstants {
     public static final String ACCOUNT_ID_API_NAME = 'AccountId';
     public static final String EMAIL_API_NAME = 'Email';
 
-    public static final String ACCOUNT_API_NAME = 'Account';
-    public static final String CONTACT_API_NAME = 'Contact';
+    public static final SObjectType ACCOUNT_API_NAME = Schema.Account.getSObjectType();
+    public static final SObjectType CONTACT_API_NAME = Schema.Contact.getSObjectType();
 
-    public static final List<String> EXTERNAL_IDS_API_NAMES_ACCOUNT = new List<String>{'Name'};
-	public static final List<String> ALL_FIELDS_API_NAMES_ACCOUNT = new List<String>{'Name'};
+    public static final List<SObjectField> ACCOUNT_KEYFIELDS = new List<SObjectField>{Account.Name};
+    public static final List<SObjectField> ACCOUNT_ALLFIELDS = new List<SObjectField>{Account.Name};
 
-    public static final List<String> EXTERNAL_IDS_API_NAMES_CONTACT = new List<String> {'Email', 'LastName'};
-	public static final List<String> ALL_FIELDS_API_NAMES_CONTACT = new List<String> {'Email', 'LastName', 'FirstName'};
+    public static final List<SObjectField> CONTACT_KEYFIELDS = new List<SObjectField>{Contact.Email, Contact.LastName};
+    public static final List<SObjectField> CONTACT_ALLFIELDS = new List<SObjectField>{Contact.Email, Contact.LastName, Contact.FirstName};
  
     public static Map<String, Account> ACCOUNT_DATA = new Map<String, Account> {
             'Social Software' => new Account(Name = 'Social Software'),

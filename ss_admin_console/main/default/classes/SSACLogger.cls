@@ -21,7 +21,7 @@ public with sharing class SSACLogger {
         List<SSACResult> duplicateResults = this.util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS);
         if (!duplicateResults.isEmpty()) {
             SObjectLoadEvent__e duplicateEvent = new SObjectLoadEvent__e(
-                    Message__c = this.util.keysToString(duplicateResults),
+                    Message__c = duplicateResults.size() < 50 ? this.util.keysToString(duplicateResults) : this.handleAmountOfRecordsProceed(duplicateResults.size()),
                     Message_title__c = this.handleDuplicateMessageTitle(duplicateResults.get(0).sObjectApiName),
                     Message_Type__c = SSACConstants.DUPLICATED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
@@ -31,7 +31,7 @@ public with sharing class SSACLogger {
         }
         if (!upsertedResults.isEmpty()) {
             SObjectLoadEvent__e successEvent = new SObjectLoadEvent__e(
-                    Message__c = this.util.idsToString(upsertedResults),
+                    Message__c = upsertedResults.size() < 50 ? this.util.idsToString(upsertedResults) : this.handleAmountOfRecordsProceed(upsertedResults.size()),
                     Message_Title__c = this.handleSuccessUpsertMessageTitle(upsertedResults.get(0).sObjectApiName),
                     Message_Type__c = SSACConstants.UPSERTED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
@@ -60,7 +60,7 @@ public with sharing class SSACLogger {
         List<SSACResult> changedResults = this.util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS);
         if (!duplicateResults.isEmpty()) {
             SObjectLoadEvent__e duplicateEvent = new SObjectLoadEvent__e(
-                    Message__c = this.util.keysToString(duplicateResults),
+                    Message__c = duplicateResults.size() < 50 ? this.util.keysToString(duplicateResults) : this.handleAmountOfRecordsTested(duplicateResults.size()),
                     Message_title__c = this.handleDuplicateMessageTitle(duplicateResults.get(0).sObjectApiName),
                     Message_Type__c = SSACConstants.DUPLICATED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
@@ -70,7 +70,7 @@ public with sharing class SSACLogger {
         }
         if (!okResults.isEmpty()) {
             SObjectLoadEvent__e validRecordsEvent = new SObjectLoadEvent__e(
-                    Message__c = this.util.keysToString(okResults),
+                    Message__c = okResults.size() < 50 ? this.util.keysToString(okResults) : this.handleAmountOfRecordsTested(okResults.size()),
                     Message_title__c = this.handleValidRecordsMessageTitle(okResults.get(0).sObjectApiName),
                     Message_Type__c = SSACConstants.OK_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
@@ -80,7 +80,7 @@ public with sharing class SSACLogger {
         }
         if (!changedResults.isEmpty()) {
             SObjectLoadEvent__e changedEvent = new SObjectLoadEvent__e(
-                    Message__c = this.util.keysToString(changedResults),
+                    Message__c = changedResults.size() < 50 ? this.util.keysToString(changedResults) : this.handleAmountOfRecordsTested(changedResults.size()),
                     Message_title__c = this.handleChangedMessageTitle(changedResults.get(0).sObjectApiName),
                     Message_Type__c = SSACConstants.CHANGED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
@@ -117,5 +117,15 @@ public with sharing class SSACLogger {
     @TestVisible
     private String handleSuccessUpsertMessageTitle(String sObjectApiName) {
         return 'Successfully upserted ' + sObjectApiName + '`s records. ';
+    }
+
+    @TestVisible
+    private String handleAmountOfRecordsProceed(Integer size) {
+        return String.valueOf(size) + ' records ' + ((size > 1) ? 'were' : 'was') + ' proceed!';
+    }
+
+    @TestVisible
+    private String handleAmountOfRecordsTested(Integer size) {
+        return String.valueOf(size) + ' records ' + ((size > 1) ? 'are' : 'is') + ' tested!';
     }
 }

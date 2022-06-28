@@ -13,14 +13,14 @@ public with sharing class SSACResultsUtil {
         return diagnosticResults;
     }
 
-    public List<SSACResult> generateDiagnosticResultsUpsert(Database.UpsertResult[] upsertResults, String sObjectApiName) {
+    public List<SSACResult> generateDiagnosticResultsUpsert(Database.UpsertResult[] upsertResults, Schema.SObjectType sObjectApiName) {
         List<SSACResult> results = new List<SSACResult>();
         for (Database.UpsertResult result : upsertResults) {
             if (result.isSuccess()) {
                 results.add(new SSACResult()
                         .setStatus(SSACConstants.UPSERTED_STATUS)
                         .setRecordId(result.getId())
-                        .setSObjectApiName(sObjectApiName));
+                        .setSObjectApiName(String.valueOf(sObjectApiName)));
             } else {
                 results = this.generateDiagnosticError(result, sObjectApiName);
             }
@@ -28,17 +28,17 @@ public with sharing class SSACResultsUtil {
         return results;
     }
 
-    public List<SSACResult> generateDiagnosticError(Database.UpsertResult result, String sObjectApiName) {
+    public List<SSACResult> generateDiagnosticError(Database.UpsertResult result, Schema.SObjectType sObjectApiName) {
         List<SSACResult> results = new List<SSACResult>();
             String errorMessage = '';
             for (Database.Error err : result.getErrors()) {
                 errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage()
-                        + sObjectApiName + ' fields that affected this error: ' + err.getFields() + '. ';
+                        + String.valueOf(sObjectApiName) + ' fields that affected this error: ' + err.getFields() + '. ';
             }
             results.add(new SSACResult()
                     .setStatus(SSACConstants.FAILED_STATUS)
                     .setErrorMessage(errorMessage)
-                    .setSObjectApiName(sObjectApiName));
+                    .setSObjectApiName(String.valueOf(sObjectApiName)));
         return results;
     }
 

@@ -25,7 +25,6 @@ export default class Diagnostic extends LightningElement {
     resultLog = '/event/ResultLogEvent__e';
 
     get labelValue(){
-        //return "Select an action: " + getProductionOrgToggle() + " - " + this.value;
         return "Select an action:";
     }
 
@@ -184,7 +183,7 @@ export default class Diagnostic extends LightningElement {
     }
 
     handleExecute = () => {
-        //console.log( 'TEST handleExecute >> this.actionTypes.length = ' + this.actionTypes.length );
+        //c/ss_admin_consoleconsole.log( 'TEST handleExecute >> this.actionTypes.length = ' + this.actionTypes.length );
         if (this.actionTypes.length <= 0){
             window.location.reload();
         }

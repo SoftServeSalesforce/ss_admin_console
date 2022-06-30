@@ -4,17 +4,17 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
         List<SSACResult> result = new SSACSObjectAction(
             ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA.values(),
             ProductConstants.PRODUCT_KEYFIELDS,
-            ProductConstants.PRODUCT_ALLFIELDS).test();
+            ProductConstants.PRODUCT_DATAFIELDS).test();
         result.addAll(new SSACSObjectAction(
             ProductConstants.PRICE_BOOK_API_NAME, ProductConstants.PRICE_BOOK_DATA.values(),
             ProductConstants.PRICEBOOK_KEYFIELDS,
-            ProductConstants.PRICEBOOK_ALLFIELDS).test());
+            ProductConstants.PRICEBOOK_DATAFIELDS).test());
         for (String priceBookName : ProductConstants.PRICE_BOOK_ENTRY_DATA.keySet()) {
             List<SSACResult> entryResults = new SSACSObjectAction(
                 ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
                 this.generateTestEntries(priceBookName).values(),
                 ProductConstants.PRICEBOOK_ENTRY_KEYFIELDS,
-                ProductConstants.PRICEBOOK_ENTRY_ALLFIELDS).test();
+                ProductConstants.PRICEBOOK_ENTRY_DATAFIELDS).test();
             result.addAll(entryResults);
         }
         new SSACLogger().publishResultLog(SSACConstants.PRODUCTS_DATA, 'Test');
@@ -25,12 +25,12 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
         List<SSACResult> productResults = new SSACSObjectAction(
             ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA.values(),
             ProductConstants.PRODUCT_KEYFIELDS,
-            ProductConstants.PRODUCT_ALLFIELDS).execute();
+            ProductConstants.PRODUCT_DATAFIELDS).execute();
         productResults.addAll(new SSACSObjectAction(
             ProductConstants.PRICE_BOOK_API_NAME,
             ProductConstants.PRICE_BOOK_DATA.values(),
             ProductConstants.PRICEBOOK_KEYFIELDS,
-            ProductConstants.PRICEBOOK_ALLFIELDS).execute());
+            ProductConstants.PRICEBOOK_DATAFIELDS).execute());
         Map<Id, Map<String, PricebookEntry>> allEntriesByPriceBookId = this.generateEntries(
             ProductConstants.PRICE_BOOK_ENTRY_DATA, this.getPriceBooks(), this.getProductByProductCode(
                 this.getProductCodes(ProductConstants.PRICE_BOOK_ENTRY_DATA)));
@@ -39,7 +39,7 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
                 ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
                 allEntriesByPriceBookId.get(i).values(),
                 ProductConstants.PRICEBOOK_ENTRY_KEYFIELDS,
-                ProductConstants.PRICEBOOK_ENTRY_ALLFIELDS).execute();
+                ProductConstants.PRICEBOOK_ENTRY_DATAFIELDS).execute();
             productResults.addAll(entryResults);
         }
         new SSACLogger().publishResultLog(SSACConstants.PRODUCTS_DATA, 'Execute');

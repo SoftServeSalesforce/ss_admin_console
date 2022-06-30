@@ -7,10 +7,10 @@ public with sharing class CustomerConstants {
     public static final SObjectType CONTACT_API_NAME = Schema.Contact.getSObjectType();
 
     public static final List<SObjectField> ACCOUNT_KEYFIELDS = new List<SObjectField>{Account.Name};
-    public static final List<SObjectField> ACCOUNT_ALLFIELDS = new List<SObjectField>{Account.Name};
+    public static final List<SObjectField> ACCOUNT_DATAFIELDS = new List<SObjectField>{Account.Name};
 
     public static final List<SObjectField> CONTACT_KEYFIELDS = new List<SObjectField>{Contact.Email, Contact.LastName};
-    public static final List<SObjectField> CONTACT_ALLFIELDS = new List<SObjectField>{Contact.Email, Contact.LastName, Contact.FirstName};
+    public static final List<SObjectField> CONTACT_DATAFIELDS = new List<SObjectField>{Contact.Email, Contact.LastName, Contact.FirstName};
  
     public static Map<String, Account> ACCOUNT_DATA = new Map<String, Account> {
             'Social Software' => new Account(Name = 'Social Software'),

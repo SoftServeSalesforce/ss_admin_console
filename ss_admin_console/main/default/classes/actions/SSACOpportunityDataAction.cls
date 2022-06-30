@@ -7,13 +7,13 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
         List<SSACResult> result = new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_API_NAME, opportunityRecords.values(),
                 OpportunityConstants.OPPORTUNITY_KEYFIELDS,
-                OpportunityConstants.OPPORTUNITY_ALLFIELDS).test();
+                OpportunityConstants.OPPORTUNITY_DATAFIELDS).test();
         Map<String, SObject> opportunityItemRecords = handler.wrappersToRecordsItem(
                 OpportunityConstants.OPPORTUNITY_ITEM_DATA);
         result.addAll(new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, opportunityItemRecords.values(),
                 OpportunityConstants.OPPORTUNITY_ITEM_KEYFIELDS,
-                OpportunityConstants.OPPORTUNITY_ITEM_ALLFIELDS).test());
+                OpportunityConstants.OPPORTUNITY_ITEM_DATAFIELDS).test());
         new SSACLogger().publishResultLog(SSACConstants.OPPORTUNITY_DATA, 'Test');
         return result;
     }
@@ -27,7 +27,7 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
         List<SSACResult> result = new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_API_NAME, validOpportunityRecords.values(),
                 OpportunityConstants.OPPORTUNITY_KEYFIELDS,
-                OpportunityConstants.OPPORTUNITY_ALLFIELDS).execute();
+                OpportunityConstants.OPPORTUNITY_DATAFIELDS).execute();
 
         Map<String, SObject> validOpportunityItemRecords = this.addPriceBookEntry(
             handler.getValidRecords(OpportunityConstants.OPPORTUNITY_ITEM_DATA,
@@ -38,7 +38,7 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
         result.addAll(new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, validOpportunityItemRecords.values(),
                 OpportunityConstants.OPPORTUNITY_ITEM_KEYFIELDS,
-                OpportunityConstants.OPPORTUNITY_ITEM_ALLFIELDS).execute());
+                OpportunityConstants.OPPORTUNITY_ITEM_DATAFIELDS).execute());
         new SSACLogger().publishResultLog(SSACConstants.OPPORTUNITY_DATA, 'Execute');
         return result;
     }

@@ -4,11 +4,11 @@ public with sharing class SSACCustomerDataAction extends SSACAsyncAction {
         List<SSACResult> result = new SSACSObjectAction(
                 CustomerConstants.ACCOUNT_API_NAME, CustomerConstants.ACCOUNT_DATA.values(), 
                 CustomerConstants.ACCOUNT_KEYFIELDS, 
-                CustomerConstants.ACCOUNT_ALLFIELDS).test();
+                CustomerConstants.ACCOUNT_DATAFIELDS).test();
         result.addAll(new SSACSObjectAction(
                 CustomerConstants.CONTACT_API_NAME, CustomerConstants.CONTACT_DATA.values(), 
                 CustomerConstants.CONTACT_KEYFIELDS, 
-                CustomerConstants.CONTACT_ALLFIELDS).test());
+                CustomerConstants.CONTACT_DATAFIELDS).test());
         new SSACLogger().publishResultLog(SSACConstants.CUSTOMERS_DATA, 'Test');
         return result;
     }
@@ -17,7 +17,7 @@ public with sharing class SSACCustomerDataAction extends SSACAsyncAction {
         List<SSACResult> results = new SSACSObjectAction(
                 CustomerConstants.ACCOUNT_API_NAME, CustomerConstants.ACCOUNT_DATA.values(),
                 CustomerConstants.ACCOUNT_KEYFIELDS, 
-                CustomerConstants.ACCOUNT_ALLFIELDS).execute();
+                CustomerConstants.ACCOUNT_DATAFIELDS).execute();
         Map<String, Contact> contacts = CustomerConstants.CONTACT_DATA;
         SSACResultsUtil util = new SSACResultsUtil();
         List<SSACResult> successResults = util.getResultsByStatus(results, SSACConstants.OK_STATUS);
@@ -26,7 +26,7 @@ public with sharing class SSACCustomerDataAction extends SSACAsyncAction {
         }
         results.addAll(new SSACSObjectAction(CustomerConstants.CONTACT_API_NAME, contacts.values(),
         CustomerConstants.CONTACT_KEYFIELDS, 
-        CustomerConstants.CONTACT_ALLFIELDS).execute());
+        CustomerConstants.CONTACT_DATAFIELDS).execute());
         new SSACLogger().publishResultLog(SSACConstants.CUSTOMERS_DATA, 'Execute');
         return results;
     }

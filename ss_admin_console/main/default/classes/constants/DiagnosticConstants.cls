@@ -1,4 +1,4 @@
-public with sharing class SSACConstants { //TODO: Rename to DiagnosticConstants
+public with sharing class DiagnosticConstants { 
     public static final String WARNING_STATUS = 'WARNING';
     public static final String FAILED_STATUS = 'FAILED';
     public static final String UPSERTED_STATUS = 'UPSERTED';
@@ -16,6 +16,8 @@ public with sharing class SSACConstants { //TODO: Rename to DiagnosticConstants
     public static final String CRON_EXPRESSION_NAME = 'Job_Cron_Expression';
     public static final String SIZE_JOB_NAME = 'Job_Size';
     public static final String REFERENCE_NAME = 'REFERENCE';
+    public static final Integer MAX_RECORDS_PER_PAGE = 50;
+    
 
 
 }

@@ -19,7 +19,7 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         if (this.records == null || this.records.isEmpty()) {
             return new List<SSACResult>();
         }
-        List<SSACResult> results = new SSACFilter(this.sObjectApiName, this.records, this.keyFields, this.allFields).filter();
+        List<SSACResult> results = new SSACDataFilter(this.sObjectApiName, this.keyFields, this.allFields).filter(this.records);
         if (this.generateTestLog) {
             logger.generateTestLog(results);
         }

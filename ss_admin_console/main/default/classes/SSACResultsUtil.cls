@@ -20,7 +20,7 @@ public with sharing class SSACResultsUtil {
                 results.add(new SSACResult()
                         .setStatus(SSACConstants.UPSERTED_STATUS)
                         .setRecordId(result.getId())
-                        .setSObjectApiName(String.valueOf(sObjectApiName)));
+                        .setSObjectApiName(sObjectApiName.getDescribe().getName()));
             } else {
                 results = this.generateDiagnosticError(result, sObjectApiName);
             }
@@ -38,7 +38,7 @@ public with sharing class SSACResultsUtil {
             results.add(new SSACResult()
                     .setStatus(SSACConstants.FAILED_STATUS)
                     .setErrorMessage(errorMessage)
-                    .setSObjectApiName(String.valueOf(sObjectApiName)));
+                    .setSObjectApiName(sObjectApiName.getDescribe().getName()));
         return results;
     }
 

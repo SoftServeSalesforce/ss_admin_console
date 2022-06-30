@@ -2,17 +2,39 @@ public with sharing class SSACSObjectAction implements ISSACAction {
     private SSACLogger logger;
     private SObjectType sObjectApiName;
     private List<SObject> records;
-    private List<SObjectField> keyFields;
-    private List<SObjectField> dataFields;
     private Boolean generateTestLog;
+
+    private List<FieldReference> keyFields = new List<FieldReference>();
+    private List<FieldReference> dataFields = new List<FieldReference>();
 
     public SSACSObjectAction(SObjectType sObjectApiName, List<SObject> records, List<SObjectField> keyFields, List<SObjectField> dataFields) {
         this.logger = new SSACLogger();
         this.records = records;
-        this.keyFields = keyFields;
-        this.dataFields = dataFields;
         this.sObjectApiName = sObjectApiName;
         this.generateTestLog = true;
+
+        for(SObjectField field: keyFields){
+            this.keyFields.add(FieldReference.build(field));
+        }
+
+        for(SObjectField field: dataFields){
+            this.dataFields.add(FieldReference.build(field));
+        }
+    }
+
+    public SSACSObjectAction(SObjectType sObjectApiName, List<SObject> records, List<String> keyFields, List<String> dataFields) {
+        this.logger = new SSACLogger();
+        this.records = records;
+        this.sObjectApiName = sObjectApiName;
+        this.generateTestLog = true;
+
+        for(String field: keyFields){
+            this.keyFields.add(FieldReference.build(field));
+        }
+
+        for(String field: dataFields){
+            this.dataFields.add(FieldReference.build(field));
+        }
     }
 
     public List<SSACResult> test() {
@@ -51,14 +73,8 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         Integer counter = 0;
 		for (SObject item : this.records) {
 			String recordKeysFingerprint = '';
-			for (SObjectField keyField: this.keyFields) {
-				if (String.valueof(keyField).contains('.')) {
-					List<String> splittedField = String.valueOf(keyField).split('\\.');
-					String nextField = splittedField[1];
-					recordKeysFingerprint += String.valueOf(item.getSObject(splittedField[0]).get(nextField)).toLowerCase() + '_';	
-				} else {
-                	recordKeysFingerprint += String.valueOf(item.get(keyField)).toLowerCase() + '_';	
-				}
+			for (FieldReference keyField: this.keyFields) {
+                recordKeysFingerprint += String.valueOf(keyField.getFrom(item)).toLowerCase() + '_';
 			}
 			recordKeysFingerprint = recordKeysFingerprint.removeEnd(recordKeysFingerprint.right(1));
 			for (SSACResult result : results) {

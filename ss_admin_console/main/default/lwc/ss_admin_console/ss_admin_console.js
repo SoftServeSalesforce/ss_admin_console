@@ -34,7 +34,7 @@ export default class Diagnostic extends LightningElement {
 
         arrList.push( {label: 'Run Scheduled Job', value: 'RunScheduledJob'} );
         arrList.push( {label: 'Run Batchable Job', value: 'RunBatchableJob'} );
-/**/
+
         if( this.value === false ){
             arrList.push( {label: 'Load Data', value: 'LoadData'} );
         }
@@ -183,7 +183,7 @@ export default class Diagnostic extends LightningElement {
     }
 
     handleExecute = () => {
-        //c/ss_admin_consoleconsole.log( 'TEST handleExecute >> this.actionTypes.length = ' + this.actionTypes.length );
+
         if (this.actionTypes.length <= 0){
             window.location.reload();
         }
@@ -201,7 +201,7 @@ export default class Diagnostic extends LightningElement {
     };
 
     handleTest = () => {
-        //console.log( 'TEST handleTest >> this.actionTypes.length = ' + this.actionTypes.length );
+
         if (this.actionTypes.length <= 0){
             window.location.reload();
         }
@@ -237,9 +237,6 @@ export default class Diagnostic extends LightningElement {
 
     handleClear() {
         this.logs = [];
-        //console.log( 'TEST handleClear >> this.actionTypes.length = ' + this.actionTypes.length );
-        //window.location.reload();
-        //console.log( 'TEST handleClear after reload >> this.actionTypes.length = ' + this.actionTypes.length );
     };
 
     handleSelectClassName(event) {

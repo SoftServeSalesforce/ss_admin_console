@@ -2,24 +2,46 @@ public with sharing class SSACSObjectAction implements ISSACAction {
     private SSACLogger logger;
     private SObjectType sObjectApiName;
     private List<SObject> records;
-    private List<SObjectField> keyFields;
-    private List<SObjectField> allFields;
     private Boolean generateTestLog;
 
-    public SSACSObjectAction(SObjectType sObjectApiName, List<SObject> records, List<SObjectField> keyFields, List<SObjectField> allFields) {
+    private List<FieldReference> keyFields = new List<FieldReference>();
+    private List<FieldReference> dataFields = new List<FieldReference>();
+
+    public SSACSObjectAction(SObjectType sObjectApiName, List<SObject> records, List<SObjectField> keyFields, List<SObjectField> dataFields) {
         this.logger = new SSACLogger();
         this.records = records;
-        this.keyFields = keyFields;
-        this.allFields = allFields;
         this.sObjectApiName = sObjectApiName;
         this.generateTestLog = true;
+
+        for(SObjectField field: keyFields){
+            this.keyFields.add(FieldReference.build(field));
+        }
+
+        for(SObjectField field: dataFields){
+            this.dataFields.add(FieldReference.build(field));
+        }
+    }
+
+    public SSACSObjectAction(SObjectType sObjectApiName, List<SObject> records, List<String> keyFields, List<String> dataFields) {
+        this.logger = new SSACLogger();
+        this.records = records;
+        this.sObjectApiName = sObjectApiName;
+        this.generateTestLog = true;
+
+        for(String field: keyFields){
+            this.keyFields.add(FieldReference.build(field));
+        }
+
+        for(String field: dataFields){
+            this.dataFields.add(FieldReference.build(field));
+        }
     }
 
     public List<SSACResult> test() {
         if (this.records == null || this.records.isEmpty()) {
             return new List<SSACResult>();
         }
-        List<SSACResult> results = new SSACDataFilter(this.sObjectApiName, this.keyFields, this.allFields).filter(this.records);
+        List<SSACResult> results = new SSACDataFilter(this.sObjectApiName, this.keyFields, this.dataFields).filter(this.records);
         if (this.generateTestLog) {
             logger.generateTestLog(results);
         }
@@ -50,19 +72,13 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         List<SObject> records = new List<SObject>();
         Integer counter = 0;
 		for (SObject item : this.records) {
-			String concatenatedString = '';
-			for (SObjectField keyField: this.keyFields) {
-				if (String.valueof(keyField).contains('.')) {
-					List<String> splittedField = String.valueOf(keyField).split('\\.');
-					String nextField = splittedField[1];
-					concatenatedString += String.valueOf(item.getSObject(splittedField[0]).get(nextField)).toLowerCase() + '_';	
-				} else {
-                	concatenatedString += String.valueOf(item.get(keyField)).toLowerCase() + '_';	
-				}
+			String recordKeysFingerprint = '';
+			for (FieldReference keyField: this.keyFields) {
+                recordKeysFingerprint += String.valueOf(keyField.getFrom(item)).toLowerCase() + '_';
 			}
-			concatenatedString = concatenatedString.removeEnd(concatenatedString.right(1));
+			recordKeysFingerprint = recordKeysFingerprint.removeEnd(recordKeysFingerprint.right(1));
 			for (SSACResult result : results) {
-				if (concatenatedString == result.recordKey) {
+				if (recordKeysFingerprint == result.recordKey) {
 					item.put('Id', result.recordId);
 					records.add(item);
 				}

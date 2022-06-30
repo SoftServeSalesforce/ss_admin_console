@@ -12,8 +12,8 @@ public with sharing class ProductConstants {
     public static final List<SObjectField> PRICEBOOK_KEYFIELDS = new List<SObjectField>{Pricebook2.Name};
     public static final List<SObjectField> PRICEBOOK_ALLFIELDS = new List<SObjectField>{Pricebook2.IsActive, Pricebook2.Name};
 
-    public static final List<SObjectField> PRICEBOOK_ENTRY_KEYFIELDS = new List<SObjectField>{PricebookEntry.Product2.ProductCode};
-    public static final List<SObjectField> PRICEBOOK_ENTRY_ALLFIELDS = new List<SObjectField>{PricebookEntry.Product2.ProductCode, PricebookEntry.UnitPrice, PricebookEntry.IsActive};
+    public static final List<String> PRICEBOOK_ENTRY_KEYFIELDS = new List<String>{'Product2.ProductCode'};
+    public static final List<String> PRICEBOOK_ENTRY_ALLFIELDS = new List<String>{'Product2.ProductCode', 'UnitPrice', 'IsActive'};
 
     public final static Map<String, Pricebook2> PRICE_BOOK_DATA = new Map<String, Pricebook2>{
             'Test PriceBook1' => new Pricebook2(Name = 'Test PriceBook1', IsActive = true),

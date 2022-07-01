@@ -7,13 +7,13 @@ public with sharing class ProductConstants {
     public final static String STANDARD_PRICE_BOOK_NAME = 'Standard Price Book';
 
     public static final List<SObjectField> PRODUCT_KEYFIELDS = new List<SObjectField>{Product2.ProductCode};
-    public static final List<SObjectField> PRODUCT_ALLFIELDS = new List<SObjectField>{Product2.ProductCode, Product2.Name};
+    public static final List<SObjectField> PRODUCT_DATAFIELDS = new List<SObjectField>{Product2.ProductCode, Product2.Name};
 
     public static final List<SObjectField> PRICEBOOK_KEYFIELDS = new List<SObjectField>{Pricebook2.Name};
-    public static final List<SObjectField> PRICEBOOK_ALLFIELDS = new List<SObjectField>{Pricebook2.IsActive, Pricebook2.Name};
+    public static final List<SObjectField> PRICEBOOK_DATAFIELDS = new List<SObjectField>{Pricebook2.IsActive, Pricebook2.Name};
 
     public static final List<String> PRICEBOOK_ENTRY_KEYFIELDS = new List<String>{'Product2.ProductCode'};
-    public static final List<String> PRICEBOOK_ENTRY_ALLFIELDS = new List<String>{'Product2.ProductCode', 'UnitPrice', 'IsActive'};
+    public static final List<String> PRICEBOOK_ENTRY_DATAFIELDS = new List<String>{'Product2.ProductCode', 'UnitPrice', 'IsActive'};
 
     public final static Map<String, Pricebook2> PRICE_BOOK_DATA = new Map<String, Pricebook2>{
             'Test PriceBook1' => new Pricebook2(Name = 'Test PriceBook1', IsActive = true),

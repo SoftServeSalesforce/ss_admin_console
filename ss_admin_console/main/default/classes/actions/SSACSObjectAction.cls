@@ -13,11 +13,11 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         this.sObjectApiName = sObjectApiName;
         this.generateTestLog = true;
 
-        for(SObjectField field: keyFields){
+        for (SObjectField field : keyFields) {
             this.keyFields.add(FieldReference.build(field));
         }
 
-        for(SObjectField field: dataFields){
+        for (SObjectField field : dataFields) {
             this.dataFields.add(FieldReference.build(field));
         }
     }
@@ -28,11 +28,11 @@ public with sharing class SSACSObjectAction implements ISSACAction {
         this.sObjectApiName = sObjectApiName;
         this.generateTestLog = true;
 
-        for(String field: keyFields){
+        for (String field : keyFields) {
             this.keyFields.add(FieldReference.build(field));
         }
 
-        for(String field: dataFields){
+        for (String field : dataFields) {
             this.dataFields.add(FieldReference.build(field));
         }
     }

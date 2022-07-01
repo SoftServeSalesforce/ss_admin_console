@@ -6,10 +6,10 @@ public with sharing class OpportunityConstants {
     public static final String OPPORTUNITY_ITEM_KEY_FIELD_NAME = 'ProductCode';
 
     public static final List<SObjectField> OPPORTUNITY_KEYFIELDS = new List<SObjectField>{Opportunity.Name};
-    public static final List<SObjectField> OPPORTUNITY_ALLFIELDS = new List<SObjectField>{Opportunity.Name, Opportunity.StageName};
+    public static final List<SObjectField> OPPORTUNITY_DATAFIELDS = new List<SObjectField>{Opportunity.Name, Opportunity.StageName};
 
     public static final List<String> OPPORTUNITY_ITEM_KEYFIELDS = new List<String>{'Product2.ProductCode'};
-    public static final List<String> OPPORTUNITY_ITEM_ALLFIELDS = new List<String>{'Product2.ProductCode', 'Quantity'};
+    public static final List<String> OPPORTUNITY_ITEM_DATAFIELDS = new List<String>{'Product2.ProductCode', 'Quantity'};
 
 
     public final static Map<String, String> REFERENCE_FIELD_TO_KEY_FIELD = new Map<String, String>{

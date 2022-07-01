@@ -7,8 +7,7 @@ public with sharing class SSACDataFilter {
     public SSACDataFilter(SObjectType sObjectApiName, List<FieldReference> keyFields, List<FieldReference> dataFields) {
         this.sObjectApiName = sObjectApiName;
         this.keyFields = keyFields;
-        this.dataFields = dataFields;
-       
+        this.dataFields = dataFields; 
     }
 
     // filter method for determining new, dublicated and existing records
@@ -75,7 +74,6 @@ public with sharing class SSACDataFilter {
     @TestVisible
     public List<SObject> getExistentRecords(List<SObject> records) {
         String query = this.buildQuery(records);
-        System.debug(query);
         return Database.query(query);
     }
 

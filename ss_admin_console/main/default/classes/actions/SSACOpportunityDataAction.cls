@@ -10,6 +10,7 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
                 OpportunityConstants.OPPORTUNITY_ALLFIELDS).test();
         Map<String, SObject> opportunityItemRecords = handler.wrappersToRecordsItem(
                 OpportunityConstants.OPPORTUNITY_ITEM_DATA);
+
         result.addAll(new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, opportunityItemRecords.values(),
                 OpportunityConstants.OPPORTUNITY_ITEM_KEYFIELDS,
@@ -24,17 +25,17 @@ public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
                 OpportunityConstants.OPPORTUNITY_DATA,
                 OpportunityConstants.REFERENCE_FIELD_TO_KEY_FIELD,
                 OpportunityConstants.REFERENCE_FIELD_TO_SOBJECT_NAME);
+
         List<SSACResult> result = new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_API_NAME, validOpportunityRecords.values(),
                 OpportunityConstants.OPPORTUNITY_KEYFIELDS,
                 OpportunityConstants.OPPORTUNITY_ALLFIELDS).execute();
-
+        
         Map<String, SObject> validOpportunityItemRecords = this.addPriceBookEntry(
             handler.getValidRecords(OpportunityConstants.OPPORTUNITY_ITEM_DATA,
                 OpportunityConstants.REFERENCE_FIELD_TO_KEY_FIELD,
                 OpportunityConstants.REFERENCE_FIELD_TO_SOBJECT_NAME));
 
-        // this.addPriceBookEntry(validOpportunityItemRecords);
         result.addAll(new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, validOpportunityItemRecords.values(),
                 OpportunityConstants.OPPORTUNITY_ITEM_KEYFIELDS,

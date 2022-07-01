@@ -75,7 +75,6 @@ public with sharing class SSACDataFilter {
     @TestVisible
     public List<SObject> getExistentRecords(List<SObject> records) {
         String query = this.buildQuery(records);
-        System.debug(query);
         return Database.query(query);
     }
 

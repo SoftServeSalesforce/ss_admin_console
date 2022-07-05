@@ -79,6 +79,7 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
                 PricebookEntry entry = pricebookEntries.get(entryCode);
                 entry.Pricebook2Id = pricebook.Id;
                 entry.Product2Id = productByProductCode.get(entryCode).Id;
+                entry.Product2 = new Product2(Id = productByProductCode.get(entryCode).Id, ProductCode = entryCode);
                 result.put(entryCode, entry);
             }
         }

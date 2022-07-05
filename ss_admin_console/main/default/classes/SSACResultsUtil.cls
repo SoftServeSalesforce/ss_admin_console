@@ -32,7 +32,7 @@ public with sharing class SSACResultsUtil {
         List<SSACResult> results = new List<SSACResult>();
             String errorMessage = '';
             for (Database.Error err : result.getErrors()) {
-                errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage()
+                errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage() + '; '
                         + String.valueOf(sObjectApiName) + ' fields that affected this error: ' + err.getFields() + '. ';
             }
             results.add(new SSACResult()

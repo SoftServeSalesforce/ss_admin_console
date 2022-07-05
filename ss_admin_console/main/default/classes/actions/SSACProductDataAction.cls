@@ -1,4 +1,4 @@
-public with sharing class SSACProductDataAction extends SSACAsyncAction {
+public inherited sharing class SSACProductDataAction extends SSACAsyncAction {
 
     public override List<SSACResult> test() {
         List<SSACResult> result = new SSACSObjectAction(

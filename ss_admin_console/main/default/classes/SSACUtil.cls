@@ -1,4 +1,4 @@
-public with sharing class SSACUtil {
+public inherited sharing class SSACUtil {
     public List<String> getJobClasses(String interfaceName) {
         Type interfaceType = Type.forName(interfaceName);
         List<String> result = new List<String>();

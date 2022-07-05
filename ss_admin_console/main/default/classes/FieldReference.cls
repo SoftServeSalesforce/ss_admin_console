@@ -1,4 +1,4 @@
-public abstract class FieldReference{
+public abstract class FieldReference {
     // FieldReference interface
     public abstract Object getFrom(SObject record);
 

@@ -1,4 +1,4 @@
-public with sharing class SSACDataFilter {
+public inherited sharing class SSACDataFilter {
     private SObjectType sObjectApiName;
     private List<SObject> records;
     private List<FieldReference> keyFields;
@@ -17,7 +17,7 @@ public with sharing class SSACDataFilter {
         Map<String, SObject> existentMap = generateExistentMap(existentRecords);
        
         Set<FieldReference> nonKeyFields = new Set<FieldReference>(dataFields.clone());
-        nonKeyFields.removeAll(this.keyFields);
+        nonKeyFields.removeAll(keyFields);
         
         for (SObject record : records) {
             Integer matchedNonKeyFields = 0;
@@ -59,13 +59,13 @@ public with sharing class SSACDataFilter {
     @TestVisible
     private Map<String, SObject> generateExistentMap(List<SObject> existentRecords) {
         Map<String, SObject> existentMap = new Map<String, SObject>();
-              for (SObject existSObj : existentRecords) {
+        for (SObject existSObj : existentRecords) {
             String recordKeysFingerprint = '';
-            for (FieldReference keyField : keyFields) {
-                recordKeysFingerprint += String.valueOf(keyField.getFrom(existSObj)).toLowerCase() + '_';
-            }
+                for (FieldReference keyField : keyFields) {
+                    recordKeysFingerprint += String.valueOf(keyField.getFrom(existSObj)).toLowerCase() + '_';
+                }
             recordKeysFingerprint = recordKeysFingerprint.removeEnd(recordKeysFingerprint.right(1));
-            existentMap.put(recordKeysFingerprint, existSObj);
+        existentMap.put(recordKeysFingerprint, existSObj);
         }
         return existentMap;
     }
@@ -79,14 +79,14 @@ public with sharing class SSACDataFilter {
 
     // // formatting map with all fields and its values
     @TestVisible
-    public Map<String, Set<Object>> getKeyFieldValues(List<SObject> records) {
+    private Map<String, Set<Object>> getKeyFieldValues(List<SObject> records) {
         Map<String, Set<Object>> constantValues = new Map<String, Set<Object>>();
         for (FieldReference field : keyFields) {
             Set<Object> values = new Set<Object>();
-            for (SObject obj : records) {
-                values.add(field.getFrom(obj));
-            }
-            constantValues.put(String.valueOf(field), values);
+                for (SObject obj : records) {
+                    values.add(field.getFrom(obj));
+                }
+            constantValues.put(field.toString(), values);
         }
         return constantValues;
     }

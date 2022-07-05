@@ -1,4 +1,4 @@
-public with sharing class DiagnosticConstants { 
+public inherited sharing class DiagnosticConstants { 
     public static final String WARNING_STATUS = 'WARNING';
     public static final String FAILED_STATUS = 'FAILED';
     public static final String UPSERTED_STATUS = 'UPSERTED';

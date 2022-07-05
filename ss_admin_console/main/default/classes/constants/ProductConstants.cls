@@ -1,4 +1,4 @@
-public with sharing class ProductConstants {
+public inherited sharing class ProductConstants {
     public final static String NAME_API_NAME = 'Name';
     public final static String PRODUCT_CODE_API_NAME = 'ProductCode';
     public static final SObjectType PRODUCT_API_NAME = Schema.Product2.getSObjectType();

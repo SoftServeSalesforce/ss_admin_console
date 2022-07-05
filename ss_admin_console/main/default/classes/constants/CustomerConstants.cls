@@ -1,4 +1,4 @@
-public with sharing class CustomerConstants {
+public inherited sharing class CustomerConstants {
     public static final String NAME_API_NAME = 'Name';
     public static final String ACCOUNT_ID_API_NAME = 'AccountId';
     public static final String EMAIL_API_NAME = 'Email';

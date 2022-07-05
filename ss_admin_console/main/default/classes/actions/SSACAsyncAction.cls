@@ -1,4 +1,4 @@
-public abstract with sharing class SSACAsyncAction implements ISSACAction, Queueable {
+public abstract inherited sharing class SSACAsyncAction implements ISSACAction, Queueable {
     private Boolean isTest;
     public abstract List<SSACResult> test();
     public abstract List<SSACResult> execute();

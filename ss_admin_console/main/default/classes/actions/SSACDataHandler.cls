@@ -1,4 +1,4 @@
-public with sharing class SSACDataHandler {
+public inherited sharing class SSACDataHandler {
 
     // public Map<String, SObject> getValidRecords(List<SSACSObjectWrapper> wrappers,
     //         Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {

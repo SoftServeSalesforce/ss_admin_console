@@ -1,38 +1,28 @@
 public with sharing class TypesSetter {
 
-    public Object toSetOfType(FieldReference field, String sObjectType, Set<Object> objects){
-        String fieldType = field.getFieldType(sObjectType);
-        if (fieldType == 'String' || fieldType == 'Email') {
-            return toSetOfString(objects);
-        } else if (fieldType == 'Decimal') {
-            return toSetOfDecimal(objects);
-        } else if (fieldType == 'Double') {
+    public Object toSetOfType(FieldReference field, String sObjectType, Set<Object> objects) {
+        Schema.SoapType fieldType = field.getFieldType(sObjectType);
+        if (fieldType == Schema.SoapType.DOUBLE) {
             return toSetOfDouble(objects);
-        } else if (fieldType == 'Integer') {
+        } else if (fieldType == Schema.SoapType.INTEGER) {
             return toSetOfInteger(objects); 
-        } else if (fieldType == 'Datetime') {
+        } else if (fieldType == Schema.SoapType.DATETIME) {
             return toSetOfDatetime(objects);
-        } else if (fieldType == 'Date') {
+        } else if (fieldType == Schema.SoapType.DATE) {
             return toSetOfDate(objects);
-        } else if (fieldType == 'Time') {
+        } else if (fieldType == Schema.SoapType.TIME) {
             return toSetOfTime(objects);
-        }  
-        return null;
+        } else if (fieldType == Schema.SoapType.BOOLEAN) {
+            return toSetOfBoolean(objects);
+        } else {
+            return toSetOfString(objects);
+        }
     }
-
 
     public Set<String> toSetOfString(Set<Object> so) {
         Set<String> ss = new Set<String>();
         for (Object o : so) {
             ss.add((String) o);
-        }
-        return ss;
-    }
-
-    public Set<Decimal> toSetOfDecimal(Set<Object> so) {
-        Set<Decimal> ss = new Set<Decimal>();
-        for (Object o : so) {
-            ss.add((Decimal) o);
         }
         return ss;
     }
@@ -73,6 +63,14 @@ public with sharing class TypesSetter {
         Set<Time> ss = new Set<Time>();
         for (Object o : so) {
             ss.add((Time) o);
+        }
+        return ss;
+    }
+
+    public Set<Boolean> toSetOfBoolean(Set<Object> so) {
+        Set<Boolean> ss = new Set<Boolean>();
+        for (Object o : so) {
+            ss.add((Boolean) o);
         }
         return ss;
     }

@@ -2,7 +2,7 @@ public abstract class FieldReference {
     // FieldReference interface
     public abstract Object getFrom(sObject record);
 
-    public abstract String getFieldType(String objType);
+    public abstract Schema.SoapType getFieldType(String objType);
 
     // factory methods
     public static FieldReference build(Schema.SObjectField field) {
@@ -30,10 +30,10 @@ public abstract class FieldReference {
             return record.get(field);
         }
 
-        public override String getFieldType(String objType) {
+        public override Schema.SoapType getFieldType(String objType) {
             Schema.SObjectType obj = Schema.getGlobalDescribe().get(objType);
-            Schema.DisplayType fieldType = obj.getDescribe().fields.getMap().get(field.getDescribe().getName()).getDescribe().getType();
-            return String.valueOf(fieldType);
+            Schema.SoapType fieldType = obj.getDescribe().fields.getMap().get(field.getDescribe().getName()).getDescribe().getSoapType();
+            return fieldType;
         }
 
         public override String toString() {
@@ -53,10 +53,10 @@ public abstract class FieldReference {
             return record.get(field);
         }
 
-        public override String getFieldType(String objType) {
+        public override Schema.SoapType getFieldType(String objType) {
             Schema.SObjectType obj = Schema.getGlobalDescribe().get(objType);
-            Schema.DisplayType fieldType = obj.getDescribe().fields.getMap().get(field).getDescribe().getType();
-            return String.valueOf(fieldType);
+            Schema.SoapType fieldType = obj.getDescribe().fields.getMap().get(field).getDescribe().getSoapType();
+            return fieldType;
         }
 
         public override String toString() {
@@ -79,10 +79,10 @@ public abstract class FieldReference {
             return parent == null ? null : next.getFrom(parent);
         }
 
-        public override String getFieldType(String objType) {
+        public override Schema.SoapType getFieldType(String objType) {
             Schema.SObjectType obj = Schema.getGlobalDescribe().get(field);
-            Schema.DisplayType fieldType = obj.getDescribe().fields.getMap().get(next.toString()).getDescribe().getType();
-            return String.valueOf(fieldType);
+            Schema.SoapType fieldType = obj.getDescribe().fields.getMap().get(next.toString()).getDescribe().getSOAPType();
+            return fieldType;
         }
 
         public override String toString() {

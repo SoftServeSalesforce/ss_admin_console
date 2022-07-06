@@ -1,19 +1,4 @@
 public with sharing class SSACDataHandler {
-
-    // public Map<String, SObject> getValidRecords(List<SSACSObjectWrapper> wrappers,
-    //         Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {
-    //     return this.getValidRecords(wrappers, this.getParentFields(wrappers),
-    //             referenceFieldToKeyFields, referenceFieldToSObjectName);
-    // }
-
-    // public Map<String, SObject> getValidRecords(List<SSACSObjectWrapper> wrappers, Set<String> parentFields,
-    //         Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {
-    //     Map<String, Map<String, Id>> parentFieldToParentId = this.getParentIds(wrappers, parentFields,
-    //             referenceFieldToKeyFields, referenceFieldToSObjectName);
-    //     Map<String, SObject> result = this.getValidSObjects(wrappers, parentFieldToParentId);
-    //     return result;
-    // }
-
     public Map<String, SObject> wrappersToRecords(List<SSACSObjectWrapper> wrappers) {
         Map<String, SObject> records = new Map<String, SObject>();
         for (SSACSObjectWrapper wrapper : wrappers) {
@@ -128,11 +113,11 @@ public with sharing class SSACDataHandler {
                     SObject sobj = wrapper.sobj;
                     for (String parentFieldName : parentIds.keySet()) {
                         sobj.put(parentFieldName, parentIds.get(parentFieldName).get(wrapper.keyByReferenceFields.get(parentFieldName)));
-
+                        
                         Schema.SObjectType sobjType  = Schema.getGlobalDescribe().get(referenceFieldToSObjectName.get(parentFieldName));
                         SObject newSObj = sobjType.newSObject();
                         newSObj.put(referenceFieldToKeyFields.get(parentFieldName), wrappers.get(counter).keyByReferenceFields.get(parentFieldName));
-                        
+                        newSObj.put('Id', parentIds.get(parentFieldName).get(wrapper.keyByReferenceFields.get(parentFieldName)));
                         sobj.putSObject(referenceFieldToSObjectName.get(parentFieldName), newSObj);
 
                     }

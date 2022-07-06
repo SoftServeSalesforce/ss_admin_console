@@ -14,7 +14,7 @@ public inherited sharing class SSACDataFilter {
     public List<SSACResult> filter(List<SObject> records) {
         List<SSACResult> results = new List<SSACResult>();
         List<SObject> existentRecords = getExistentRecords(records);
-        Map<String, SObject> existentMap = generateExistentMap(existentRecords);
+        Map<String, SObject> existentMap = generateExistentRecordsMap(existentRecords);
        
         Set<FieldReference> nonKeyFields = new Set<FieldReference>(dataFields.clone());
         nonKeyFields.removeAll(keyFields);
@@ -57,7 +57,7 @@ public inherited sharing class SSACDataFilter {
     }
 
     @TestVisible
-    private Map<String, SObject> generateExistentMap(List<SObject> existentRecords) {
+    private Map<String, SObject> generateExistentRecordsMap(List<SObject> existentRecords) {
         Map<String, SObject> existentMap = new Map<String, SObject>();
         for (SObject existSObj : existentRecords) {
             String recordKeysFingerprint = '';
@@ -70,30 +70,43 @@ public inherited sharing class SSACDataFilter {
         return existentMap;
     }
 
-    // // existent sobject extraction
+    //existent sobject extraction
     @TestVisible
-    public List<SObject> getExistentRecords(List<SObject> records) {
+    private List<SObject> getExistentRecords(List<SObject> records) {
+        List<Set<Object>> keyFieldValues = this.getKeyFieldValues(records);
+
+        Integer fieldsNumber = keyFieldValues.size();
+        String sObjectType = sObjectApiName.getDescribe().getName();
+        TypesSetter ts = new TypesSetter();
+        Object pr0 = (fieldsNumber > 0) ?  ts.toSetOfType(keyFields[0], sObjectType, keyFieldValues[0]) : null;
+        Object pr1 = (fieldsNumber > 1) ?  ts.toSetOfType(keyFields[1], sObjectType, keyFieldValues[1]) : null;
+        Object pr2 = (fieldsNumber > 2) ?  ts.toSetOfType(keyFields[2], sObjectType, keyFieldValues[2]) : null;
+        Object pr3 = (fieldsNumber > 3) ?  ts.toSetOfType(keyFields[3], sObjectType, keyFieldValues[3]) : null;
+        Object pr4 = (fieldsNumber > 4) ?  ts.toSetOfType(keyFields[4], sObjectType, keyFieldValues[4]) : null;
+
         String query = this.buildQuery(records);
         return Database.query(query);
     }
 
-    // // formatting map with all fields and its values
+    //formatting map with all fields and its values
     @TestVisible
-    private Map<String, Set<Object>> getKeyFieldValues(List<SObject> records) {
-        Map<String, Set<Object>> constantValues = new Map<String, Set<Object>>();
+    private List<Set<Object>> getKeyFieldValues(List<SObject> records) {
+        List<Set<Object>> constantValues = new List<Set<Object>>();
         for (FieldReference field : keyFields) {
             Set<Object> values = new Set<Object>();
-                for (SObject obj : records) {
-                    values.add(field.getFrom(obj));
-                }
-            constantValues.put(field.toString(), values);
+            for (SObject obj : records) {
+                values.add(field.getFrom(obj));
+            }
+            constantValues.add(values);
+
         }
         return constantValues;
     }
 
+
     @TestVisible
     private String buildQuery(List<SObject> records) {
-        Map<String, Set<Object>> keyFieldValues = this.getKeyFieldValues(records);
+        Integer counter = 0;
         String result = 'SELECT Id, ';
         if (dataFields != null) {
             for (FieldReference field : dataFields) {
@@ -101,14 +114,12 @@ public inherited sharing class SSACDataFilter {
             }
         }
         result = result.removeEnd(result.right(1));         
-        result += ' FROM '+ String.valueOf(sObjectApiName) + ' WHERE ';
+        result += ' FROM '+ sObjectApiName.getDescribe().getName() + ' WHERE ';
         for (FieldReference field : keyFields) {
-            result += field.toString() + ' IN (';
-            for (Object value : keyFieldValues.get(field.toString())) {
-                result += (value instanceof String) ? '\'' + value + '\',' :  value + ',';
-            }
-            result = result.removeEnd(result.right(1)) + ') AND ';
+            result += field.toString() + ' IN :pr' + counter + ' AND ';
+            counter += 1;
         } 
+
         result = result.removeEnd(result.right(4));
         return result;
     }

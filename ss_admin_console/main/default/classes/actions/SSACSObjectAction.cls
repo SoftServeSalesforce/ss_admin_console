@@ -1,4 +1,4 @@
-public with sharing class SSACSObjectAction implements ISSACAction {
+public inherited sharing class SSACSObjectAction implements ISSACAction {
     private SSACLogger logger;
     private SObjectType sObjectApiName;
     private List<SObject> records;

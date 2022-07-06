@@ -1,4 +1,4 @@
-public with sharing class SSACOpportunityDataAction extends SSACAsyncAction {
+public inherited sharing class SSACOpportunityDataAction extends SSACAsyncAction {
 
     public override List<SSACResult> test() {
         SSACDataHandler handler = new SSACDataHandler();

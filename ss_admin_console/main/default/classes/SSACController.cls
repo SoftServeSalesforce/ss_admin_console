@@ -1,4 +1,4 @@
-public with sharing class SSACController {
+public inherited sharing class SSACController {
 
     private static Map<String, ISSACAction> actions = new Map<String, ISSACAction> {
             SSACConstants.CUSTOMERS_DATA => new SSACCustomerDataAction(),

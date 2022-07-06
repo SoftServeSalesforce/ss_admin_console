@@ -1,4 +1,4 @@
-public with sharing class SSACScheduledAction implements ISSACAction {
+public inherited sharing class SSACScheduledAction implements ISSACAction {
 
     private String className;
     private SSACLogger logger;

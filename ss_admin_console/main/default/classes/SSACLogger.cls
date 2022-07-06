@@ -1,4 +1,4 @@
-public with sharing class SSACLogger {
+public inherited sharing class SSACLogger {
     SSACResultsUtil util;
     public SSACLogger() {
         this.util = new SSACResultsUtil();
@@ -112,20 +112,19 @@ public with sharing class SSACLogger {
 
     @TestVisible
     private String handleChangedMessageTitle(String sObjectApiName) {
-        return 'The following ' + sObjectApiName + '`s records could be updated: ';
+        return 'The following ' + sObjectApiName + '\'s records could be updated: ';
     }
     @TestVisible
     private String handleSuccessUpsertMessageTitle(String sObjectApiName) {
-        return 'Successfully upserted ' + sObjectApiName + '`s records. ';
+        return 'Successfully upserted ' + sObjectApiName + '\'s records. ';
     }
-
     @TestVisible
     private String handleAmountOfRecordsProceed(Integer size) {
-        return String.valueOf(size) + ' records ' + ((size > 1) ? 'were' : 'was') + ' proceed!';
+        return String.valueOf(size) + ' records ' + ((size > 1) ? 'were' : 'was') + ' proceed.';
     }
 
     @TestVisible
     private String handleAmountOfRecordsTested(Integer size) {
-        return String.valueOf(size) + ' records ' + ((size > 1) ? 'are' : 'is') + ' tested!';
+        return String.valueOf(size) + ' records ' + ((size > 1) ? 'were' : 'was') + ' tested.';
     }
 }

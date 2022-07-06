@@ -1,4 +1,4 @@
-public with sharing class OpportunityConstants {
+public inherited sharing class OpportunityConstants {
 
     public static final SObjectType OPPORTUNITY_API_NAME = Schema.Opportunity.getSObjectType();
     public static final String OPPORTUNITY_KEY_FIELD_NAME = 'Name';

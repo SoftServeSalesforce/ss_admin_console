@@ -1,4 +1,4 @@
-public with sharing class SSACResultsUtil {
+public inherited sharing class SSACResultsUtil {
 
     private static String ID_SEPARATOR = ', ';
 

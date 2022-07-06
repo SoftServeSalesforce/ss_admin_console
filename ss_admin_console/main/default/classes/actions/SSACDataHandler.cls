@@ -1,19 +1,5 @@
 public inherited sharing class SSACDataHandler {
 
-    // public Map<String, SObject> getValidRecords(List<SSACSObjectWrapper> wrappers,
-    //         Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {
-    //     return this.getValidRecords(wrappers, this.getParentFields(wrappers),
-    //             referenceFieldToKeyFields, referenceFieldToSObjectName);
-    // }
-
-    // public Map<String, SObject> getValidRecords(List<SSACSObjectWrapper> wrappers, Set<String> parentFields,
-    //         Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {
-    //     Map<String, Map<String, Id>> parentFieldToParentId = this.getParentIds(wrappers, parentFields,
-    //             referenceFieldToKeyFields, referenceFieldToSObjectName);
-    //     Map<String, SObject> result = this.getValidSObjects(wrappers, parentFieldToParentId);
-    //     return result;
-    // }
-
     public Map<String, SObject> wrappersToRecords(List<SSACSObjectWrapper> wrappers) {
         Map<String, SObject> records = new Map<String, SObject>();
         for (SSACSObjectWrapper wrapper : wrappers) {
@@ -25,7 +11,7 @@ public inherited sharing class SSACDataHandler {
 	public Map<String, SObject> wrappersToRecordsItem(List<SSACSObjectWrapper> wrappers) {
         Map<String, SObject> records = this.wrappersToRecords(wrappers);
 		Integer counter = 0;
-		for(String obj: records.keySet()){
+		for(String obj: records.keySet()) {
 			records.get(obj).putSObject('Product2', new Product2(ProductCode = wrappers.get(counter).keyByReferenceFields.get('Product2Id')));
 			counter = wrappers.size() - 1 > counter ? ++counter : 0;
 			records.put(obj, records.get(obj));

@@ -9,36 +9,35 @@ public inherited sharing class SSACResultsUtil {
                 diagnosticResults.add(result);
             }
         }
-
         return diagnosticResults;
     }
 
-    public List<SSACResult> generateDiagnosticResultsUpsert(Database.UpsertResult[] upsertResults, Schema.SObjectType sObjectApiName) {
+    public List<SSACResult> generateDiagnosticResultsUpsert(Database.UpsertResult[] upsertResults, Schema.SObjectType sObjectType) {
         List<SSACResult> results = new List<SSACResult>();
         for (Database.UpsertResult result : upsertResults) {
             if (result.isSuccess()) {
                 results.add(new SSACResult()
                         .setStatus(SSACConstants.UPSERTED_STATUS)
                         .setRecordId(result.getId())
-                        .setSObjectApiName(sObjectApiName.getDescribe().getName()));
+                        .setSObjectApiName(sObjectType.getDescribe().getName()));
             } else {
-                results = this.generateDiagnosticError(result, sObjectApiName);
+                results = this.generateDiagnosticError(result, sObjectType);
             }
         }
         return results;
     }
 
-    public List<SSACResult> generateDiagnosticError(Database.UpsertResult result, Schema.SObjectType sObjectApiName) {
+    public List<SSACResult> generateDiagnosticError(Database.UpsertResult result, Schema.SObjectType sObjectType) {
         List<SSACResult> results = new List<SSACResult>();
             String errorMessage = '';
             for (Database.Error err : result.getErrors()) {
-                errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage() + '; '
-                        + String.valueOf(sObjectApiName) + ' fields that affected this error: ' + err.getFields() + '. ';
+                errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage()
+                        + String.valueOf(sObjectType) + ' fields that affected this error: ' + err.getFields() + '. ';
             }
             results.add(new SSACResult()
                     .setStatus(SSACConstants.FAILED_STATUS)
                     .setErrorMessage(errorMessage)
-                    .setSObjectApiName(sObjectApiName.getDescribe().getName()));
+                    .setSObjectApiName(sObjectType.getDescribe().getName()));
         return results;
     }
 
@@ -68,7 +67,7 @@ public inherited sharing class SSACResultsUtil {
 
     public List<Id> getIds(List<SSACResult> results) {
         List<Id> ids = new List<Id>();
-        for (SSACResult result: results) {
+        for (SSACResult result : results) {
             ids.add(result.recordId);
         }
         return ids;

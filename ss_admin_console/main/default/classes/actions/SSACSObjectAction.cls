@@ -88,7 +88,7 @@ public inherited sharing class SSACSObjectAction implements ISSACAction {
     }
 
 	@TestVisible
-	private List<SSACResult> getAllResults(SSACResultsUtil util, List<SSACResult> filterResults){
+	private List<SSACResult> getAllResults(SSACResultsUtil util, List<SSACResult> filterResults) {
 		List<SSACResult> allResults = new List<SSACResult>();
         List<SSACResult> okResults = util.getResultsByStatus(filterResults, SSACConstants.OK_STATUS);
         List<SSACResult> changedResults = util.getResultsByStatus(filterResults, SSACConstants.CHANGED_STATUS);

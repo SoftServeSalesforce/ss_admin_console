@@ -76,8 +76,8 @@ public with sharing class SSACSObjectAction implements ISSACAction {
 			for (FieldReference keyField: this.keyFields) {
                 recordKeysFingerprint += String.valueOf(keyField.getFrom(item)).toLowerCase() + '_';
 			}
-			recordKeysFingerprint = recordKeysFingerprint.removeEnd(recordKeysFingerprint.right(1));
-			for (SSACResult result : results) {
+			recordKeysFingerprint = recordKeysFingerprint.removeEnd('_');			
+            for (SSACResult result : results) {
 				if (recordKeysFingerprint == result.recordKey) {
 					item.put('Id', result.recordId);
 					records.add(item);
@@ -88,7 +88,7 @@ public with sharing class SSACSObjectAction implements ISSACAction {
     }
 
 	@TestVisible
-	private List<SSACResult> getAllResults(SSACResultsUtil util, List<SSACResult> filterResults){
+	private List<SSACResult> getAllResults(SSACResultsUtil util, List<SSACResult> filterResults) {
 		List<SSACResult> allResults = new List<SSACResult>();
         List<SSACResult> okResults = util.getResultsByStatus(filterResults, SSACConstants.OK_STATUS);
         List<SSACResult> changedResults = util.getResultsByStatus(filterResults, SSACConstants.CHANGED_STATUS);

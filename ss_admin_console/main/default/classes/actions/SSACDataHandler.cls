@@ -10,7 +10,7 @@ public with sharing class SSACDataHandler {
 	public Map<String, SObject> wrappersToRecordsItem(List<SSACSObjectWrapper> wrappers) {
         Map<String, SObject> records = this.wrappersToRecords(wrappers);
 		Integer counter = 0;
-		for(String obj: records.keySet()){
+		for(String obj: records.keySet()) {
 			records.get(obj).putSObject('Product2', new Product2(ProductCode = wrappers.get(counter).keyByReferenceFields.get('Product2Id')));
 			counter = wrappers.size() - 1 > counter ? ++counter : 0;
 			records.put(obj, records.get(obj));

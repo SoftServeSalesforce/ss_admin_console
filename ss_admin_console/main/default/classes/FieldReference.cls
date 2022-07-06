@@ -1,8 +1,9 @@
 public abstract class FieldReference {
     // FieldReference interface
+
     public abstract Object getFrom(sObject record);
 
-    public abstract Schema.SoapType getFieldType(String objType);
+    public abstract Schema.SoapType getFieldType(SObjectType objType);
 
     // factory methods
     public static FieldReference build(Schema.SObjectField field) {
@@ -14,13 +15,13 @@ public abstract class FieldReference {
         if (index == -1){
             return new SimpleFieldReference(field);
         }
-
         return new ChainedFieldReference(field.substring(0, index), build(field.substring(index + 1)));
     }
 
     // concrete implementations
     public virtual class SchemaFieldReference extends FieldReference {
-        @TestVisible Schema.SObjectField field;
+        @TestVisible 
+        Schema.SObjectField field;
 
         public SchemaFieldReference(Schema.SObjectField field) {
             this.field = field;
@@ -30,16 +31,15 @@ public abstract class FieldReference {
             return record.get(field);
         }
 
-        public override Schema.SoapType getFieldType(String objType) {
-            Schema.SObjectType obj = Schema.getGlobalDescribe().get(objType);
-            Schema.SoapType fieldType = obj.getDescribe().fields.getMap().get(field.getDescribe().getName()).getDescribe().getSoapType();
+        // override method to get field Type depending on SObject Type for SObjectField type
+        public override Schema.SoapType getFieldType(SObjectType objType) {
+            Schema.SoapType fieldType = objType.getDescribe().fields.getMap().get(field.getDescribe().getName()).getDescribe().getSoapType();
             return fieldType;
         }
 
         public override String toString() {
             return '' + field;
         }
-
     }
 
     public virtual class SimpleFieldReference extends FieldReference {
@@ -53,9 +53,9 @@ public abstract class FieldReference {
             return record.get(field);
         }
 
-        public override Schema.SoapType getFieldType(String objType) {
-            Schema.SObjectType obj = Schema.getGlobalDescribe().get(objType);
-            Schema.SoapType fieldType = obj.getDescribe().fields.getMap().get(field).getDescribe().getSoapType();
+        // override method to get field Type depending on SObject Type for String type
+        public override Schema.SoapType getFieldType(SObjectType objType) {
+            Schema.SoapType fieldType = objType.getDescribe().fields.getMap().get(field).getDescribe().getSoapType();
             return fieldType;
         }
 
@@ -79,9 +79,9 @@ public abstract class FieldReference {
             return parent == null ? null : next.getFrom(parent);
         }
 
-        public override Schema.SoapType getFieldType(String objType) {
-            Schema.SObjectType obj = Schema.getGlobalDescribe().get(field);
-            Schema.SoapType fieldType = obj.getDescribe().fields.getMap().get(next.toString()).getDescribe().getSOAPType();
+        // override method to get field Type depending on SObject Type for SObjectField type
+        public override Schema.SoapType getFieldType(SObjectType objType) {
+            Schema.SoapType fieldType = objType.getDescribe().fields.getMap().get(next.toString()).getDescribe().getSOAPType();
             return fieldType;
         }
 

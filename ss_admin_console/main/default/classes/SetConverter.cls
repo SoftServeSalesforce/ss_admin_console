@@ -1,6 +1,6 @@
-public with sharing class TypesSetter {
+public inherited sharing class SetConverter {
 
-    public Object toSetOfType(FieldReference field, String sObjectType, Set<Object> objects) {
+    public Object toSetOfType(FieldReference field, SObjectType sObjectType, Set<Object> objects) {
         Schema.SoapType fieldType = field.getFieldType(sObjectType);
         if (fieldType == Schema.SoapType.DOUBLE) {
             return toSetOfDouble(objects);

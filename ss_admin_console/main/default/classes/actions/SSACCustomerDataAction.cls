@@ -12,7 +12,7 @@ public with sharing class SSACCustomerDataAction extends SSACAsyncAction {
         new SSACLogger().publishResultLog(SSACConstants.CUSTOMERS_DATA, 'Test');
         return result;
     }
-
+    
     public override List<SSACResult> execute() {
         List<SSACResult> results = new SSACSObjectAction(
                 CustomerConstants.ACCOUNT_API_NAME, CustomerConstants.ACCOUNT_DATA.values(),

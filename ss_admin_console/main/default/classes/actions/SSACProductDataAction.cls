@@ -9,6 +9,7 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
             ProductConstants.PRICE_BOOK_API_NAME, ProductConstants.PRICE_BOOK_DATA.values(),
             ProductConstants.PRICEBOOK_KEYFIELDS,
             ProductConstants.PRICEBOOK_ALLFIELDS).test());
+       
         for (String priceBookName : ProductConstants.PRICE_BOOK_ENTRY_DATA.keySet()) {
             List<SSACResult> entryResults = new SSACSObjectAction(
                 ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
@@ -79,6 +80,9 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
                 PricebookEntry entry = pricebookEntries.get(entryCode);
                 entry.Pricebook2Id = pricebook.Id;
                 entry.Product2Id = productByProductCode.get(entryCode).Id;
+
+                entry.Product2 = new Product2(Id = productByProductCode.get(entryCode).Id, ProductCode = entryCode);
+
                 result.put(entryCode, entry);
             }
         }

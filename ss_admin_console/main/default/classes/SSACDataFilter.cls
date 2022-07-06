@@ -8,7 +8,6 @@ public with sharing class SSACDataFilter {
         this.sObjectApiName = sObjectApiName;
         this.keyFields = keyFields;
         this.dataFields = dataFields;
-       
     }
 
     // filter method for determining new, dublicated and existing records
@@ -22,50 +21,60 @@ public with sharing class SSACDataFilter {
         
         for (SObject record : records) {
             Integer matchedNonKeyFields = 0;
-            String recordKeysFingerprint = '';
-            for (FieldReference keyField : keyFields) {
-                recordKeysFingerprint += String.valueOf(keyField.getFrom(record)).toLowerCase() + '_';
-            }
-
-            recordKeysFingerprint = recordKeysFingerprint.removeEnd(recordKeysFingerprint.right(1));
-            if (existentMap.get(recordKeysFingerprint) != null) {
+            String recordKeysFingerprint = generateRecordFingerprint(record);
+            // for (FieldReference keyField : keyFields) {
+            //     recordKeysFingerprint += String.valueOf(keyField.getFrom(record)).toLowerCase() + '_';
+            // }
+            // recordKeysFingerprint = recordKeysFingerprint.removeEnd('_');
+            SObject existentSObject = existentMap.get(recordKeysFingerprint);            
+            if (existentSObject != null) {
                 for (FieldReference nonKeyField : nonKeyFields) {
-                        if(nonKeyField.getFrom(record) == nonKeyField.getFrom(existentMap.get(recordKeysFingerprint))){
-                            matchedNonKeyFields += 1;
-                        } else {
-                            results.add(new SSACResult()
-                                .setStatus(DiagnosticConstants.CHANGED_STATUS)
-                                .setRecordKey(recordKeysFingerprint)
-                                .setRecordId(existentMap.get(recordKeysFingerprint).Id)
-                                .setSObjectApiName(String.valueOf(sObjectApiName)));
-                            break;
-                        }
+                    if (nonKeyField.getFrom(record) == nonKeyField.getFrom(existentSObject)) {
+                        matchedNonKeyFields++;
+                    } else {
+                        results.add(new SSACResult()
+                            .setStatus(DiagnosticConstants.CHANGED_STATUS)
+                            .setRecordKey(recordKeysFingerprint)
+                            .setRecordId(existentSObject.Id)
+                            .setSObjectApiName(sObjectApiName.getDescribe().getName()));
+                        break;
                     }
+                }
                 if (matchedNonKeyFields == nonKeyFields.size()) {
                     results.add(new SSACResult()
                         .setStatus(DiagnosticConstants.DUPLICATED_STATUS)
                         .setRecordKey(recordKeysFingerprint)
-                        .setSObjectApiName(String.valueOf(sObjectApiName)));
+                        .setSObjectApiName(sObjectApiName.getDescribe().getName()));
                 }
             } else {
                 results.add(new SSACResult()
                     .setStatus(DiagnosticConstants.OK_STATUS)
                     .setRecordKey(recordKeysFingerprint)
-                    .setSObjectApiName(String.valueOf(sObjectApiName)));
+                    .setSObjectApiName(sObjectApiName.getDescribe().getName()));
             }
         }
         return results;
     }
 
     @TestVisible
+    private String generateRecordFingerprint(SObject record) {
+        String recordKeysFingerprint = '';
+        for (FieldReference keyField : keyFields) {
+            recordKeysFingerprint += String.valueOf(keyField.getFrom(record)).toLowerCase() + '_';
+        }
+        return recordKeysFingerprint.removeEnd('_');
+    }
+
+
+    @TestVisible
     private Map<String, SObject> generateExistentRecordsMap(List<SObject> existentRecords) {
         Map<String, SObject> existentMap = new Map<String, SObject>();
-              for (SObject existSObj : existentRecords) {
-            String recordKeysFingerprint = '';
-            for (FieldReference keyField : keyFields) {
-                recordKeysFingerprint += String.valueOf(keyField.getFrom(existSObj)).toLowerCase() + '_';
-            }
-            recordKeysFingerprint = recordKeysFingerprint.removeEnd(recordKeysFingerprint.right(1));
+        for (SObject existSObj : existentRecords) {
+            String recordKeysFingerprint = generateRecordFingerprint(existSObj);
+            // for (FieldReference keyField : keyFields) {
+            //     recordKeysFingerprint += String.valueOf(keyField.getFrom(existSObj)).toLowerCase() + '_';
+            // }
+            // recordKeysFingerprint = recordKeysFingerprint.removeEnd('_');            
             existentMap.put(recordKeysFingerprint, existSObj);
         }
         return existentMap;
@@ -77,15 +86,14 @@ public with sharing class SSACDataFilter {
         List<Set<Object>> keyFieldValues = this.getKeyFieldValues(records);
 
         Integer fieldsNumber = keyFieldValues.size();
-        String sObjectType = sObjectApiName.getDescribe().getName();
-        TypesSetter ts = new TypesSetter();
-        Object pr0 = (fieldsNumber > 0) ?  ts.toSetOfType(keyFields[0], sObjectType, keyFieldValues[0]) : null;
-        Object pr1 = (fieldsNumber > 1) ?  ts.toSetOfType(keyFields[1], sObjectType, keyFieldValues[1]) : null;
-        Object pr2 = (fieldsNumber > 2) ?  ts.toSetOfType(keyFields[2], sObjectType, keyFieldValues[2]) : null;
-        Object pr3 = (fieldsNumber > 3) ?  ts.toSetOfType(keyFields[3], sObjectType, keyFieldValues[3]) : null;
-        Object pr4 = (fieldsNumber > 4) ?  ts.toSetOfType(keyFields[4], sObjectType, keyFieldValues[4]) : null;
+        SetConverter sc = new SetConverter();
+        Object pr0 = (fieldsNumber > 0) ?  sc.toSetOfType(keyFields[0], sObjectApiName, keyFieldValues[0]) : null;
+        Object pr1 = (fieldsNumber > 1) ?  sc.toSetOfType(keyFields[1], sObjectApiName, keyFieldValues[1]) : null;
+        Object pr2 = (fieldsNumber > 2) ?  sc.toSetOfType(keyFields[2], sObjectApiName, keyFieldValues[2]) : null;
+        Object pr3 = (fieldsNumber > 3) ?  sc.toSetOfType(keyFields[3], sObjectApiName, keyFieldValues[3]) : null;
+        Object pr4 = (fieldsNumber > 4) ?  sc.toSetOfType(keyFields[4], sObjectApiName, keyFieldValues[4]) : null;
 
-        String query = this.buildQuery(records);
+        String query = this.buildQuery();
         return Database.query(query);
     }
 
@@ -99,14 +107,12 @@ public with sharing class SSACDataFilter {
                 values.add(field.getFrom(obj));
             }
             constantValues.add(values);
-
         }
         return constantValues;
     }
 
-
     @TestVisible
-    private String buildQuery(List<SObject> records) {
+    private String buildQuery() {
         Integer counter = 0;
         String result = 'SELECT Id, ';
         if (dataFields != null) {
@@ -115,13 +121,12 @@ public with sharing class SSACDataFilter {
             }
         }
         result = result.removeEnd(result.right(1));         
-        result += ' FROM '+ sObjectApiName.getDescribe().getName() + ' WHERE ';
+        result += ' FROM ' + sObjectApiName.getDescribe().getName() + ' WHERE ';
         for (FieldReference field : keyFields) {
             result += field.toString() + ' IN :pr' + counter + ' AND ';
-            counter += 1;
+            counter++;
         } 
-
-        result = result.removeEnd(result.right(4));
+        result = result.removeEnd(' AND ');
         return result;
     }
 }

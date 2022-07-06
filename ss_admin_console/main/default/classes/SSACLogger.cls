@@ -120,11 +120,11 @@ public inherited sharing class SSACLogger {
     }
     @TestVisible
     private String handleAmountOfRecordsProceed(Integer size) {
-        return String.valueOf(size) + ' records ' + ((size > 1) ? 'were' : 'was') + ' proceed.';
+        return String.valueOf(size) + ' records were proceed.';
     }
 
     @TestVisible
     private String handleAmountOfRecordsTested(Integer size) {
-        return String.valueOf(size) + ' records ' + ((size > 1) ? 'were' : 'was') + ' tested.';
+        return String.valueOf(size) + ' records were tested.';
     }
 }

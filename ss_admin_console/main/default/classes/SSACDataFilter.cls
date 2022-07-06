@@ -25,8 +25,7 @@ public inherited sharing class SSACDataFilter {
             for (FieldReference keyField : keyFields) {
                 recordKeysFingerprint += String.valueOf(keyField.getFrom(record)).toLowerCase() + '_';
             }
-
-            recordKeysFingerprint = recordKeysFingerprint.removeEnd(recordKeysFingerprint.right(1));
+            recordKeysFingerprint = recordKeysFingerprint.removeEnd('_');
             if (existentMap.get(recordKeysFingerprint) != null) {
                 for (FieldReference nonKeyField : nonKeyFields) {
                         if(nonKeyField.getFrom(record) == nonKeyField.getFrom(existentMap.get(recordKeysFingerprint))){
@@ -113,7 +112,7 @@ public inherited sharing class SSACDataFilter {
                 result += field.toString() + ',';
             }
         }
-        result = result.removeEnd(result.right(1));         
+        result = result.removeEnd(',');         
         result += ' FROM '+ sObjectApiName.getDescribe().getName() + ' WHERE ';
         for (FieldReference field : keyFields) {
             result += field.toString() + ' IN :pr' + counter + ' AND ';

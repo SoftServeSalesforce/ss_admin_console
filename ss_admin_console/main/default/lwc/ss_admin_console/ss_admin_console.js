@@ -1,12 +1,12 @@
-import {LightningElement, track, api} from 'lwc';
+import {LightningElement, track, wire, api} from 'lwc';
+
 import execute from '@salesforce/apex/SSACController.execute';
 import test from '@salesforce/apex/SSACController.test';
 import getDataTypes from '@salesforce/apex/SSACController.getDataTypes';
 import getJobClasses from '@salesforce/apex/SSACController.getJobClasses';
-import getProductionOrgToggle from '@salesforce/apex/SSACController.getProductionOrgToggle';
+import isProductionOrg from '@salesforce/apex/SSACController.isProductionOrg';
 import userId from '@salesforce/user/Id';
 import {subscribe} from 'lightning/empApi';
-
 export default class Diagnostic extends LightningElement {
     @track isLoading = false;
     @track selectedAction;
@@ -18,7 +18,22 @@ export default class Diagnostic extends LightningElement {
     @track types = [];
     @track batchClasses = [];
     @track scheduledClasses = [];
-    @track value = false;
+
+    @track isProductionOrgValue = false; 
+
+    /*
+    @wire ( isProductionOrg )
+    wiredProductionOrgValue({data,error}){
+        if(data){
+            this.isProductionOrgValue = data;
+            console.log("wiredProductionOrgValue() data: " + data);
+        }
+        else if(error){
+            console.log("wiredProductionOrgValue() error: " + {error});
+        }
+    } 
+    */
+
     logPayload = {};
     jobResultPayload = {};
     sObjectLoadLog = '/event/SObjectLoadEvent__e';
@@ -35,22 +50,14 @@ export default class Diagnostic extends LightningElement {
         arrList.push( {label: 'Run Scheduled Job', value: 'RunScheduledJob'} );
         arrList.push( {label: 'Run Batchable Job', value: 'RunBatchableJob'} );
 
-        if( this.value === false ){
+        console.log("Inside actions(): this.isProductionOrgValue = " + this.isProductionOrgValue);
+
+        if( this.isProductionOrgValue === false ){
             arrList.push( {label: 'Load Data', value: 'LoadData'} );
         }
 
         return arrList;
          
-    };
-
-    productionOrgToggle() {
-        getProductionOrgToggle()
-            .then(result => {
-                this.value = result;
-            })
-            .catch(error => {
-                console.log(error);
-            })
     };
 
     dataTypes() {
@@ -94,14 +101,31 @@ export default class Diagnostic extends LightningElement {
         return options;
     };
 
+    getProductionOrgValue() {
+        isProductionOrg()
+            .then(result => {
+                this.isProductionOrgValue = result;
+                console.log("Inside getProductionOrgValue(): this.isProductionOrgValue = result => " + result);
+            })
+            .catch(error => {
+                console.log("Inside getProductionOrgValue(): error => " + error);
+            })
+    };
+
     connectedCallback() {
         this.getBatchableClasses();
         this.getScheduledClasses();
         this.dataTypes();
         this.handleLogSubscribe();
         this.handleJobResultSubscribe();
-        this.productionOrgToggle();
+
+        console.log('Inside connectedCallback: this.getProductionOrgValue()');
+        this.getProductionOrgValue();
     };
+
+    renderedCallback() {
+        console.log('Inside renderedCallback');
+    }
 
     handleLogSubscribe() {
         const messageCallback = (response) => {

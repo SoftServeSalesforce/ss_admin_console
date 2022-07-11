@@ -56,10 +56,68 @@ public with sharing class SSACController {
     }
 
     @AuraEnabled
-    public static Boolean getProductionOrgToggle(){
-        Toggle__mdt productionOrgToggle = Toggle__mdt.getInstance('ProductionOrgToggle');
+    public static String orgType(){
+        String orgType = [SELECT OrganizationType FROM Organization].OrganizationType;
+        return orgType;
+    }
+
+    @AuraEnabled
+    public static Boolean isOrgTypeProduction(){
+        String orgType = [SELECT OrganizationType FROM Organization].OrganizationType;
+        Boolean blnResult = false;
+
+        blnResult = ( orgType == 'Essentials Edition'
+        ||orgType == 'Professional Edition' 
+        ||orgType == 'Enterprise Edition' 
+        ||orgType == 'Unlimited Edition' 
+        );
+
+        return blnResult;
+    }
+
+    @AuraEnabled
+    public static Boolean isSandbox(){
+        Boolean isSandbox = [SELECT IsSandbox FROM Organization limit 1].IsSandbox;
+        return isSandbox;
+    }
+
+    @AuraEnabled
+    public static Boolean isProductionOrg(){
+
+        // this method for determining whether an organization is a production org 
+
+        String orgType = [SELECT OrganizationType FROM Organization].OrganizationType;
+        Boolean isSandbox = [SELECT IsSandbox FROM Organization limit 1].IsSandbox;
+        Boolean blnIsProductionOrg = false; 
+        Boolean blnResult = false;
         
-        return productionOrgToggle.ProductionOrgToggle__c;
+        blnResult = ( orgType == 'Essentials Edition'
+        ||orgType == 'Professional Edition' 
+        ||orgType == 'Enterprise Edition' 
+        ||orgType == 'Unlimited Edition' 
+        );
+
+        //console.log('Inside isProductionOrg():');
+        //console.log('Inside isProductionOrg(): orgType = ' + orgType);
+        //console.log('Inside isProductionOrg(): isSandbox = ' + isSandbox);
+
+        /*
+        if ( ( orgType == 'Essentials Edition'
+             ||orgType == 'Professional Edition' 
+             ||orgType == 'Enterprise Edition' 
+             ||orgType == 'Unlimited Edition' 
+             ) && ( !isSandbox ) ){
+            blnIsProductionOrg = true;
+        }
+        */
+
+        blnIsProductionOrg = blnResult && (!isSandbox);
+        
+        //blnIsProductionOrg = true;
+        //blnIsProductionOrg = false;
+        
+        return blnIsProductionOrg;
+
     }
 
 }

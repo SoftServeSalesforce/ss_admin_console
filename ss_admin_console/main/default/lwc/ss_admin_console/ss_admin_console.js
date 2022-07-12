@@ -18,21 +18,7 @@ export default class Diagnostic extends LightningElement {
     @track types = [];
     @track batchClasses = [];
     @track scheduledClasses = [];
-
     @track isProductionOrgValue = false; 
-
-    /*
-    @wire ( isProductionOrg )
-    wiredProductionOrgValue({data,error}){
-        if(data){
-            this.isProductionOrgValue = data;
-            console.log("wiredProductionOrgValue() data: " + data);
-        }
-        else if(error){
-            console.log("wiredProductionOrgValue() error: " + {error});
-        }
-    } 
-    */
 
     logPayload = {};
     jobResultPayload = {};
@@ -49,8 +35,6 @@ export default class Diagnostic extends LightningElement {
 
         arrList.push( {label: 'Run Scheduled Job', value: 'RunScheduledJob'} );
         arrList.push( {label: 'Run Batchable Job', value: 'RunBatchableJob'} );
-
-        console.log("Inside actions(): this.isProductionOrgValue = " + this.isProductionOrgValue);
 
         if( this.isProductionOrgValue === false ){
             arrList.push( {label: 'Load Data', value: 'LoadData'} );
@@ -105,7 +89,6 @@ export default class Diagnostic extends LightningElement {
         isProductionOrg()
             .then(result => {
                 this.isProductionOrgValue = result;
-                console.log("Inside getProductionOrgValue(): this.isProductionOrgValue = result => " + result);
             })
             .catch(error => {
                 console.log("Inside getProductionOrgValue(): error => " + error);
@@ -118,14 +101,8 @@ export default class Diagnostic extends LightningElement {
         this.dataTypes();
         this.handleLogSubscribe();
         this.handleJobResultSubscribe();
-
-        console.log('Inside connectedCallback: this.getProductionOrgValue()');
         this.getProductionOrgValue();
     };
-
-    renderedCallback() {
-        console.log('Inside renderedCallback');
-    }
 
     handleLogSubscribe() {
         const messageCallback = (response) => {

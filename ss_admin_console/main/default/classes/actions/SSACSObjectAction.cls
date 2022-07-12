@@ -29,11 +29,11 @@ public inherited sharing class SSACSObjectAction implements ISSACAction {
         this.generateTestLog = true;
 
         for (String field : keyFields) {
-            this.keyFields.add(FieldReference.build(field));
+            this.keyFields.add(FieldReference.build(sObjectApiName, field));
         }
 
         for (String field : dataFields) {
-            this.dataFields.add(FieldReference.build(field));
+            this.dataFields.add(FieldReference.build(sObjectApiName, field));
         }
     }
 

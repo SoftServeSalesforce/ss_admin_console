@@ -1,27 +1,32 @@
 /*
-    The MIT License (MIT)
+    Copyright (C) 2013 Bluewolf
 
-    Copyright (c) 2014 Ilija Pavlic
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation
+    files (the "Software"), to deal in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
 
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
+    Except as contained in this notice, the name(s) of the above
+    copyright holders shall not be used in advertising or otherwise to
+    promote the sale, use or other dealings in this Software without
+    prior written authorization.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
 
     https://github.com/bluewolf-beyond/selector
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
 */
 
 public abstract class FieldReference {
@@ -29,64 +34,52 @@ public abstract class FieldReference {
 
     public abstract Object getFrom(sObject record);
 
-    public abstract Schema.SoapType getFieldType(SObjectType objType);
+    public abstract SObjectField getField();
 
     // factory methods
-    public static FieldReference build(Schema.SObjectField field) {
+    public static FieldReference build(SObjectField field) {
         return new SchemaFieldReference(field);
     }
 
-    public static FieldReference build(String field) {
-        Integer index = field.indexOf('.');
+    public static FieldReference build(SObjectType sobjType, String field) {
+        Integer index = field.indexOf('.'); 
         if (index == -1) {
-            return new SimpleFieldReference(field);
+            return new SchemaFieldReference(sobjType.getDescribe().fields.getMap().get(field));
         }
-        return new ChainedFieldReference(field.substring(0, index), build(field.substring(index + 1)));
+        String referenceName = field.substring(0, index);
+        String sobjectName = null;
+        String fieldName = null;
+        if (referenceName.endsWith('__r')) {
+            // Custom object
+            fieldName = referenceName.left(referenceName.length() - 1) + 'c';
+        } else {
+            // Standard object
+            fieldName = referenceName + 'Id';
+        }
+        SObjectField sobjField = sobjType.getDescribe().fields.getMap().get(fieldName);
+
+        return new ChainedFieldReference(referenceName, build(sobjField.getDescribe().getReferenceTo()[0], field.substring(index + 1)));
     }
 
     // concrete implementations
     public virtual class SchemaFieldReference extends FieldReference {
         @TestVisible 
-        Schema.SObjectField field;
+        private SObjectField field;
 
-        public SchemaFieldReference(Schema.SObjectField field) {
+        public SchemaFieldReference(SObjectField field) {
             this.field = field;
         }
 
         public override Object getFrom(SObject record) {
             return record.get(field);
-        }
+        }    
 
-        // override method to get field Type depending on SObject Type for SObjectField type
-        public override Schema.SoapType getFieldType(SObjectType objType) {
-            Schema.SoapType fieldType = objType.getDescribe().fields.getMap().get(field.getDescribe().getName()).getDescribe().getSoapType();
-            return fieldType;
+        public override SObjectField getField() {
+            return field;
         }
 
         public override String toString() {
             return '' + field;
-        }
-    }
-
-    public virtual class SimpleFieldReference extends FieldReference {
-        @TestVisible String field;
-
-        public SimpleFieldReference(String field) {
-            this.field = field;
-        }
-
-        public override Object getFrom(SObject record) {
-            return record.get(field);
-        }
-
-        // override method to get field Type depending on SObject Type for String type
-        public override Schema.SoapType getFieldType(SObjectType objType) {
-            Schema.SoapType fieldType = objType.getDescribe().fields.getMap().get(field).getDescribe().getSoapType();
-            return fieldType;
-        }
-
-        public override String toString() {
-            return field;
         }
     }
 
@@ -104,10 +97,8 @@ public abstract class FieldReference {
             return parent == null ? null : next.getFrom(parent);
         }
 
-        // override method to get field Type depending on SObject Type for SObjectField type
-        public override Schema.SoapType getFieldType(SObjectType objType) {
-            Schema.SoapType fieldType = objType.getDescribe().fields.getMap().get(next.toString()).getDescribe().getSOAPType();
-            return fieldType;
+        public override SObjectField getField() {
+            return next.getField();
         }
 
         public override String toString() {

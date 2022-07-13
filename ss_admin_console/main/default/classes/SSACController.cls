@@ -23,7 +23,6 @@ public inherited sharing class SSACController {
             ((SSACAsyncAction) item).testAsync();
             return 'Test Started';
         }
-
         if (TypeUtils.isBatchable(actionType)) {
             new SSACBatchableAction(actionType).test();
             return 'Test for batch job ' + actionType + ' started';

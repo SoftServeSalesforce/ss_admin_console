@@ -1,16 +1,32 @@
+/**
+ *  Provides a data filtration dividing records to three status: Changed/Duplicated/Ok
+ *  If at least one key field of current record is changed, record is Ok and ready to be inserted
+ *  If key fields are not changed but non key fields changed, record is Changed and ready to be updated
+ *  If data fields are not changed, record is Duplicated and upsertion is skipped
+ */
 public inherited sharing class SSACDataFilter {
+
     private SObjectType sObjectApiName;
     private List<SObject> records;
     private List<FieldReference> keyFields;
     private List<FieldReference> dataFields;
 
+    /**
+     * @param sObjectApiName describes filtered SObject 
+     * @param keyFields contains list of unique key fields
+     * @param datafields contains list of all fields used in filtration
+     */
     public SSACDataFilter(SObjectType sObjectApiName, List<FieldReference> keyFields, List<FieldReference> dataFields) {
         this.sObjectApiName = sObjectApiName;
         this.keyFields = keyFields;
         this.dataFields = dataFields; 
     }
 
-    // filter method for determining new, dublicated and existing records
+    /** filter method for determining OK, Duplicated and Changed records
+     * 
+     *  @param records contains sample data from constants 
+     *  @return list of filtered records with determined status
+     */
     public List<SSACResult> filter(List<SObject> records) {
         List<SSACResult> results = new List<SSACResult>();
         List<SObject> existentRecords = getExistentRecords(records);
@@ -29,7 +45,7 @@ public inherited sharing class SSACDataFilter {
                         matchedNonKeyFields++;
                     } else {
                         results.add(new SSACResult()
-                            .setStatus(DiagnosticConstants.CHANGED_STATUS)
+                            .setStatus(SSACConstants.CHANGED_STATUS)
                             .setRecordKey(recordKeysFingerprint)
                             .setRecordId(existentSObject.Id)
                             .setSObjectApiName(sObjectApiName.getDescribe().getName()));
@@ -38,20 +54,20 @@ public inherited sharing class SSACDataFilter {
                 }
                 if (matchedNonKeyFields == nonKeyFields.size()) {
                     results.add(new SSACResult()
-                        .setStatus(DiagnosticConstants.DUPLICATED_STATUS)
+                        .setStatus(SSACConstants.DUPLICATED_STATUS)
                         .setRecordKey(recordKeysFingerprint)
                         .setSObjectApiName(sObjectApiName.getDescribe().getName()));
                 }
             } else {
                 results.add(new SSACResult()
-                    .setStatus(DiagnosticConstants.OK_STATUS)
+                    .setStatus(SSACConstants.OK_STATUS)
                     .setRecordKey(recordKeysFingerprint)
                     .setSObjectApiName(sObjectApiName.getDescribe().getName()));
             }
         }
         return results;
     }
-
+    
     @TestVisible
     private String generateRecordFingerprint(SObject record) {
         String recordKeysFingerprint = '';
@@ -61,7 +77,11 @@ public inherited sharing class SSACDataFilter {
         return recordKeysFingerprint.removeEnd('_');
     }
 
-
+    /**
+     * generate map with existent records and key fields
+     * @param existentRecords contains list of queried records
+     * @return map with recordFingerprint key and sobject as a value
+     */
     @TestVisible
     private Map<String, SObject> generateExistentRecordsMap(List<SObject> existentRecords) {
         Map<String, SObject> existentMap = new Map<String, SObject>();
@@ -72,7 +92,11 @@ public inherited sharing class SSACDataFilter {
         return existentMap;
     }
 
-    //existent sobject extraction
+    /**
+     * Query records from database with key field values
+     * @param records contains list of sample data
+     * @return list of queried records
+     */
     @TestVisible
     private List<SObject> getExistentRecords(List<SObject> records) {
         List<Set<Object>> keyFieldValues = this.getKeyFieldValues(records);
@@ -89,7 +113,11 @@ public inherited sharing class SSACDataFilter {
         return Database.query(query);
     }
 
-    //formatting map with all fields and its values
+    /**
+     * Retrieving list of key field values from sample data
+     * @param records contains list of sample data
+     * @return list of values of all key fields 
+     */
     @TestVisible
     private List<Set<Object>> getKeyFieldValues(List<SObject> records) {
         List<Set<Object>> constantValues = new List<Set<Object>>();

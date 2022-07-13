@@ -21,7 +21,7 @@ public inherited sharing class SSACLogger {
         List<SSACResult> duplicateResults = this.util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS);
         if (!duplicateResults.isEmpty()) {
             SObjectLoadEvent__e duplicateEvent = new SObjectLoadEvent__e(
-                    Message__c = duplicateResults.size() < DiagnosticConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(duplicateResults) : this.handleAmountOfRecordsProceed(duplicateResults.size()),
+                    Message__c = duplicateResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(duplicateResults) : this.handleAmountOfRecordsProceed(duplicateResults.size()),
                     Message_title__c = this.handleDuplicateMessageTitle(duplicateResults.get(0).sObjectApiName),
                     Message_Type__c = SSACConstants.DUPLICATED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
@@ -31,7 +31,7 @@ public inherited sharing class SSACLogger {
         }
         if (!upsertedResults.isEmpty()) {
             SObjectLoadEvent__e successEvent = new SObjectLoadEvent__e(
-                    Message__c = upsertedResults.size() < DiagnosticConstants.MAX_RECORDS_PER_PAGE ? this.util.idsToString(upsertedResults) : this.handleAmountOfRecordsProceed(upsertedResults.size()),
+                    Message__c = upsertedResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.idsToString(upsertedResults) : this.handleAmountOfRecordsProceed(upsertedResults.size()),
                     Message_Title__c = this.handleSuccessUpsertMessageTitle(upsertedResults.get(0).sObjectApiName),
                     Message_Type__c = SSACConstants.UPSERTED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
@@ -60,7 +60,7 @@ public inherited sharing class SSACLogger {
         List<SSACResult> changedResults = this.util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS);
         if (!duplicateResults.isEmpty()) {
             SObjectLoadEvent__e duplicateEvent = new SObjectLoadEvent__e(
-                    Message__c = duplicateResults.size() < DiagnosticConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(duplicateResults) : this.handleAmountOfRecordsTested(duplicateResults.size()),
+                    Message__c = duplicateResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(duplicateResults) : this.handleAmountOfRecordsTested(duplicateResults.size()),
                     Message_title__c = this.handleDuplicateMessageTitle(duplicateResults.get(0).sObjectApiName),
                     Message_Type__c = SSACConstants.DUPLICATED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
@@ -70,7 +70,7 @@ public inherited sharing class SSACLogger {
         }
         if (!okResults.isEmpty()) {
             SObjectLoadEvent__e validRecordsEvent = new SObjectLoadEvent__e(
-                    Message__c = okResults.size() < DiagnosticConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(okResults) : this.handleAmountOfRecordsTested(okResults.size()),
+                    Message__c = okResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(okResults) : this.handleAmountOfRecordsTested(okResults.size()),
                     Message_title__c = this.handleValidRecordsMessageTitle(okResults.get(0).sObjectApiName),
                     Message_Type__c = SSACConstants.OK_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
@@ -80,7 +80,7 @@ public inherited sharing class SSACLogger {
         }
         if (!changedResults.isEmpty()) {
             SObjectLoadEvent__e changedEvent = new SObjectLoadEvent__e(
-                    Message__c = changedResults.size() < DiagnosticConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(changedResults) : this.handleAmountOfRecordsTested(changedResults.size()),
+                    Message__c = changedResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(changedResults) : this.handleAmountOfRecordsTested(changedResults.size()),
                     Message_title__c = this.handleChangedMessageTitle(changedResults.get(0).sObjectApiName),
                     Message_Type__c = SSACConstants.CHANGED_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,

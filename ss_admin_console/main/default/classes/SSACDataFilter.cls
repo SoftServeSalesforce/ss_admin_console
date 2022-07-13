@@ -7,7 +7,6 @@
 public inherited sharing class SSACDataFilter {
 
     private SObjectType sObjectApiName;
-    private List<SObject> records;
     private List<FieldReference> keyFields;
     private List<FieldReference> dataFields;
 

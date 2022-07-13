@@ -63,7 +63,7 @@ public inherited sharing class SSACProductDataAction extends SSACAsyncAction {
             if (priceBookByName.containsKey(priceBookName)) {
                 allEntries.put(priceBookByName.get(priceBookName).Id,
                     this.getPriceBookEntries(priceBookByName.get(priceBookName), pricebookEntries.get(priceBookName),
-                    productByProductCode)
+                            productByProductCode)
                 );
             }
         }
@@ -117,7 +117,7 @@ public inherited sharing class SSACProductDataAction extends SSACAsyncAction {
     @TestVisible
     private Map<String, PricebookEntry> generateTestEntries(String priceBookName) {
         Map<String, PricebookEntry> entriesMap = ProductConstants.PRICE_BOOK_ENTRY_DATA.get(priceBookName);
-        for(String obj: entriesMap.keySet()) {
+        for (String obj: entriesMap.keySet()) {
             entriesMap.get(obj).putSObject('Pricebook2', new Pricebook2(Name = priceBookName));
             entriesMap.get(obj).putSObject('Product2', new Product2(ProductCode = obj));
             entriesMap.put(obj, entriesMap.get(obj));

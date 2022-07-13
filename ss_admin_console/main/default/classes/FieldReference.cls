@@ -47,7 +47,6 @@ public abstract class FieldReference {
             return new SchemaFieldReference(sobjType.getDescribe().fields.getMap().get(field));
         }
         String referenceName = field.substring(0, index);
-        String sobjectName = null;
         String fieldName = null;
         if (referenceName.endsWith('__r')) {
             // Custom object
@@ -57,7 +56,10 @@ public abstract class FieldReference {
             fieldName = referenceName + 'Id';
         }
         SObjectField sobjField = sobjType.getDescribe().fields.getMap().get(fieldName);
-
+        if (sobjField == null) {
+            throw new IllegalArgumentException(String.format('{0} does not belong to SObject type {1}',
+                    new Object[] { referenceName, sobjType }));
+        }
         return new ChainedFieldReference(referenceName, build(sobjField.getDescribe().getReferenceTo()[0], field.substring(index + 1)));
     }
 
@@ -67,6 +69,9 @@ public abstract class FieldReference {
         private SObjectField field;
 
         public SchemaFieldReference(SObjectField field) {
+            if (field == null){
+                throw new IllegalArgumentException('Field is invalid');
+            }
             this.field = field;
         }
 

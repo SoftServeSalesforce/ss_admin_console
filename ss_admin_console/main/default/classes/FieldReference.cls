@@ -34,64 +34,57 @@ public abstract class FieldReference {
 
     public abstract Object getFrom(sObject record);
 
-    public abstract Schema.SoapType getFieldType(SObjectType objType);
+    public abstract SObjectField getField();
 
     // factory methods
-    public static FieldReference build(Schema.SObjectField field) {
+    public static FieldReference build(SObjectField field) {
         return new SchemaFieldReference(field);
     }
 
-    public static FieldReference build(String field) {
-        Integer index = field.indexOf('.');
+    public static FieldReference build(SObjectType sobjType, String field) {
+        Integer index = field.indexOf('.'); 
         if (index == -1) {
-            return new SimpleFieldReference(field);
+            return new SchemaFieldReference(sobjType.getDescribe().fields.getMap().get(field));
         }
-        return new ChainedFieldReference(field.substring(0, index), build(field.substring(index + 1)));
+        String referenceName = field.substring(0, index);
+        String fieldName = null;
+        if (referenceName.endsWith('__r')) {
+            // Custom object
+            fieldName = referenceName.left(referenceName.length() - 1) + 'c';
+        } else {
+            // Standard object
+            fieldName = referenceName + 'Id';
+        }
+        SObjectField sobjField = sobjType.getDescribe().fields.getMap().get(fieldName);
+        if (sobjField == null) {
+            throw new IllegalArgumentException(String.format('{0} does not belong to SObject type {1}',
+                    new Object[] { referenceName, sobjType }));
+        }
+        return new ChainedFieldReference(referenceName, build(sobjField.getDescribe().getReferenceTo()[0], field.substring(index + 1)));
     }
 
     // concrete implementations
     public virtual class SchemaFieldReference extends FieldReference {
         @TestVisible 
-        Schema.SObjectField field;
+        private SObjectField field;
 
-        public SchemaFieldReference(Schema.SObjectField field) {
+        public SchemaFieldReference(SObjectField field) {
+            if (field == null){
+                throw new IllegalArgumentException('Field is invalid');
+            }
             this.field = field;
         }
 
         public override Object getFrom(SObject record) {
             return record.get(field);
-        }
+        }    
 
-        // override method to get field Type depending on SObject Type for SObjectField type
-        public override Schema.SoapType getFieldType(SObjectType objType) {
-            Schema.SoapType fieldType = objType.getDescribe().fields.getMap().get(field.getDescribe().getName()).getDescribe().getSoapType();
-            return fieldType;
+        public override SObjectField getField() {
+            return field;
         }
 
         public override String toString() {
             return '' + field;
-        }
-    }
-
-    public virtual class SimpleFieldReference extends FieldReference {
-        @TestVisible String field;
-
-        public SimpleFieldReference(String field) {
-            this.field = field;
-        }
-
-        public override Object getFrom(SObject record) {
-            return record.get(field);
-        }
-
-        // override method to get field Type depending on SObject Type for String type
-        public override Schema.SoapType getFieldType(SObjectType objType) {
-            Schema.SoapType fieldType = objType.getDescribe().fields.getMap().get(field).getDescribe().getSoapType();
-            return fieldType;
-        }
-
-        public override String toString() {
-            return field;
         }
     }
 
@@ -109,10 +102,8 @@ public abstract class FieldReference {
             return parent == null ? null : next.getFrom(parent);
         }
 
-        // override method to get field Type depending on SObject Type for SObjectField type
-        public override Schema.SoapType getFieldType(SObjectType objType) {
-            Schema.SoapType fieldType = objType.getDescribe().fields.getMap().get(next.toString()).getDescribe().getSOAPType();
-            return fieldType;
+        public override SObjectField getField() {
+            return next.getField();
         }
 
         public override String toString() {

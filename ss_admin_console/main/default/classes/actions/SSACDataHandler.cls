@@ -98,12 +98,11 @@ public inherited sharing class SSACDataHandler {
         return result;
     }
 
-    public Map<String, SObject> getValidRecords(List<SSACSObjectWrapper> wrappers,
-    Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {
+    public Map<String, SObject> getValidRecords(List<SSACSObjectWrapper> wrappers, 
+           Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {
 
         Map<String, Map<String, Id>> parentIds = this.getParentIds(wrappers, this.getParentFields(wrappers),
-        referenceFieldToKeyFields, referenceFieldToSObjectName);
-
+                referenceFieldToKeyFields, referenceFieldToSObjectName);
         Map<String, SObject> result = new Map<String, SObject>();
         Integer counter = 0;
         for (SSACSObjectWrapper wrapper : wrappers) {
@@ -113,15 +112,15 @@ public inherited sharing class SSACDataHandler {
                 if (this.allParentsExist(wrapper, parentIds)) {
                     SObject sobj = wrapper.sobj;
                     for (String parentFieldName : parentIds.keySet()) {
-                        sobj.put(parentFieldName, parentIds.get(parentFieldName).get(wrapper.keyByReferenceFields.get(parentFieldName)));
+                        String parentId = parentIds.get(parentFieldName).get(wrapper.keyByReferenceFields.get(parentFieldName));
+                        sobj.put(parentFieldName, parentId);
                         Schema.SObjectType sobjType  = Schema.getGlobalDescribe().get(referenceFieldToSObjectName.get(parentFieldName));
                         SObject newSObj = sobjType.newSObject();
                         newSObj.put(referenceFieldToKeyFields.get(parentFieldName), wrappers.get(counter).keyByReferenceFields.get(parentFieldName));
-                        newSObj.put('Id', parentIds.get(parentFieldName).get(wrapper.keyByReferenceFields.get(parentFieldName)));
+                        newSObj.Id = parentId;
                         sobj.putSObject(referenceFieldToSObjectName.get(parentFieldName), newSObj);
-
                     }
-			        counter = wrappers.size() - 1 > counter ? ++counter : 0;
+                    counter = wrappers.size() - 1 > counter ? ++counter : 0;
                     result.put(wrapper.key, sobj);
                 }
             }

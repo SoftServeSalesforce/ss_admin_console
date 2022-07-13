@@ -78,12 +78,12 @@ public inherited sharing class SSACDataFilter {
         List<Set<Object>> keyFieldValues = this.getKeyFieldValues(records);
 
         Integer fieldsNumber = keyFieldValues.size();
-        SetConverter sc = new SetConverter();
-        Object pr0 = (fieldsNumber > 0) ?  sc.toSetOfType(keyFields[0], sObjectApiName, keyFieldValues[0]) : null;
-        Object pr1 = (fieldsNumber > 1) ?  sc.toSetOfType(keyFields[1], sObjectApiName, keyFieldValues[1]) : null;
-        Object pr2 = (fieldsNumber > 2) ?  sc.toSetOfType(keyFields[2], sObjectApiName, keyFieldValues[2]) : null;
-        Object pr3 = (fieldsNumber > 3) ?  sc.toSetOfType(keyFields[3], sObjectApiName, keyFieldValues[3]) : null;
-        Object pr4 = (fieldsNumber > 4) ?  sc.toSetOfType(keyFields[4], sObjectApiName, keyFieldValues[4]) : null;
+        SetUtils sc = new SetUtils();
+        Object pr0 = (fieldsNumber > 0) ?  sc.toSetOfType(keyFields[0], keyFieldValues[0]) : null;
+        Object pr1 = (fieldsNumber > 1) ?  sc.toSetOfType(keyFields[1], keyFieldValues[1]) : null;
+        Object pr2 = (fieldsNumber > 2) ?  sc.toSetOfType(keyFields[2], keyFieldValues[2]) : null;
+        Object pr3 = (fieldsNumber > 3) ?  sc.toSetOfType(keyFields[3], keyFieldValues[3]) : null;
+        Object pr4 = (fieldsNumber > 4) ?  sc.toSetOfType(keyFields[4], keyFieldValues[4]) : null;
 
         String query = this.buildQuery();
         return Database.query(query);

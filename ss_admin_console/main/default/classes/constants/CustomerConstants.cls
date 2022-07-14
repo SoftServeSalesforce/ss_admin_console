@@ -1,19 +1,19 @@
-public with sharing class CustomerConstants {
+public inherited sharing class CustomerConstants {
     public static final String NAME_API_NAME = 'Name';
     public static final String ACCOUNT_ID_API_NAME = 'AccountId';
     public static final String EMAIL_API_NAME = 'Email';
 
-    public static final String ACCOUNT_API_NAME = 'Account';
-    public static final String CONTACT_API_NAME = 'Contact';
+    public static final SObjectType ACCOUNT_API_NAME = Schema.Account.getSObjectType();
+    public static final SObjectType CONTACT_API_NAME = Schema.Contact.getSObjectType();
 
-    public static final List<String> EXTERNAL_IDS_API_NAMES_ACCOUNT = new List<String>{'Name'};
-	public static final List<String> ALL_FIELDS_API_NAMES_ACCOUNT = new List<String>{'Name'};
+    public static final List<SObjectField> ACCOUNT_KEYFIELDS = new List<SObjectField>{Account.Name};
+    public static final List<SObjectField> ACCOUNT_DATAFIELDS = new List<SObjectField>{Account.Name};
 
-    public static final List<String> EXTERNAL_IDS_API_NAMES_CONTACT = new List<String> {'Email', 'LastName'};
-	public static final List<String> ALL_FIELDS_API_NAMES_CONTACT = new List<String> {'Email', 'LastName', 'FirstName'};
+    public static final List<SObjectField> CONTACT_KEYFIELDS = new List<SObjectField>{Contact.Email, Contact.LastName};
+    public static final List<SObjectField> CONTACT_DATAFIELDS = new List<SObjectField>{Contact.Email, Contact.LastName, Contact.FirstName};
  
     public static Map<String, Account> ACCOUNT_DATA = new Map<String, Account> {
-            'Social Software' => new Account(Name = 'Test Software'),
+            'Social Software' => new Account(Name = 'Social Software'),
             'Adept Software' => new Account(Name = 'Adept Software'),
             'Boss Software' => new Account(Name = 'Boss Software'),
             'Scope Software' => new Account(Name = 'Scope Software'),
@@ -51,8 +51,8 @@ public with sharing class CustomerConstants {
             'OliviaSmith@testmail.com' => new Contact(LastName = 'Smith', FirstName = 'Olivia', Email = 'OliviaSmith@testmail.com'),
             'EmmaBrown@testmail.com' => new Contact(LastName = 'Brown', FirstName = 'Emma', Email = 'EmmaBrown@testmail.com'),
             'AmeliaWilson@testmail.com' => new Contact(LastName = 'Wilson', FirstName = 'Amelia', Email = 'AmeliaWilson@testmail.com'),
-            'AvaThomson@testmail.com' => new Contact(LastName = 'Test', FirstName = 'Ava', Email = 'AvaThomson@testmail.com'),
-            'SophiaRobertson@testmail.com' => new Contact(LastName = 'Robertson', FirstName = 'Test', Email = 'SophiaRobertson@testmail.com'),
+            'AvaThomson@testmail.com' => new Contact(LastName = 'Thomson', FirstName = 'Ava', Email = 'AvaThomson@testmail.com'),
+            'SophiaRobertson@testmail.com' => new Contact(LastName = 'Robertson', FirstName = 'Sophia', Email = 'SophiaRobertson@testmail.com'),
             'CharlotteCampbell@testmail.com' => new Contact(LastName = 'Campbell', FirstName = 'Charlotte', Email = 'CharlotteCampbell@testmail.com'),
             'IsabellaStewart@testmail.com' => new Contact(LastName = 'Stewart', FirstName = 'Isabella', Email = 'IsabellaStewart@testmail.com'),
             'MiaAnderson@testmail.com' => new Contact(LastName = 'Anderson', FirstName = 'Mia', Email = 'MiaAnderson@testmail.com'),

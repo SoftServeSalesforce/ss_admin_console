@@ -1,4 +1,4 @@
-public with sharing class SSACBatchableAction implements ISSACAction {
+public inherited sharing class SSACBatchableAction implements ISSACAction {
 
     private String className;
     private SSACLogger logger;

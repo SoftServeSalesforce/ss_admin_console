@@ -1,5 +1,5 @@
 @IsTest
-public with sharing class SSACUtilTest {
+public inherited sharing class SSACUtilTest {
     @IsTest
     static void testJobSettingPositive() {
         Job_Setting__mdt testMDT = new Job_Setting__mdt();

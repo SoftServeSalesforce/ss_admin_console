@@ -1,5 +1,5 @@
 @IsTest
-public with sharing class SSACControllerTest {
+public inherited sharing class SSACControllerTest {
     
     @IsTest
     static void testProductData(){

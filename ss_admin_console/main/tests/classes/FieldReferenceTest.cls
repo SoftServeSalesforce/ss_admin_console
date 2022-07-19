@@ -1,102 +1,96 @@
-@IsTest
-public inherited sharing class FieldReferenceTest {
-
-    @TestSetup static void setup() {
-        Account acc = new Account(Name = 'TestAcct');
-        insert acc;
-        Contact cont = new Contact(FirstName='Test', LastName='Test', Accountid= acc.id);
-		insert cont;      
-    }
-    
     @IsTest
-    static void testSchemaGetField(){
+    public inherited sharing class FieldReferenceTest {
+
+    @IsTest
+    static void testSchemaGetField() {
         FieldReference field = FieldReference.build(Account.Name);
 
         Test.startTest();
         SObjectField sobjField = field.getField();
         Test.stopTest();
 
-        System.assertEquals(sobjField, Account.Name, 'Method must return SObjectField');
+        System.assertEquals(Account.Name, sobjField, 'Method must return SObjectField');
     }
 
     @IsTest
-    static void testSchemaGetFrom(){
+    static void testSchemaGetFrom() {
         FieldReference field = FieldReference.build(Account.Name);
-        SObject sobj = [SELECT ID, Name FROM Account LIMIT 1];
+        Account acc = new Account(Name = 'TestAcct');
 
         Test.startTest();
-        Object obj = field.getFrom(sobj);
+        Object obj = field.getFrom(acc);
         Test.stopTest();
 
-        System.assertEquals(obj, 'TestAcct', 'Method must return field value of sobject');
+        System.assertEquals(acc.Name, obj, 'Method must return field value of sobject');
     }
 
     @IsTest
-    static void testSchemaToString(){
+    static void testSchemaToString() {
         FieldReference field = FieldReference.build(Account.Name);
-        SObject sobj = [SELECT Name FROM Account LIMIT 1];
 
         Test.startTest();
         String strField = field.toString();
         Test.stopTest();
 
-        System.assertEquals(strField, 'Name', 'Method must return field name sobject');
+        System.assertEquals(Account.Name.getDescribe().getName(), strField);
     }
 
     @IsTest
-    static void testSchemaInvalidField(){
+    static void testSchemaInvalidField() {
         Test.startTest();
         try {
             FieldReference field = FieldReference.build(Schema.Account.getSObjectType(), 'Invalid Field');
-        } catch (Exception e) {
+            System.assert(false, 'IllegalArgumentException is expected here');
+        } catch (IllegalArgumentException e) {
             System.assertEquals('Field is invalid', e.getMessage());
         }
         Test.stopTest();
     }
 
     @IsTest 
-    static void testChainedGetField(){
+    static void testChainedGetField() {
         FieldReference field = FieldReference.build(Schema.Opportunity.getSObjectType(), 'Account.Owner.Name');
-       
+        
         Test.startTest();
         SObjectField sobjField = field.getField();
         Test.stopTest();
 
-        System.assertEquals(sobjField, User.Name, 'Method must return SObjectField');
+        System.assertEquals(User.Name, sobjField, 'Method must return SObjectField');
     }
 
     @IsTest 
-    static void testChainedInvalidField(){
+    static void testChainedInvalidField() {
         Test.startTest();
         try {
             FieldReference field = FieldReference.build(Schema.Account.getSObjectType(), 
                                                     'Account.Name');
-        } catch (Exception e) {
-            System.assertEquals(e.getTypeName(), 'System.IllegalArgumentException');
+            System.assert(false, 'IllegalArgumentException is expected here');
+        } catch (IllegalArgumentException  e) {
+            System.assertEquals('System.IllegalArgumentException', e.getTypeName());
         }
         Test.stopTest();
     }
 
     @IsTest
-    static void testChainedGetFrom(){
+    static void testChainedGetFrom() {
         FieldReference field = FieldReference.build(Schema.Contact.getSObjectType(), 'Account.Name');
-        SObject sobj = [SELECT ID, Account.Name FROM Contact LIMIT 1];
+        Contact cont = new Contact(FirstName='Test', LastName='Test', Account=new Account(Name = 'TestAcct'));
 
         Test.startTest();
-        Object obj = field.getFrom(sobj);
+        Object obj = field.getFrom(cont);
         Test.stopTest();
 
-        System.assertEquals(obj, 'TestAcct', 'Method must return field value of sobject');
+        System.assertEquals(cont.Account.Name, obj, 'Method must return field value of sobject');
     }
 
     @IsTest
-    static void testChainedToString(){
+    static void testChainedToString() {
         FieldReference field = FieldReference.build(Schema.Contact.getSObjectType(), 'Account.Name');
 
         Test.startTest();
         String strField = field.toString();
         Test.stopTest();
 
-        System.assertEquals(strField, 'Account.Name', 'Method must return field name sobject');
+        System.assertEquals('Account.Name', strField, 'Method must return field name sobject');
     }
 }

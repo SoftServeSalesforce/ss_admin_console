@@ -2,20 +2,20 @@
 public with sharing class SSACDataFilterTest {
     
     @isTest
-    public static void testFilterForContactPositive() {
+    static void testFilterForContactPositive() {
         new SSACTestUtils().insertCustomerData();
         Test.startTest();
         List<SSACResult> filteredRecords = new SSACSObjectAction(CustomerConstants.CONTACT_API_NAME, CustomerConstants.CONTACT_DATA.values(), CustomerConstants.CONTACT_KEYFIELDS, CustomerConstants.CONTACT_DATAFIELDS).test();
         Test.stopTest();
         System.assert(filteredRecords.size() > 0, 'Filter method is not working properly');
         System.assert(filteredRecords.get(0).status != null, 'Status is null');
-        System.assertEquals(filteredRecords.get(0).status, 'OK', 'Filter status is not correct');
-        System.assertEquals(filteredRecords.get(1).status, 'CHANGED', 'Filter status is not correct');
-        System.assertEquals(filteredRecords.get(2).status, 'DUPLICATED', 'Filter status is not correct');
+        System.assertEquals('OK', filteredRecords.get(0).status, 'Filter status is not correct');
+        System.assertEquals('CHANGED', filteredRecords.get(1).status, 'Filter status is not correct');
+        System.assertEquals('DUPLICATED', filteredRecords.get(2).status, 'Filter status is not correct');
     }
 
     @isTest
-    public static void testFilterForContactNegative() {
+    static void testFilterForContactNegative() {
         Test.startTest();
         List<SSACResult> filteredRecords = new SSACSObjectAction(CustomerConstants.CONTACT_API_NAME, null, CustomerConstants.CONTACT_KEYFIELDS, CustomerConstants.CONTACT_DATAFIELDS).test();
         Test.stopTest();
@@ -23,7 +23,7 @@ public with sharing class SSACDataFilterTest {
     }
     
     @isTest
-    public static void testGetExistentContactRecordsPositive() {
+    static void testGetExistentContactRecordsPositive() {
         List<FieldReference> keyFields = new List<FieldReference> {FieldReference.build(Contact.LastName), FieldReference.build(Contact.Email)};
         List<FieldReference> dataFields = new List<FieldReference> {FieldReference.build(Contact.LastName), FieldReference.build(Contact.FirstName), FieldReference.build(Contact.Email)};
         new SSACTestUtils().insertCustomerData();
@@ -34,15 +34,15 @@ public with sharing class SSACDataFilterTest {
     }
 
     @isTest
-    public static void testGetExistentContactRecordsNegative() {
+    static void testGetExistentContactRecordsNegative() {
         List<FieldReference> keyFields = new List<FieldReference> {FieldReference.build(Contact.LastName), FieldReference.build(Contact.Email)};
         List<FieldReference> dataFields = new List<FieldReference> {FieldReference.build(Contact.LastName), FieldReference.build(Contact.FirstName), FieldReference.build(Contact.Email)};
         new SSACTestUtils().insertCustomerData();
         Test.startTest();
         try {
-        List<SObject> queriedRecords = new SSACDataFilter(CustomerConstants.ACCOUNT_API_NAME, keyFields, dataFields).getExistentRecords(CustomerConstants.CONTACT_DATA.values());
-        } catch (QueryException e) {
-            System.assert(!String.isEmpty(e.getMessage()), 'Exception is not catched');
+            List<SObject> queriedRecords = new SSACDataFilter(CustomerConstants.ACCOUNT_API_NAME, keyFields, dataFields).getExistentRecords(CustomerConstants.CONTACT_DATA.values());
+        } catch (Exception e) {
+            System.assertEquals('System.QueryException', e.getTypeName());
         }
         Test.stopTest();
     }

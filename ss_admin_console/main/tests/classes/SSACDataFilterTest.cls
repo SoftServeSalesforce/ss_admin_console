@@ -1,4 +1,4 @@
-@isTest
+@IsTest
 public with sharing class SSACDataFilterTest {
 
     public static void insertCustomerData() {

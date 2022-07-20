@@ -7,7 +7,7 @@ public inherited sharing class SetUtilsTest {
         Set<Object> objs = new Set<Object>{'Test1', 'Test2'};
 
         Test.startTest();
-        Object result = SetUtils.toSetOfType(field,objs);
+        Object result = SetUtils.toSetOfType(field, objs);
         Test.stopTest();
 
         System.assert(result instanceof Set<String>, 'Method must return set of strings');
@@ -20,7 +20,7 @@ public inherited sharing class SetUtilsTest {
 
         Test.startTest();
         try {
-            Object result = SetUtils.toSetOfType(field,objs);
+            Object result = SetUtils.toSetOfType(field, objs);
             System.assert(false, 'TypeException is expected here');
         } catch (Exception ex) {
             System.assert(e instanceof TypeException);
@@ -46,7 +46,7 @@ public inherited sharing class SetUtilsTest {
         Set<Object> objs = new Set<Object>{1, 2, 3};
 
         Test.startTest();
-        Object result = SetUtils.toSetOfType(field,objs);
+        Object result = SetUtils.toSetOfType(field, objs);
         Test.stopTest();
 
         System.assert(result instanceof Set<Integer>, 'Method must return set of integers');
@@ -58,7 +58,7 @@ public inherited sharing class SetUtilsTest {
         Set<Object> objs = new Set<Object>{Date.newInstance(1960, 2, 17)};
 
         Test.startTest();
-        Object result = SetUtils.toSetOfType(field,objs);
+        Object result = SetUtils.toSetOfType(field, objs);
         Test.stopTest();
 
         System.assert(result instanceof Set<Date>, 'Method must return set of dates');
@@ -70,7 +70,7 @@ public inherited sharing class SetUtilsTest {
         Set<Object> objs = new Set<Object>{Datetime.newInstance(2020, 2, 17)};
 
         Test.startTest();
-        Object result = SetUtils.toSetOfType(field,objs);
+        Object result = SetUtils.toSetOfType(field, objs);
         Test.stopTest();
 
         System.assert(result instanceof Set<Datetime>, 'Method must return set of datetimes');
@@ -82,7 +82,7 @@ public inherited sharing class SetUtilsTest {
         Set<Object> objs = new Set<Object>{true};
 
         Test.startTest();
-        Object result = SetUtils.toSetOfType(field,objs);
+        Object result = SetUtils.toSetOfType(field, objs);
         Test.stopTest();
 
         System.assert(result instanceof Set<Boolean>, 'Method must return set of booleans');

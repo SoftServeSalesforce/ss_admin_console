@@ -120,9 +120,9 @@ public inherited sharing class SSACDataHandler {
                         newSObj.Id = parentId;
                         sobj.putSObject(referenceFieldToSObjectName.get(parentFieldName), newSObj);
                     }
-                    counter = wrappers.size() - 1 > counter ? ++counter : 0;
                     result.put(wrapper.key, sobj);
                 }
+                counter = wrappers.size() - 1 > counter ? ++counter : 0;
             }
         }
         return result;

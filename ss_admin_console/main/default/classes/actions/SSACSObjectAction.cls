@@ -2,6 +2,7 @@ public inherited sharing class SSACSObjectAction implements ISSACAction {
     private SSACLogger logger;
     private SObjectType sObjectApiName;
     private List<SObject> records;
+    private Map<String, SObject> invalidRecords;
     private Boolean generateTestLog;
 
     private List<FieldReference> keyFields = new List<FieldReference>();
@@ -36,12 +37,31 @@ public inherited sharing class SSACSObjectAction implements ISSACAction {
             this.dataFields.add(FieldReference.build(sObjectApiName, field));
         }
     }
+    
+    public SSACSObjectAction(SObjectType sObjectApiName, List<SObject> records, Map<String, SObject> invalidRecords, List<String> keyFields, List<String> dataFields) {
+        this.logger = new SSACLogger();
+        this.records = records;
+        this.invalidRecords = invalidRecords;
+        this.sObjectApiName = sObjectApiName;
+        this.generateTestLog = true;
+
+        for (String field : keyFields) {
+            this.keyFields.add(FieldReference.build(sObjectApiName, field));
+        }
+
+        for (String field : dataFields) {
+            this.dataFields.add(FieldReference.build(sObjectApiName, field));
+        }
+    } 
 
     public List<SSACResult> test() {
         if (this.records == null || this.records.isEmpty()) {
             return new List<SSACResult>();
         }
         List<SSACResult> results = new SSACDataFilter(this.sObjectApiName, this.keyFields, this.dataFields).filter(this.records);
+        if (this.invalidRecords != null) {
+            results.addAll(generateInvalidResults());
+        }
         if (this.generateTestLog) {
             logger.generateTestLog(results);
         }
@@ -62,6 +82,7 @@ public inherited sharing class SSACSObjectAction implements ISSACAction {
             results = util.generateDiagnosticResultsUpsert(upsertResults, this.sObjectApiName);
         } else {
             results = util.getResultsByStatus(filterResults, SSACConstants.DUPLICATED_STATUS);
+            results.addAll(util.getResultsByStatus(filterResults, SSACConstants.INVALID_STATUS));
         }
         this.logger.generateLoadLog(results);
         return results;
@@ -95,5 +116,17 @@ public inherited sharing class SSACSObjectAction implements ISSACAction {
         allResults.addAll(okResults);
         allResults.addAll(changedResults);
         return allResults;
+    }
+
+    @TestVisible
+    private List<SSACResult> generateInvalidResults() {
+        List<SSACResult> results = new List<SSACResult>();
+        for (String key : invalidRecords.keySet()) {
+            results.add(new SSACResult()
+                        .setStatus(SSACConstants.INVALID_STATUS)
+                        .setRecordKey(key)
+                        .setSObjectApiName(sObjectApiName.getDescribe().getName()));
+        }
+        return results;
     }
 }

@@ -109,11 +109,7 @@ public inherited sharing class SSACDataFilter {
         Object pr4 = (fieldsNumber > 4) ?  sc.toSetOfType(keyFields[4], keyFieldValues[4]) : null;
 
         String query = this.buildQuery();
-        try {
-            return Database.query(query);
-        } catch (QueryException e) {
-            throw new QueryException(e.getMessage());
-        }
+        return Database.query(query);
     }
 
     /**

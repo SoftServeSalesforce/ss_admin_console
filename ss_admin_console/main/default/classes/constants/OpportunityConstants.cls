@@ -127,7 +127,7 @@ public inherited sharing class OpportunityConstants {
 
     public final static List<SSACSObjectWrapper> OPPORTUNITY_ITEM_DATA = new List<SSACSObjectWrapper>{
         new SSACSObjectWrapper('TEST-0001', new OpportunityLineItem(TotalPrice = 578, Quantity = 85.00), new Map<String, String>{
-                'Product2Id' => 'TEST-0001', 'OpportunityId' => 'OPP_TEST-0001'
+                'Product2Id' => 'TEST-000154', 'OpportunityId' => 'OPP_TEST-0001'
         }),
         new SSACSObjectWrapper('TEST-0002', new OpportunityLineItem(TotalPrice = 442, Quantity = 91.00), new Map<String, String>{
                 'Product2Id' => 'TEST-0002', 'OpportunityId' => 'OPP_TEST-0001'

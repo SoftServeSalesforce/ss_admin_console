@@ -1,5 +1,5 @@
-    @IsTest
-    public inherited sharing class SetUtilsTest {
+@IsTest
+public inherited sharing class SetUtilsTest {
 
     @IsTest
     static void testSetOfStrings() {
@@ -7,10 +7,10 @@
         Set<Object> objs = new Set<Object>{'Test1', 'Test2'};
 
         Test.startTest();
-        Object result = new SetUtils().toSetOfType(field,objs);
+        Object result = SetUtils.toSetOfType(field, objs);
         Test.stopTest();
 
-        System.assertEquals(true, result instanceof Set<String>, 'Method must return set of strings');
+        System.assert(result instanceof Set<String>, 'Method must return set of strings');
     }
 
     @IsTest
@@ -20,10 +20,10 @@
 
         Test.startTest();
         try {
-            Object result = new SetUtils().toSetOfType(field,objs);
+            Object result = SetUtils.toSetOfType(field, objs);
             System.assert(false, 'TypeException is expected here');
-        } catch (TypeException ex) {
-            System.assertEquals('Invalid conversion from runtime type Integer to String', ex.getMessage());
+        } catch (Exception ex) {
+            System.assert(e instanceof TypeException);
         }  
         Test.stopTest();
     }
@@ -34,10 +34,10 @@
         Set<Object> objs = new Set<Object>{1.2, 2.3};
 
         Test.startTest();
-        Object result = new SetUtils().toSetOfType(field,objs);
+        Object result = SetUtils.toSetOfType(field, objs);
         Test.stopTest();
 
-        System.assertEquals(true, result instanceof Set<Double>, 'Method must return set of doubles');
+        System.assert(result instanceof Set<Double>, 'Method must return set of doubles');
     }
 
     @IsTest
@@ -46,10 +46,10 @@
         Set<Object> objs = new Set<Object>{1, 2, 3};
 
         Test.startTest();
-        Object result = new SetUtils().toSetOfType(field,objs);
+        Object result = SetUtils.toSetOfType(field, objs);
         Test.stopTest();
 
-        System.assertEquals(true, result instanceof Set<Integer>, 'Method must return set of integers');
+        System.assert(result instanceof Set<Integer>, 'Method must return set of integers');
     }
 
     @IsTest
@@ -58,10 +58,10 @@
         Set<Object> objs = new Set<Object>{Date.newInstance(1960, 2, 17)};
 
         Test.startTest();
-        Object result = new SetUtils().toSetOfType(field,objs);
+        Object result = SetUtils.toSetOfType(field, objs);
         Test.stopTest();
 
-        System.assertEquals(true, result instanceof Set<Date>, 'Method must return set of dates');
+        System.assert(result instanceof Set<Date>, 'Method must return set of dates');
     }
 
     @IsTest
@@ -70,10 +70,10 @@
         Set<Object> objs = new Set<Object>{Datetime.newInstance(2020, 2, 17)};
 
         Test.startTest();
-        Object result = new SetUtils().toSetOfType(field,objs);
+        Object result = SetUtils.toSetOfType(field, objs);
         Test.stopTest();
 
-        System.assertEquals(true, result instanceof Set<Datetime>, 'Method must return set of datetimes');
+        System.assert(result instanceof Set<Datetime>, 'Method must return set of datetimes');
     }
 
     @IsTest
@@ -82,9 +82,9 @@
         Set<Object> objs = new Set<Object>{true};
 
         Test.startTest();
-        Object result = new SetUtils().toSetOfType(field,objs);
+        Object result = SetUtils.toSetOfType(field, objs);
         Test.stopTest();
 
-        System.assertEquals(true, result instanceof Set<Boolean>, 'Method must return set of booleans');
+        System.assert(result instanceof Set<Boolean>, 'Method must return set of booleans');
     }
 }

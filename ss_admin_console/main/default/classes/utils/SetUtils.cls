@@ -9,7 +9,7 @@ public inherited sharing class SetUtils {
      * @param field describes FieldReference to a field of SObject
      * @return set of elements of certain type
      */
-    public Object toSetOfType(FieldReference field, Set<Object> objects) {
+    public static Object toSetOfType(FieldReference field, Set<Object> objects) {
         Schema.SoapType fieldType = field.getField().getDescribe().getSoapType();
         if (fieldType == Schema.SoapType.DOUBLE) {
             return toSetOfDouble(objects);
@@ -33,7 +33,7 @@ public inherited sharing class SetUtils {
      * @param so contains objects to be converted
      * @return set containing converted objects to strings
      */
-    public Set<String> toSetOfString(Set<Object> so) {
+    public static Set<String> toSetOfString(Set<Object> so) {
         Set<String> ss = new Set<String>();
         for (Object o : so) {
             ss.add((String) o);
@@ -46,7 +46,7 @@ public inherited sharing class SetUtils {
      * @param so contains objects to be converted
      * @return set containing converted objects to doubles
      */
-    public Set<Double> toSetOfDouble(Set<Object> so) {
+    public static Set<Double> toSetOfDouble(Set<Object> so) {
         Set<Double> ss = new Set<Double>();
         for (Object o : so) {
             ss.add((Double) o);
@@ -59,7 +59,7 @@ public inherited sharing class SetUtils {
      * @param so contains objects to be converted
      * @return set containing converted objects to integers
      */
-    public Set<Integer> toSetOfInteger(Set<Object> so) {
+    public static Set<Integer> toSetOfInteger(Set<Object> so) {
         Set<Integer> ss = new Set<Integer>();
         for (Object o : so) {
             ss.add((Integer) o);
@@ -72,7 +72,7 @@ public inherited sharing class SetUtils {
      * @param so contains objects to be converted
      * @return set containing converted objects to datetimes
      */
-    public Set<Datetime> toSetOfDatetime(Set<Object> so) {
+    public static Set<Datetime> toSetOfDatetime(Set<Object> so) {
         Set<Datetime> ss = new Set<Datetime>();
         for (Object o : so) {
             ss.add((Datetime) o);
@@ -85,7 +85,7 @@ public inherited sharing class SetUtils {
      * @param so contains objects to be converted
      * @return set containing converted objects to dates
      */
-    public Set<Date> toSetOfDate(Set<Object> so) {
+    public static Set<Date> toSetOfDate(Set<Object> so) {
         Set<Date> ss = new Set<Date>();
         for (Object o : so) {
             ss.add((Date) o);
@@ -98,7 +98,7 @@ public inherited sharing class SetUtils {
      * @param so contains objects to be converted
      * @return set containing converted objects to times
      */
-    public Set<Time> toSetOfTime(Set<Object> so) {
+    public static Set<Time> toSetOfTime(Set<Object> so) {
         Set<Time> ss = new Set<Time>();
         for (Object o : so) {
             ss.add((Time) o);
@@ -111,7 +111,7 @@ public inherited sharing class SetUtils {
      * @param so contains objects to be converted
      * @return set containing converted objects to booleans
      */
-    public Set<Boolean> toSetOfBoolean(Set<Object> so) {
+    public static Set<Boolean> toSetOfBoolean(Set<Object> so) {
         Set<Boolean> ss = new Set<Boolean>();
         for (Object o : so) {
             ss.add((Boolean) o);

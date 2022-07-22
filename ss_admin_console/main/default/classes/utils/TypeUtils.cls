@@ -1,4 +1,4 @@
-public with sharing class TypeUtils {
+public inherited sharing class TypeUtils {
     public static Boolean isBatchable(String typeName) {
         return isBatchable(Type.forName(typeName));
     }

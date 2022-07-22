@@ -1,4 +1,4 @@
-public with sharing class SSACSObjectWrapper {
+public inherited sharing class SSACSObjectWrapper {
     public String key;
     public SObject sobj;
     public Map<String, String> keyByReferenceFields {get; set;}

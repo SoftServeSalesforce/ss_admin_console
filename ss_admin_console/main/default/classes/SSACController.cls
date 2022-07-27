@@ -5,10 +5,6 @@ public inherited sharing class SSACController {
             SSACConstants.CONTACTS_DATA => SampleDataSuppliers.getContactSampleData()
     };
 
-    // private static Map<String, DataSupplier> prikol = new Map<String, DataSupplier>{
-    //     'ACCOUNTS DATA' => new BaseDataFeeder(SampleDataSuppliers.getAccountSampleData(), CustomerConstants.ACCOUNT_KEYFIELDS, CustomerConstants.ACCOUNT_KEYFIELDS, new SystemFeedLogger())
-    // };
-
     @AuraEnabled
     public static List<String> getDataTypes() {
         return new List<String>(actions.keySet());
@@ -24,7 +20,7 @@ public inherited sharing class SSACController {
         DataSupplier ds = actions.get(actionType);
         BaseDataFeeder bdf = new BaseDataFeeder(ds, ds.getKeyFields(), ds.getDataFields(), new SystemFeedLogger());
         AsyncDataFeeder adf = new AsyncDataFeeder(bdf, new SystemFeedLogger());
-        adf.feed(false);
+        ((AsyncDataFeeder) adf).feed(false);
         new SystemFeedLogger().publishResultLog(actionType, 'Test');
         // if (TypeUtils.isBatchable(actionType)) {
         //     new SSACBatchableAction(actionType).test();
@@ -41,7 +37,10 @@ public inherited sharing class SSACController {
     public static String execute(String actionType) {
         DataSupplier ds = actions.get(actionType);
         BaseDataFeeder bdf = new BaseDataFeeder(ds, ds.getKeyFields(), ds.getDataFields(), new SystemFeedLogger());
-        bdf.feed(true);
+        AsyncDataFeeder adf = new AsyncDataFeeder(bdf, new SystemFeedLogger());
+        ((AsyncDataFeeder) adf).feed(true);
+        new SystemFeedLogger().publishResultLog(actionType, 'Execute');
+        //new SystemFeedLogger().publishResultLog(actionType, 'Execute');
         // if (TypeUtils.isBatchable(actionType)) {
         //     new SSACBatchableAction(actionType).execute();
         //     return 'Execution for batch job ' + actionType + ' started';
@@ -50,7 +49,6 @@ public inherited sharing class SSACController {
         //     new SSACScheduledAction(actionType).execute();
         //     return 'Execution for scheduled job ' + actionType + ' started';
         // }
-        // item.execute();
         return 'Execution Started';
     }
 }

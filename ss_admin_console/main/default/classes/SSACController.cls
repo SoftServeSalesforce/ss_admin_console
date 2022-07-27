@@ -1,4 +1,4 @@
-public with sharing class SSACController {
+public inherited sharing class SSACController {
 
     private static Map<String, ISSACAction> actions = new Map<String, ISSACAction> {
             SSACConstants.CUSTOMERS_DATA => new SSACCustomerDataAction(),
@@ -23,7 +23,6 @@ public with sharing class SSACController {
             ((SSACAsyncAction) item).testAsync();
             return 'Test Started';
         }
-
         if (TypeUtils.isBatchable(actionType)) {
             new SSACBatchableAction(actionType).test();
             return 'Test for batch job ' + actionType + ' started';

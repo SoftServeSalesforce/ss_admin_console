@@ -1,4 +1,4 @@
-public with sharing class SSACResult {
+public inherited sharing class SSACResult {
     public String status;
     public String recordKey;
     public String recordId;

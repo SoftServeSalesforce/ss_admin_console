@@ -15,9 +15,6 @@ public with sharing class SystemFeedLogger implements FeedLogger {
         List<SSACResult> duplicateResults = this.util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS);
         List<SSACResult> okResults = this.util.getResultsByStatus(results, SSACConstants.OK_STATUS);
         List<SSACResult> changedResults = this.util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS);
-        System.debug(duplicateResults);
-        System.debug(okResults);
-        System.debug(changedResults);
         if (!duplicateResults.isEmpty()) {
             SObjectLoadEvent__e duplicateEvent = new SObjectLoadEvent__e(
                     Message__c = duplicateResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(duplicateResults) : this.handleAmountOfRecordsTested(duplicateResults.size()),

@@ -24,7 +24,6 @@ public inherited sharing class SSACController {
         DataSupplier ds = actions.get(actionType);
         BaseDataFeeder bdf = new BaseDataFeeder(ds, ds.getKeyFields(), ds.getDataFields(), new SystemFeedLogger());
         bdf.feed(false);
-        
         // if (TypeUtils.isBatchable(actionType)) {
         //     new SSACBatchableAction(actionType).test();
         //     return 'Test for batch job ' + actionType + ' started';

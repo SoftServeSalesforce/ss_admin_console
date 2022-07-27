@@ -28,7 +28,10 @@ public inherited sharing class SSACOpportunityDataAction extends SSACAsyncAction
                 OpportunityConstants.OPPORTUNITY_API_NAME, validOpportunityRecords.values(),
                 OpportunityConstants.OPPORTUNITY_KEYFIELDS,
                 OpportunityConstants.OPPORTUNITY_DATAFIELDS).execute();
-
+        Map<String, SObject> invalidOpportunityItemRecords = 
+            handler.getInvalidRecords(OpportunityConstants.OPPORTUNITY_ITEM_DATA,
+                OpportunityConstants.REFERENCE_FIELD_TO_KEY_FIELD,
+                OpportunityConstants.REFERENCE_FIELD_TO_SOBJECT_NAME);
         Map<String, SObject> validOpportunityItemRecords = this.addPriceBookEntry(
             handler.getValidRecords(OpportunityConstants.OPPORTUNITY_ITEM_DATA,
                 OpportunityConstants.REFERENCE_FIELD_TO_KEY_FIELD,
@@ -36,6 +39,7 @@ public inherited sharing class SSACOpportunityDataAction extends SSACAsyncAction
         this.addPriceBookEntry(validOpportunityItemRecords);
         result.addAll(new SSACSObjectAction(
                 OpportunityConstants.OPPORTUNITY_ITEM_API_NAME, validOpportunityItemRecords.values(),
+                invalidOpportunityItemRecords,
                 OpportunityConstants.OPPORTUNITY_ITEM_KEYFIELDS,
                 OpportunityConstants.OPPORTUNITY_ITEM_DATAFIELDS).execute());
         new SSACLogger().publishResultLog(SSACConstants.OPPORTUNITY_DATA, 'Execute');

@@ -19,6 +19,7 @@ public inherited sharing class SSACLogger {
         List<SSACResult> failedResults = this.util.getResultsByStatus(results, SSACConstants.FAILED_STATUS);
         List<SSACResult> upsertedResults = this.util.getResultsByStatus(results, SSACConstants.UPSERTED_STATUS);
         List<SSACResult> duplicateResults = this.util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS);
+        List<SSACResult> invalidResults = this.util.getResultsByStatus(results, SSACConstants.INVALID_STATUS);
         if (!duplicateResults.isEmpty()) {
             SObjectLoadEvent__e duplicateEvent = new SObjectLoadEvent__e(
                     Message__c = duplicateResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(duplicateResults) : this.handleAmountOfRecordsProceed(duplicateResults.size()),
@@ -34,6 +35,16 @@ public inherited sharing class SSACLogger {
                     Message__c = upsertedResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.idsToString(upsertedResults) : this.handleAmountOfRecordsProceed(upsertedResults.size()),
                     Message_Title__c = this.handleSuccessUpsertMessageTitle(upsertedResults.get(0).sObjectApiName),
                     Message_Type__c = SSACConstants.UPSERTED_STATUS,
+                    SObject_Type__c = results.get(0).sObjectApiName,
+                    Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
+            );
+            EventBus.publish(successEvent);
+        }
+        if (!invalidResults.isEmpty()) {
+            SObjectLoadEvent__e successEvent = new SObjectLoadEvent__e(
+                    Message__c = invalidResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(invalidResults) : this.handleAmountOfRecordsProceed(invalidResults.size()),
+                    Message_Title__c = this.handleInvalidRecordsMessageTitle(invalidResults.get(0).sObjectApiName),
+                    Message_Type__c = SSACConstants.INVALID_STATUS,
                     SObject_Type__c = results.get(0).sObjectApiName,
                     Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
             );
@@ -114,10 +125,17 @@ public inherited sharing class SSACLogger {
     private String handleChangedMessageTitle(String sObjectApiName) {
         return 'The following ' + sObjectApiName + '\'s records could be updated: ';
     }
+
+    @TestVisible
+    private String handleInvalidRecordsMessageTitle(String sObjectApiName) {
+        return 'The following ' + sObjectApiName + '\'s records failed to insert because the system doesn`t find the parent record: ';
+    }
+
     @TestVisible
     private String handleSuccessUpsertMessageTitle(String sObjectApiName) {
         return 'Successfully upserted ' + sObjectApiName + '\'s records. ';
     }
+
     @TestVisible
     private String handleAmountOfRecordsProceed(Integer size) {
         return String.valueOf(size) + ' records were proceed.';

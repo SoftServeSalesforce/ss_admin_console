@@ -14,6 +14,9 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
     }
 
     private List<SSACResult> filter() {
+        if(supplier.supply() == null && supplier.supply().isEmpty()){
+            return new List<SSACResult>();
+        }
         List<SObject> records = supplier.supply();
         List<SSACResult> results = new List<SSACResult>();
 
@@ -57,18 +60,19 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
     }
 
     public void feed(Boolean updateRecords) {
-        // TODO check if not empty records
         SSACResultsUtil util = new SSACResultsUtil();
         List<SSACResult> results = filter();
         List<SSACResult> allResults = this.getAllResults(util, results);
         if (updateRecords) { 
-            //TODO call execute
-            if (!results.isEmpty()) {
+            if (!allResults.isEmpty()) {
                 Database.UpsertResult[] upsertResults = Database.upsert(this.setId(allResults), false);
                 results = util.generateDiagnosticResultsUpsert(upsertResults, this.sObjectApiName);
             }
             logger.generateLoadLog(results);
         } else {
+            // TODO for Mykola: implement rollback 
+
+
             logger.generateTestLog(results);
         } 
     }

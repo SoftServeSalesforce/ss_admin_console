@@ -26,11 +26,11 @@ public inherited sharing class SSACController {
             return 'Test Started';
         }
         if (TypeUtils.isBatchable(actionType)) {
-            new SSACBatchableAction(actionType).test();
+            new BaseBatchableFeeder(actionType).feed(false);
             return 'Test for batch job ' + actionType + ' started';
         }
         if (TypeUtils.isSchedulable(actionType)) {
-            new SSACScheduledAction(actionType).test();
+            new BaseSchedulableFeeder(actionType).feed(false);
             return 'Test for scheduled job ' + actionType + ' started';
         } 
         return 'Test Started';
@@ -44,14 +44,14 @@ public inherited sharing class SSACController {
             AsyncDataFeeder adf = new AsyncDataFeeder(bdf, new SystemFeedLogger());
             ((AsyncDataFeeder) adf).feed(true);
             new SystemFeedLogger().publishResultLog(actionType, 'Execute');
-            return 'Test Started';
+            return 'Execution Started';
         }
         if (TypeUtils.isBatchable(actionType)) {
-            new SSACBatchableAction(actionType).execute();
+            new BaseBatchableFeeder(actionType).feed(true);
             return 'Execution for batch job ' + actionType + ' started';
         }
         if (TypeUtils.isSchedulable(actionType)) {
-            new SSACScheduledAction(actionType).execute();
+            new BaseSchedulableFeeder(actionType).feed(true);
             return 'Execution for scheduled job ' + actionType + ' started';
         } 
         return 'Execution Started';

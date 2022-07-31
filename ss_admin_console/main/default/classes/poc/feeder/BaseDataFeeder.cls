@@ -70,9 +70,13 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
             }
             logger.generateLoadLog(results);
         } else {
-            // TODO for Mykola: implement rollback 
-
-
+            // Create a savepoint while AccountNumber is null
+            Savepoint sp = Database.setSavepoint();
+            if (!allResults.isEmpty()) {
+                Database.UpsertResult[] upsertResults = Database.upsert(this.setId(allResults), false);
+            }
+            // Rollback to the previous null value
+            Database.rollback(sp);
             logger.generateTestLog(results);
         } 
     }

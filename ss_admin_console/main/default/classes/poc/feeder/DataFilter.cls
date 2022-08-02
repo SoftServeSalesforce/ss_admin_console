@@ -1,33 +1,23 @@
-/**
- *  Provides a data filtration dividing records to three status: Changed/Duplicated/Ok
- *  If at least one key field of current record is changed, record is Ok and ready to be inserted
- *  If key fields are not changed but non key fields changed, record is Changed and ready to be updated
- *  If data fields are not changed, record is Duplicated and upsertion is skipped
- */
-public inherited sharing class SSACDataFilter {
-
-    private SObjectType sObjectApiName;
+public class DataFilter {
+    private DataSupplier supplier;
     private List<FieldReference> keyFields;
     private List<FieldReference> dataFields;
+    private SObjectType sObjectApiName;
 
-    /**
-     * @param sObjectApiName describes filtered SObject 
-     * @param keyFields contains list of unique key fields
-     * @param datafields contains list of all fields used in filtration
-     */
-    public SSACDataFilter(SObjectType sObjectApiName, List<FieldReference> keyFields, List<FieldReference> dataFields) {
-        this.sObjectApiName = sObjectApiName;
+    public DataFilter(DataSupplier supplier, List<FieldReference> keyFields, List<FieldReference> dataFields) {
+        this.supplier = supplier;
         this.keyFields = keyFields;
-        this.dataFields = dataFields; 
+        this.datafields = dataFields;
+        this.sObjectApiName = supplier.getListType();
     }
 
-    /** filter method for determining OK, Duplicated and Changed records
-     * 
-     *  @param records contains sample data from constants 
-     *  @return list of filtered records with determined status
-     */
-    public List<SSACResult> filter(List<SObject> records) {
+    public List<SSACResult> filter() {
+        if(supplier.supply() == null && supplier.supply().isEmpty()){
+            return new List<SSACResult>();
+        }
+        List<SObject> records = supplier.supply();
         List<SSACResult> results = new List<SSACResult>();
+
         List<SObject> existentRecords = getExistentRecords(records);
         Map<String, SObject> existentMap = generateExistentRecordsMap(existentRecords);
        
@@ -66,7 +56,7 @@ public inherited sharing class SSACDataFilter {
         }
         return results;
     }
-    
+
     @TestVisible
     private String generateRecordFingerprint(SObject record) {
         String recordKeysFingerprint = '';
@@ -91,7 +81,7 @@ public inherited sharing class SSACDataFilter {
         return existentMap;
     }
 
-    /**
+     /**
      * Query records from database with key field values
      * @param records contains list of sample data
      * @return list of queried records
@@ -101,7 +91,6 @@ public inherited sharing class SSACDataFilter {
         List<Set<Object>> keyFieldValues = this.getKeyFieldValues(records);
 
         Integer fieldsNumber = keyFieldValues.size();
-        //SetUtils sc = new SetUtils();
         Object pr0 = (fieldsNumber > 0) ?  SetUtils.toSetOfType(keyFields[0], keyFieldValues[0]) : null;
         Object pr1 = (fieldsNumber > 1) ?  SetUtils.toSetOfType(keyFields[1], keyFieldValues[1]) : null;
         Object pr2 = (fieldsNumber > 2) ?  SetUtils.toSetOfType(keyFields[2], keyFieldValues[2]) : null;

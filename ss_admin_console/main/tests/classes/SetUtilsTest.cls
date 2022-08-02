@@ -23,7 +23,7 @@ public inherited sharing class SetUtilsTest {
             Object result = SetUtils.toSetOfType(field, objs);
             System.assert(false, 'TypeException is expected here');
         } catch (Exception ex) {
-            System.assert(e instanceof TypeException);
+            System.assert(ex instanceof TypeException);
         }  
         Test.stopTest();
     }

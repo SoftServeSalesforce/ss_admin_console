@@ -16,9 +16,8 @@ public inherited sharing class SSACUtil {
         List<Type> result = new List<Type>();
         List<ApexClass> classes = getApexClasses();
         for (ApexClass aClass : classes) {
-            System.debug(aClass);
             Type classType = Type.forName(aClass.Name);
-            if ((classType != null) && (theType.isAssignableFrom(classType))) {
+            if (classType != null && theType.isAssignableFrom(classType)) {
                 result.add(classType);
             }
         }

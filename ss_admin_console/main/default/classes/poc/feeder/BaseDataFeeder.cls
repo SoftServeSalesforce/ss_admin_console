@@ -3,36 +3,42 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
     private FeedLogger logger;
     private List<FieldReference> keyFields;
     private List<FieldReference> dataFields;
-    private SObjectType sObjectApiName;
+    private SObjectType objectType;
 
     public BaseDataFeeder(DataSupplier supplier, List<FieldReference> keyFields, List<FieldReference> dataFields, FeedLogger logger) {
         this.supplier = supplier;
         this.logger = logger;
         this.keyFields = keyFields;
-        this.datafields = dataFields;
-        this.sObjectApiName = supplier.getListType();
+        this.dataFields = dataFields;
+        this.objectType = supplier.getListType();
     }
 
     public void feed(Boolean updateRecords) {
         SSACResultsUtil util = new SSACResultsUtil();
         List<SSACResult> results = new DataFilter(supplier, keyFields, dataFields).filter();
         List<SSACResult> allResults = this.getAllResults(util, results);
-        if (updateRecords) { 
+        if (updateRecords) {
             if (!allResults.isEmpty()) {
                 Database.UpsertResult[] upsertResults = Database.upsert(this.setId(allResults), false);
-                results = util.generateDiagnosticResultsUpsert(upsertResults, this.sObjectApiName);
+                results = util.generateDiagnosticResultsUpsert(upsertResults, this.objectType);
+                logger.generateLoadLog(results);
             }
-            logger.generateLoadLog(results);
         } else {
-            // Create a savepoint while AccountNumber is null
-            Savepoint sp = Database.setSavepoint();
-            if (!allResults.isEmpty()) {
-                Database.UpsertResult[] upsertResults = Database.upsert(this.setId(allResults), false);
+            try {
+
             }
-            // Rollback to the previous null value
-            Database.rollback(sp);
-            logger.generateTestLog(results);
-        } 
+            if (!allResults.isEmpty()) {
+                // Create a savepoint while AccountNumber is null
+                Savepoint sp = Database.setSavepoint();
+                try {
+                    Database.UpsertResult[] upsertResults = Database.upsert(this.setId(allResults), false);
+                } finally {
+                    // Rollback to the previous null value
+                    Database.rollback(sp);
+                }
+                logger.generateTestLog(results);
+            }
+        }
     }
 
     @TestVisible

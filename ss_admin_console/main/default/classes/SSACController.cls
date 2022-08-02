@@ -11,21 +11,21 @@ public inherited sharing class SSACController {
     }
 
     @AuraEnabled
-    public static List<DataSupplierFactoryWrapper> getDataSupplierFactories() {
-        List<Type> factoryTypes = new SSACUtil().getSubClasses(DataSupplierFactory.class);
-        List<DataSupplierFactoryWrapper> supplierFactories = new List<DataSupplierFactoryWrapper>();
+    public static List<DataSupplierFactoryWrapper> getDataFeederFactories() {
+        List<Type> factoryTypes = new SSACUtil().getSubClasses(DataFeederFactory.class);
+        List<DataSupplierFactoryWrapper> feederFactories = new List<DataSupplierFactoryWrapper>();
         for (Type factoryType : factoryTypes) {
-            if (factoryType != DataSupplierFactory.class) {
+            if (factoryType != DataFeederFactory.class) {
                 try {
-                    DataSupplierFactory factory = (DataSupplierFactory) factoryType.newInstance();
-                    supplierFactories.add(new DataSupplierFactoryWrapper(factory.getName(), factoryType.getName()));
+                    DataFeederFactory factory = (DataFeederFactory) factoryType.newInstance();
+                    feederFactories.add(new DataSupplierFactoryWrapper(factory.getName(), factoryType.getName()));
                 } catch (Exception e) {
                     // Log message properly
                 }
             }
         }
 
-        return supplierFactories;
+        return feederFactories;
     }
 
     @AuraEnabled
@@ -37,9 +37,8 @@ public inherited sharing class SSACController {
     public static String test(String actionType) {
         DataSupplier ds = actions.get(actionType);
         if (ds != null) {
-            BaseDataFeeder bdf = new BaseDataFeeder(ds, new SystemFeedLogger());
-            AsyncDataFeeder adf = new AsyncDataFeeder(bdf, new SystemFeedLogger());
-            ((AsyncDataFeeder) adf).feed(false);
+            BaseDataFeeder bdf = new BaseDataFeeder(ds);
+            bdf.feed(false, new SystemFeedLogger());
             new SystemFeedLogger().publishResultLog(actionType, 'Test');
             return 'Test Started';
         }
@@ -58,9 +57,8 @@ public inherited sharing class SSACController {
     public static String execute(String actionType) {
         DataSupplier ds = actions.get(actionType);
         if (ds != null) {
-            BaseDataFeeder bdf = new BaseDataFeeder(ds, new SystemFeedLogger());
-            AsyncDataFeeder adf = new AsyncDataFeeder(bdf, new SystemFeedLogger());
-            ((AsyncDataFeeder) adf).feed(true);
+            BaseDataFeeder bdf = new BaseDataFeeder(ds);
+            bdf.feed(true, new SystemFeedLogger());
             new SystemFeedLogger().publishResultLog(actionType, 'Execute');
             return 'Execution Started';
         }

@@ -45,6 +45,14 @@
         <members>TestBatchable</members>
         <members>TestScheduable</members>
         <members>TypeUtilsTest</members>
+        <members>BaseBatchableFeeder</members>
+        <members>AccountsDataFeederFactory</members>
+        <members>BaseSchedulableFeeder</members>
+        <members>CompositeFeedLogger</members>
+        <members>DataDefinition</members>
+        <members>DataFeederFactory</members>
+        <members>DataFilter</members>
+        <members>PlatformEventFeedLogger</members>
         <name>ApexClass</name>
     </types>
     <types>

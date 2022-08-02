@@ -1,13 +1,11 @@
-public inherited sharing class BaseDataFeeder implements DataFeeder {
+public inherited sharing class BaseDataFeeder implements DataFeeder{
     private DataSupplier supplier;
-    private FeedLogger logger;
 
-    public BaseDataFeeder(DataSupplier supplier, FeedLogger logger) {
+    public BaseDataFeeder(DataSupplier supplier) {
         this.supplier = supplier;
-        this.logger = logger;
     }
 
-    public void feed(Boolean updateRecords) {
+    public void feed(Boolean updateRecords, FeedLogger logger) {
         SSACResultsUtil util = new SSACResultsUtil();
         List<SSACResult> results = new DataFilter(supplier).filter();
         List<SSACResult> allResults = this.getAllResults(util, results);

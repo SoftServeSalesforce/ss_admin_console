@@ -1,4 +1,5 @@
-public with sharing class BaseSchedulableFeeder implements DataFeeder {
+// TODO What does this class do?
+public with sharing class BaseSchedulableFeeder {
     private String className;
     private SSACLogger logger;
 

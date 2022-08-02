@@ -1,8 +1,4 @@
 public interface DataSupplier {
+    DataDefinition getMetadata();
     List<SObject> supply();
-
-    SObjectType getListType();
-    List<FieldReference> getKeyFields();
-    List<FieldReference> getDataFields();
-
 }

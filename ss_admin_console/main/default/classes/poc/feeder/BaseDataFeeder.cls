@@ -1,37 +1,30 @@
 public inherited sharing class BaseDataFeeder implements DataFeeder {
     private DataSupplier supplier;
     private FeedLogger logger;
-    private List<FieldReference> keyFields;
-    private List<FieldReference> dataFields;
-    private SObjectType objectType;
 
-    public BaseDataFeeder(DataSupplier supplier, List<FieldReference> keyFields, List<FieldReference> dataFields, FeedLogger logger) {
+    public BaseDataFeeder(DataSupplier supplier, FeedLogger logger) {
         this.supplier = supplier;
         this.logger = logger;
-        this.keyFields = keyFields;
-        this.dataFields = dataFields;
-        this.objectType = supplier.getListType();
     }
 
     public void feed(Boolean updateRecords) {
         SSACResultsUtil util = new SSACResultsUtil();
-        List<SSACResult> results = new DataFilter(supplier, keyFields, dataFields).filter();
+        List<SSACResult> results = new DataFilter(supplier).filter();
         List<SSACResult> allResults = this.getAllResults(util, results);
         if (updateRecords) {
             if (!allResults.isEmpty()) {
                 Database.UpsertResult[] upsertResults = Database.upsert(this.setId(allResults), false);
-                results = util.generateDiagnosticResultsUpsert(upsertResults, this.objectType);
+                results = util.generateDiagnosticResultsUpsert(upsertResults, supplier.getMetadata().objectType);
                 logger.generateLoadLog(results);
             }
         } else {
-            try {
-
-            }
             if (!allResults.isEmpty()) {
                 // Create a savepoint while AccountNumber is null
                 Savepoint sp = Database.setSavepoint();
                 try {
                     Database.UpsertResult[] upsertResults = Database.upsert(this.setId(allResults), false);
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
                 } finally {
                     // Rollback to the previous null value
                     Database.rollback(sp);
@@ -47,7 +40,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         Integer counter = 0;
         for (SObject item : supplier.supply()) {
             String recordKeysFingerprint = '';
-            for (FieldReference keyField: this.keyFields) {
+            for (FieldReference keyField: supplier.getMetadata().keyFields) {
                 recordKeysFingerprint += String.valueOf(keyField.getFrom(item)).toLowerCase() + '_';
             }
             recordKeysFingerprint = recordKeysFingerprint.removeEnd('_');

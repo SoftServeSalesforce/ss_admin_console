@@ -4,12 +4,16 @@ public inherited sharing class AccountsDataSupplierFactory implements DataSuppli
     }
 
     public DataSupplier getDataSupplier() {
-        return new StaticDataSupplier(new Account[] {
-                new Account(Name = 'Social Software'),
-                new Account(Name = 'Adept Software'),
-                new Account(Name = 'Boss Software'),
-                new Account(Name = 'Scope Software'),
-                new Account(Name = 'Variable Software')
-        });
+        return new StaticDataSupplier(
+                new List<SObjectField>{Account.Name},
+                new List<SObjectField>{Account.Name},
+                new Account[] {
+                        new Account(Name = 'Social Software'),
+                        new Account(Name = 'Adept Software'),
+                        new Account(Name = 'Boss Software'),
+                        new Account(Name = 'Scope Software'),
+                        new Account(Name = 'Variable Software')
+                }
+        );
     }
 }

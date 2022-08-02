@@ -37,7 +37,7 @@ public inherited sharing class SSACController {
     public static String test(String actionType) {
         DataSupplier ds = actions.get(actionType);
         if (ds != null) {
-            BaseDataFeeder bdf = new BaseDataFeeder(ds, ds.getKeyFields(), ds.getDataFields(), new SystemFeedLogger());
+            BaseDataFeeder bdf = new BaseDataFeeder(ds, new SystemFeedLogger());
             AsyncDataFeeder adf = new AsyncDataFeeder(bdf, new SystemFeedLogger());
             ((AsyncDataFeeder) adf).feed(false);
             new SystemFeedLogger().publishResultLog(actionType, 'Test');
@@ -58,7 +58,7 @@ public inherited sharing class SSACController {
     public static String execute(String actionType) {
         DataSupplier ds = actions.get(actionType);
         if (ds != null) {
-            BaseDataFeeder bdf = new BaseDataFeeder(ds, ds.getKeyFields(), ds.getDataFields(), new SystemFeedLogger());
+            BaseDataFeeder bdf = new BaseDataFeeder(ds, new SystemFeedLogger());
             AsyncDataFeeder adf = new AsyncDataFeeder(bdf, new SystemFeedLogger());
             ((AsyncDataFeeder) adf).feed(true);
             new SystemFeedLogger().publishResultLog(actionType, 'Execute');

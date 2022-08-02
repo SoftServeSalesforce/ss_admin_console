@@ -2,13 +2,15 @@ public class DataFilter {
     private DataSupplier supplier;
     private List<FieldReference> keyFields;
     private List<FieldReference> dataFields;
-    private SObjectType sObjectApiName;
+    private SObjectType objectType;
 
-    public DataFilter(DataSupplier supplier, List<FieldReference> keyFields, List<FieldReference> dataFields) {
+    public DataFilter(DataSupplier supplier) {
         this.supplier = supplier;
-        this.keyFields = keyFields;
-        this.datafields = dataFields;
-        this.sObjectApiName = supplier.getListType();
+
+        DataDefinition metadata = supplier.getMetadata();
+        this.keyFields = metadata.keyFields;
+        this.dataFields = metadata.dataFields;
+        this.objectType = metadata.objectType;
     }
 
     public List<SSACResult> filter() {
@@ -37,7 +39,7 @@ public class DataFilter {
                             .setStatus(SSACConstants.CHANGED_STATUS)
                             .setRecordKey(recordKeysFingerprint)
                             .setRecordId(existentSObject.Id)
-                            .setSObjectApiName(sObjectApiName.getDescribe().getName()));
+                            .setSObjectApiName(objectType.getDescribe().getName()));
                         break;
                     }
                 }
@@ -45,13 +47,13 @@ public class DataFilter {
                     results.add(new SSACResult()
                         .setStatus(SSACConstants.DUPLICATED_STATUS)
                         .setRecordKey(recordKeysFingerprint)
-                        .setSObjectApiName(sObjectApiName.getDescribe().getName()));
+                        .setSObjectApiName(objectType.getDescribe().getName()));
                 }
             } else {
                 results.add(new SSACResult()
                     .setStatus(SSACConstants.OK_STATUS)
                     .setRecordKey(recordKeysFingerprint)
-                    .setSObjectApiName(sObjectApiName.getDescribe().getName()));
+                    .setSObjectApiName(objectType.getDescribe().getName()));
             }
         }
         return results;
@@ -129,7 +131,7 @@ public class DataFilter {
             }
         }
         result = result.removeEnd(result.right(1));         
-        result += ' FROM ' + sObjectApiName.getDescribe().getName() + ' WHERE ';
+        result += ' FROM ' + objectType.getDescribe().getName() + ' WHERE ';
         for (FieldReference field : keyFields) {
             result += field.toString() + ' IN :pr' + counter + ' AND ';
             counter++;

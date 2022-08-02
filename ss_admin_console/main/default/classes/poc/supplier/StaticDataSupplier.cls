@@ -1,45 +1,41 @@
 public inherited sharing class StaticDataSupplier implements DataSupplier {
-
+    private DataDefinition metadata;
     private List<SObject> data;
-    private List<FieldReference> keyFields = new List<FieldReference>();
-    private List<FieldReference> dataFields = new List<FieldReference>();
 
     public StaticDataSupplier(List<String> keyFields, List<String> dataFields, List<SObject> data) {
+        // TODO verify input parameters
+        SObjectType objectType = data.getSObjectType();
         this.data = data;
-        for (String field : keyFields) {
-            this.keyFields.add(FieldReference.build(getListType(), field));
-        }
-
-        for (String field : dataFields) {
-            this.dataFields.add(FieldReference.build(getListType(), field));
-        }
+        this.metadata = new DataDefinition(objectType, toFieldReferences(objectType, keyFields), toFieldReferences(objectType, dataFields));
     }
 
     public StaticDataSupplier(List<SObjectField> keyFields, List<SObjectField> dataFields, List<SObject> data) {
+        // TODO verify input parameters
         this.data = data;
-        for (SObjectField field : keyFields) {
-            this.keyFields.add(FieldReference.build(field));
-        }
-
-        for (SObjectField field : dataFields) {
-            this.dataFields.add(FieldReference.build(field));
-        }
+        this.metadata = new DataDefinition(data.getSObjectType(), toFieldReferences(keyFields), toFieldReferences(dataFields));
     }
-    
 
     public List<SObject> supply() {
         return data;
     }
 
-    public SObjectType getListType() {
-        return data.getSObjectType();
+    public DataDefinition getMetadata() {
+        return metadata;
     }
 
-    public List<FieldReference> getKeyFields() {
-        return keyFields;
+    private static List<FieldReference> toFieldReferences(SObjectType objectType, List<String> fields) {
+        List<FieldReference> result = new List<FieldReference>();
+        for (String field : fields) {
+            result.add(FieldReference.build(objectType, field));
+        }
+        return result;
     }
 
-    public List<FieldReference> getDataFields() {
-        return dataFields;
+    private static List<FieldReference> toFieldReferences(List<SObjectField> fields) {
+        List<FieldReference> result = new List<FieldReference>();
+        for (SObjectField field : fields) {
+            result.add(FieldReference.build(field));
+        }
+        return result;
     }
 }

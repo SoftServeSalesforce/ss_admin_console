@@ -12,6 +12,23 @@ public inherited sharing class SSACController {
     }
 
     @AuraEnabled
+    public static List<DataSupplierFactoryWrapper> getDataFeederFactories() {
+        List<Type> factoryTypes = new SSACUtil().getSubClasses(DataFeederFactory.class);
+        List<DataSupplierFactoryWrapper> feederFactories = new List<DataSupplierFactoryWrapper>();
+        for (Type factoryType : factoryTypes) {
+            if (factoryType != DataFeederFactory.class) {
+                try {
+                    DataFeederFactory factory = (DataFeederFactory) factoryType.newInstance();
+                    feederFactories.add(new DataSupplierFactoryWrapper(factory.getName(), factoryType.getName()));
+                } catch (Exception e) {
+                    // Log message properly
+                }
+            }
+        }
+        return new List<DataSupplierFactoryWrapper>();
+    }
+
+    @AuraEnabled
     public static List<String> getJobClasses(String interfaceName) {
         return new SSACUtil().getJobClasses(interfaceName);
     }
@@ -52,5 +69,15 @@ public inherited sharing class SSACController {
         }
         item.execute();
         return 'Execution Started';
+    }
+
+    public class DataSupplierFactoryWrapper {
+        public String supplierName {get; private set;}
+        public String factoryName {get; private set;}
+
+        public DataSupplierFactoryWrapper(String supplierName, String factoryName) {
+            this.supplierName = supplierName;
+            this.factoryName = factoryName;
+        }
     }
 }

@@ -1,4 +1,4 @@
-public inherited sharing class BaseDataFeeder implements DataFeeder{
+public inherited sharing class BaseDataFeeder implements DataFeeder {
     private DataSupplier supplier;
 
     public BaseDataFeeder(DataSupplier supplier) {
@@ -8,28 +8,24 @@ public inherited sharing class BaseDataFeeder implements DataFeeder{
     public void feed(Boolean updateRecords, FeedLogger logger) {
         SSACResultsUtil util = new SSACResultsUtil();
         List<SSACResult> results = new DataFilter(supplier).filter();
-        List<SSACResult> allResults = this.getAllResults(util, results);
+        List<SSACResult> resultsToUpsert = this.getresultsToUpsert(util, results);
         if (updateRecords) {
-            if (!allResults.isEmpty()) {
-                Database.UpsertResult[] upsertResults = Database.upsert(this.setId(allResults), false);
-                results = util.generateDiagnosticResultsUpsert(upsertResults, supplier.getMetadata().objectType);
-                logger.generateLoadLog(results);
+            if (!resultsToUpsert.isEmpty()) {
+                Database.UpsertResult[] upsertResults = Database.upsert(this.setId(resultsToUpsert), false);
+                logger.log(upsertResults, supplier.getMetadata().objectType);
             }
         } else {
-            if (!allResults.isEmpty()) {
-                // Create a savepoint while AccountNumber is null
+            if (!resultsToUpsert.isEmpty()) {
                 Savepoint sp = Database.setSavepoint();
                 try {
-                    Database.UpsertResult[] upsertResults = Database.upsert(this.setId(allResults), false);
-                    results = util.generateDiagnosticResultsUpsert(upsertResults, supplier.getMetadata().objectType);
+                    Database.upsert(this.setId(resultsToUpsert), false);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 } finally {
-                    // Rollback to the previous null value
                     Database.rollback(sp);
                 }
-                logger.generateTestLog(results);
             }
+            logger.log(results);
         }
     }
 
@@ -54,12 +50,12 @@ public inherited sharing class BaseDataFeeder implements DataFeeder{
     }
 
     @TestVisible
-    private List<SSACResult> getAllResults(SSACResultsUtil util, List<SSACResult> filterResults) {
-        List<SSACResult> allResults = new List<SSACResult>();
+    private List<SSACResult> getresultsToUpsert(SSACResultsUtil util, List<SSACResult> filterResults) {
+        List<SSACResult> resultsToUpsert = new List<SSACResult>();
         List<SSACResult> okResults = util.getResultsByStatus(filterResults, SSACConstants.OK_STATUS);
         List<SSACResult> changedResults = util.getResultsByStatus(filterResults, SSACConstants.CHANGED_STATUS);
-        allResults.addAll(okResults);
-        allResults.addAll(changedResults);
-        return allResults;
+        resultsToUpsert.addAll(okResults);
+        resultsToUpsert.addAll(changedResults);
+        return resultsToUpsert;
     }
 }

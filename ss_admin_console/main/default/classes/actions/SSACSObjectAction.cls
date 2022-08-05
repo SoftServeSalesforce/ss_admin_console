@@ -56,9 +56,9 @@ public inherited sharing class SSACSObjectAction implements ISSACAction {
             return new List<SSACResult>();
         }
         List<SSACResult> filterResults = this.test();
-        List<SSACResult> allResults = this.getAllResults(util, filterResults);
-        if (!allResults.isEmpty()) {
-            Database.UpsertResult[] upsertResults = Database.upsert(this.setId(allResults), false);
+        List<SSACResult> resultsToUpsert = this.getresultsToUpsert(util, filterResults);
+        if (!resultsToUpsert.isEmpty()) {
+            Database.UpsertResult[] upsertResults = Database.upsert(this.setId(resultsToUpsert), false);
             results = util.generateDiagnosticResultsUpsert(upsertResults, this.sObjectApiName);
         } else {
             results = util.getResultsByStatus(filterResults, SSACConstants.DUPLICATED_STATUS);
@@ -88,12 +88,12 @@ public inherited sharing class SSACSObjectAction implements ISSACAction {
     }
 
     @TestVisible
-    private List<SSACResult> getAllResults(SSACResultsUtil util, List<SSACResult> filterResults) {
-        List<SSACResult> allResults = new List<SSACResult>();
+    private List<SSACResult> getresultsToUpsert(SSACResultsUtil util, List<SSACResult> filterResults) {
+        List<SSACResult> resultsToUpsert = new List<SSACResult>();
         List<SSACResult> okResults = util.getResultsByStatus(filterResults, SSACConstants.OK_STATUS);
         List<SSACResult> changedResults = util.getResultsByStatus(filterResults, SSACConstants.CHANGED_STATUS);
-        allResults.addAll(okResults);
-        allResults.addAll(changedResults);
-        return allResults;
+        resultsToUpsert.addAll(okResults);
+        resultsToUpsert.addAll(changedResults);
+        return resultsToUpsert;
     }
 }

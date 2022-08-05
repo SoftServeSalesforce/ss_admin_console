@@ -5,7 +5,9 @@ public inherited sharing class StaticDataSupplier implements DataSupplier {
     public StaticDataSupplier(List<String> keyFields, List<String> dataFields, List<SObject> data) {
         // TODO verify input parameters
         SObjectType objectType = data.getSObjectType();
-        this.data = data;
+        if (data != null) {
+            this.data = data;
+        }
         this.metadata = new DataDefinition(objectType, toFieldReferences(objectType, keyFields), toFieldReferences(objectType, dataFields));
     }
 

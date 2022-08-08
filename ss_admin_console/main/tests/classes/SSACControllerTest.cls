@@ -12,7 +12,7 @@ public inherited sharing class SSACControllerTest {
     @IsTest
     static void executeProductData(){
         Test.startTest();
-        String result = SSACController.execute(SSACConstants.PRODUCTS_DATA);
+        String result = SSACController.execute(SSACConstants.PRODUCTS_DATA, false);
         Test.stopTest();
         System.assert(result.contains('Execution Started'));
     }
@@ -28,7 +28,7 @@ public inherited sharing class SSACControllerTest {
     @IsTest
     static void executeCustomerData(){
         Test.startTest();
-        String result = SSACController.execute(SSACConstants.CUSTOMERS_DATA);
+        String result = SSACController.execute(SSACConstants.CUSTOMERS_DATA, false);
         Test.stopTest();
         System.assert(result.contains('Execution Started'));
     }
@@ -44,7 +44,7 @@ public inherited sharing class SSACControllerTest {
     @IsTest
     static void executeOpportunityData(){
         Test.startTest();
-        String result = SSACController.execute(SSACConstants.OPPORTUNITY_DATA);
+        String result = SSACController.execute(SSACConstants.OPPORTUNITY_DATA, false);
         Test.stopTest();
         System.assert(result.contains('Execution Started'));
     }

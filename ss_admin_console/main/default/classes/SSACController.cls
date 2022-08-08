@@ -48,15 +48,14 @@ public inherited sharing class SSACController {
             DataFeederFactory feederFactory = (DataFeederFactory) factoryType.newInstance();
             df = feederFactory.getDataFeeder();
         }
-        
-       
         if (df != null) {
-            //try{
-            df.feed(false, new PlatformEventFeedLogger());
-            //}finally{
-            //    rollback;
-            //}
-            new PlatformEventFeedLogger().publishResultLog(actionType, 'Test');
+            try {
+                df.feed(false, true, new PlatformEventFeedLogger());
+            } finally {
+                new PlatformEventFeedLogger().publishResultLog(actionType, 'Test');
+            }
+
+            //TODO: fix the sequence of logging 'Test Started' message
             return 'Test Started';
         }
         /*if (TypeUtils.isBatchable(actionType)) {
@@ -71,7 +70,8 @@ public inherited sharing class SSACController {
     }
 
     @AuraEnabled
-    public static String execute(String actionType) {
+    public static String execute(String actionType, Boolean updateRecords) {
+        //TODO: fix issue with updateRecords parameter (null)
         List<DataSupplierFactoryWrapper> factories = getDataFeederFactories();
         String factoryName;
         for (DataSupplierFactoryWrapper wrapper : factories) {
@@ -86,8 +86,11 @@ public inherited sharing class SSACController {
 
         DataFeeder df = feederFactory.getDataFeeder();
         if (df != null) {
-            df.feed(true, new SystemFeedLogger());
-            new PlatformEventFeedLogger().publishResultLog(actionType, 'Execute');
+            try {
+                df.feed(updateRecords, false, new PlatformEventFeedLogger());
+            } finally {
+                new PlatformEventFeedLogger().publishResultLog(actionType, 'Execute');
+            }
             return 'Execution Started';
         }/*
         if (TypeUtils.isBatchable(actionType)) {

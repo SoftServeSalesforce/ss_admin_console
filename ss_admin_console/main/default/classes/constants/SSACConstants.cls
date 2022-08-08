@@ -1,10 +1,12 @@
 public inherited sharing class SSACConstants { 
     public static final String WARNING_STATUS = 'WARNING';
     public static final String FAILED_STATUS = 'FAILED';
-    public static final String UPSERTED_STATUS = 'UPSERTED';
+    public static final String UPDATED_STATUS = 'UPDATED';
+    public static final String INSERTED_STATUS = 'INSERTED';
     public static final String OK_STATUS = 'OK';
     public static final String DUPLICATED_STATUS = 'DUPLICATED';
     public static final String CHANGED_STATUS = 'CHANGED';
+    public static final String UPSERTED_STATUS = 'UPSERTED';
 
     public static final String TEST_ACTION_TYPE = 'Test';
     public static final String EXECUTE_ACTION_TYPE = 'Execute';

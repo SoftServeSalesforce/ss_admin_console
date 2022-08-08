@@ -72,6 +72,13 @@
                             onclick={handleExecute}
                             class="slds-m-left_x-small">
                     </lightning-button>
+                    <lightning-input 
+                            type="checkbox" 
+                            label="Update records?" 
+                            class="slds-m-left_x-small" 
+                            checked={updateRecords}
+                            onchange={handleCheckboxChange}>
+                    </lightning-input>
                 </div>
             </div>
             <div class="slds-col">

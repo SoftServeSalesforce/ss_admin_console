@@ -9,8 +9,8 @@ public inherited sharing class ContactsDataFeederFactory implements DataFeederFa
                     new List<SObjectField>{Contact.Email, Contact.LastName},
                     new List<SObjectField>{Contact.Email, Contact.LastName, Contact.FirstName},
                     new Contact[] {
-                        new Contact(LastName = 'Smith', FirstName = 'Olivia', Email = 'OliviaSmith@testmail.com'),
-                        new Contact(LastName = 'Brown', FirstName = 'Emma', Email = 'EmmaBrown@testmail.com'),
+                        new Contact(LastName = 'Testt', FirstName = 'Olivia', Email = 'OliviaSmith@testmail.com'),
+                        new Contact(LastName = 'Brown', FirstName = 'Testt', Email = 'EmmaBrown@testmail.com'),
                         new Contact(LastName = 'Wilson', FirstName = 'Amelia', Email = 'AmeliaWilson@testmail.com'),
                         new Contact(LastName = 'Thomson', FirstName = 'Ava', Email = 'AvaThomson@testmail.com'),
                         new Contact(LastName = 'Robertson', FirstName = 'Sophia', Email = 'SophiaRobertson@testmail.com'),

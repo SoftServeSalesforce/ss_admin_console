@@ -9,43 +9,43 @@ public inherited sharing class SSACLogger {
             SObjectLoadEvent__e successEvent = new SObjectLoadEvent__e(
                     Message__c = '',
                     Message_Title__c = 'Nothing to load, check test results',
-                    Message_Type__c = SSACConstants.OK_STATUS,
-                    SObject_Type__c = '',
-                    Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
+                    Message_Type__c = SSACConstants.OK_STATUS
+                    //SObject_Type__c = '',
+                    //Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
             );
             EventBus.publish(successEvent);
             return;
         }
         List<SSACResult> failedResults = this.util.getResultsByStatus(results, SSACConstants.FAILED_STATUS);
-        List<SSACResult> upsertedResults = this.util.getResultsByStatus(results, SSACConstants.UPSERTED_STATUS);
+        //List<SSACResult> upsertedResults = this.util.getResultsByStatus(results, SSACConstants.UPSERTED_STATUS);
         List<SSACResult> duplicateResults = this.util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS);
         if (!duplicateResults.isEmpty()) {
             SObjectLoadEvent__e duplicateEvent = new SObjectLoadEvent__e(
                     Message__c = duplicateResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(duplicateResults) : this.handleAmountOfRecordsProceed(duplicateResults.size()),
                     Message_title__c = this.handleDuplicateMessageTitle(duplicateResults.get(0).sObjectApiName),
-                    Message_Type__c = SSACConstants.DUPLICATED_STATUS,
-                    SObject_Type__c = results.get(0).sObjectApiName,
-                    Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
+                    Message_Type__c = SSACConstants.DUPLICATED_STATUS
+                    //SObject_Type__c = results.get(0).sObjectApiName,
+                    //Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
             );
             EventBus.publish(duplicateEvent);
         }
-        if (!upsertedResults.isEmpty()) {
-            SObjectLoadEvent__e successEvent = new SObjectLoadEvent__e(
-                    Message__c = upsertedResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.idsToString(upsertedResults) : this.handleAmountOfRecordsProceed(upsertedResults.size()),
-                    Message_Title__c = this.handleSuccessUpsertMessageTitle(upsertedResults.get(0).sObjectApiName),
-                    Message_Type__c = SSACConstants.UPSERTED_STATUS,
-                    SObject_Type__c = results.get(0).sObjectApiName,
-                    Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
-            );
-            EventBus.publish(successEvent);
-        }
+        // if (!upsertedResults.isEmpty()) {
+        //     SObjectLoadEvent__e successEvent = new SObjectLoadEvent__e(
+        //             Message__c = upsertedResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.idsToString(upsertedResults) : this.handleAmountOfRecordsProceed(upsertedResults.size()),
+        //             Message_Title__c = this.handleSuccessUpsertMessageTitle(upsertedResults.get(0).sObjectApiName),
+        //             Message_Type__c = SSACConstants.UPSERTED_STATUS
+        //            // SObject_Type__c = results.get(0).sObjectApiName,
+        //             //Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
+        //     );
+        //     EventBus.publish(successEvent);
+        // }
         if (!failedResults.isEmpty()) {
             SObjectLoadEvent__e errorEvent = new SObjectLoadEvent__e(
                     Message_Title__c = 'Error occurred: ',
                     Message__c = util.errorsToString(failedResults),
-                    Message_Type__c = SSACConstants.FAILED_STATUS,
-                    SObject_Type__c = results.get(0).sObjectApiName,
-                    Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
+                    Message_Type__c = SSACConstants.FAILED_STATUS
+                   // SObject_Type__c = results.get(0).sObjectApiName,
+                   // Action_Type__c = SSACConstants.EXECUTE_ACTION_TYPE
             );
             EventBus.publish(errorEvent);
         }
@@ -62,9 +62,9 @@ public inherited sharing class SSACLogger {
             SObjectLoadEvent__e duplicateEvent = new SObjectLoadEvent__e(
                     Message__c = duplicateResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(duplicateResults) : this.handleAmountOfRecordsTested(duplicateResults.size()),
                     Message_title__c = this.handleDuplicateMessageTitle(duplicateResults.get(0).sObjectApiName),
-                    Message_Type__c = SSACConstants.DUPLICATED_STATUS,
-                    SObject_Type__c = results.get(0).sObjectApiName,
-                    Action_Type__c = SSACConstants.TEST_ACTION_TYPE
+                    Message_Type__c = SSACConstants.DUPLICATED_STATUS
+                   // SObject_Type__c = results.get(0).sObjectApiName,
+                   // Action_Type__c = SSACConstants.TEST_ACTION_TYPE
             );
             EventBus.publish(duplicateEvent);
         }
@@ -72,9 +72,9 @@ public inherited sharing class SSACLogger {
             SObjectLoadEvent__e validRecordsEvent = new SObjectLoadEvent__e(
                     Message__c = okResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(okResults) : this.handleAmountOfRecordsTested(okResults.size()),
                     Message_title__c = this.handleValidRecordsMessageTitle(okResults.get(0).sObjectApiName),
-                    Message_Type__c = SSACConstants.OK_STATUS,
-                    SObject_Type__c = results.get(0).sObjectApiName,
-                    Action_Type__c = SSACConstants.TEST_ACTION_TYPE
+                    Message_Type__c = SSACConstants.OK_STATUS
+                   // SObject_Type__c = results.get(0).sObjectApiName,
+                   // Action_Type__c = SSACConstants.TEST_ACTION_TYPE
             );
             EventBus.publish(validRecordsEvent);
         }
@@ -82,9 +82,9 @@ public inherited sharing class SSACLogger {
             SObjectLoadEvent__e changedEvent = new SObjectLoadEvent__e(
                     Message__c = changedResults.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(changedResults) : this.handleAmountOfRecordsTested(changedResults.size()),
                     Message_title__c = this.handleChangedMessageTitle(changedResults.get(0).sObjectApiName),
-                    Message_Type__c = SSACConstants.CHANGED_STATUS,
-                    SObject_Type__c = results.get(0).sObjectApiName,
-                    Action_Type__c = SSACConstants.TEST_ACTION_TYPE
+                    Message_Type__c = SSACConstants.CHANGED_STATUS
+                    //SObject_Type__c = results.get(0).sObjectApiName,
+                    //Action_Type__c = SSACConstants.TEST_ACTION_TYPE
             );
             EventBus.publish(changedEvent);
         }

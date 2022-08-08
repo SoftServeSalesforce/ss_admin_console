@@ -3,13 +3,17 @@ public with sharing class SystemFeedLogger implements FeedLogger {
         System.debug('Error: ' + message);
     }
 
-    public void log(List<SSACResult> data) {
-        if (data != null && !data.isEmpty()) {
-            new PlatformEventFeedLogger().generateEvent(data, SSACConstants.TEST_ACTION_TYPE);
-        }
+    // public void log(List<SSACResult> data) {
+    //     if (data != null && !data.isEmpty()) {
+    //         new PlatformEventFeedLogger().generateEvent(data, SSACConstants.TEST_ACTION_TYPE);
+    //     }
+    // }
+
+    public void log(String message, Schema.SObjectType sObjectType, String status, String type) {
+
     }
 
-    public void log(Database.UpsertResult[] upsertResults, Schema.SObjectType sObjectType) {
+    /*public void log(Database.UpsertResult[] upsertResults, Schema.SObjectType sObjectType) {
         List<SSACResult> results = new List<SSACResult>();
         for (Database.UpsertResult result : upsertResults) {
             if (result.isSuccess()) {
@@ -31,5 +35,5 @@ public with sharing class SystemFeedLogger implements FeedLogger {
                 new PlatformEventFeedLogger().generateEvent(results, SSACConstants.EXECUTE_ACTION_TYPE);
             }
         }
-    }
+    }*/
 }

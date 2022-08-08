@@ -1,11 +1,26 @@
-public with sharing class PlatformEventFeedLogger /*implements FeedLogger*/ {
+public with sharing class PlatformEventFeedLogger implements FeedLogger {
 
-    SSACResultsUtil util;
-    public PlatformEventFeedLogger() {
-        this.util = new SSACResultsUtil();
+    public void error(String message) {
+        System.debug('Error: ' + message);
     }
 
-    public void generateEvent(List<SSACResult> results, String type) {
+    /*SSACResultsUtil util;
+    public PlatformEventFeedLogger() {
+        this.util = new SSACResultsUtil();
+    }*/
+
+    public void log(String message, Schema.SObjectType sObjectType, String status, String type) {
+        SObjectLoadEvent__e event = new SObjectLoadEvent__e(
+                Message__c = 'Hello',
+                Message_title__c = message,
+                Message_Type__c = status,
+                SObject_Type__c = String.valueOf(sObjectType),
+                Action_Type__c = type
+        );
+        EventBus.publish(event);
+    }
+
+    /*public void generateEvent(List<SSACResult> results, String type) {
         List<SSACResult> duplicateResults = this.util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS);
         List<SSACResult> okResults = this.util.getResultsByStatus(results, SSACConstants.OK_STATUS);
         List<SSACResult> changedResults = this.util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS);
@@ -62,7 +77,7 @@ public with sharing class PlatformEventFeedLogger /*implements FeedLogger*/ {
             );
             EventBus.publish(errorEvent);
         }
-    }
+    }*/
 
     public void publishResultLog(String jobName, String jobAction) {
         ResultLogEvent__e event = new ResultLogEvent__e(Action_Name__c = jobName, Action_Completed__c = true, Action_Type__c = jobAction);
@@ -74,7 +89,7 @@ public with sharing class PlatformEventFeedLogger /*implements FeedLogger*/ {
         EventBus.publish(event);
     }
 
-    @TestVisible
+    /*@TestVisible
     private String handleValidRecordsMessageTitle(String sObjectApiName) {
         return 'The following ' + sObjectApiName + '\'s records should be inserted: ';
     }
@@ -100,5 +115,5 @@ public with sharing class PlatformEventFeedLogger /*implements FeedLogger*/ {
     @TestVisible
     private String handleAmountOfRecordsTested(Integer size) {
         return String.valueOf(size) + ' records were tested.';
-    }
+    }*/
 }

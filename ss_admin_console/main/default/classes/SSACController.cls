@@ -42,12 +42,20 @@ public inherited sharing class SSACController {
                 break;
             }
         }
-        Type factoryType = Type.forName(factoryName);
-        DataFeederFactory feederFactory = (DataFeederFactory) factoryType.newInstance();
-
-        DataFeeder df = feederFactory.getDataFeeder();
+        DataFeeder df;
+        if (factoryName != null) {
+            Type factoryType = Type.forName(factoryName);
+            DataFeederFactory feederFactory = (DataFeederFactory) factoryType.newInstance();
+            df = feederFactory.getDataFeeder();
+        }
+        
+       
         if (df != null) {
-            df.feed(false, new SystemFeedLogger());
+            //try{
+            df.feed(false, new PlatformEventFeedLogger());
+            //}finally{
+            //    rollback;
+            //}
             new PlatformEventFeedLogger().publishResultLog(actionType, 'Test');
             return 'Test Started';
         }

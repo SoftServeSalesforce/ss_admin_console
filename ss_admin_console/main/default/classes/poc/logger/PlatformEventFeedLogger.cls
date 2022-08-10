@@ -1,10 +1,9 @@
 public with sharing class PlatformEventFeedLogger implements FeedLogger {
-
-    public void error(String message) {
-        System.debug('Error: ' + message);
+    public void error() {
+        System.debug('messageError: ' + messageError);
     }
 
-    public void log(String messageTitle, String message, String status) {
+    public void log(String stringMessageTitleLog, String stringMessageLog, String stringStatusLog) {
         SObjectLoadEvent__e event = new SObjectLoadEvent__e(
                 Message_title__c = messageTitle,
                 Message__c = message,

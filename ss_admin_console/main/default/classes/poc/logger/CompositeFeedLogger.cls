@@ -8,14 +8,14 @@ public with sharing class CompositeFeedLogger implements FeedLogger {
     }
 
     public void error(String messageError) {
-        for (FeedLoger feedLoger : listFeedLoger) {
-            feedLoger.error(messageError);  //Delegation
+        for (FeedLogger feedLogger : feedLoggers) {
+            feedLogger.error(messageError);  //Delegation
         }
     }
 
-    public void log(String stringMessageTitleLog, String stringMessageLog, String stringStatusLog) {
-        for (FeedLoger feedLoger : listFeedLoger) {
-            feedLoger.log(stringMessageTitleLog, stringMessageLog, stringStatusLog);  //Delegation
+    public void log(String messageTitleLog, String messageLog, String statusLog) {
+        for (FeedLogger feedLogger : feedLoggers) {
+            feedLogger.log(messageTitleLog, messageLog, statusLog);  //Delegation
         }
     }
 

@@ -29,18 +29,40 @@
     https://github.com/bluewolf-beyond/selector
 */
 
+/**
+ * Represents a reference to an sObject field. 
+ */
 public abstract class FieldReference {
-    // FieldReference interface
-
+    
+    /**
+     * Returns value of the referenced field on the given sObject.
+     * @param record describes sObject 
+     * @return value of the field
+     */
     public abstract Object getFrom(sObject record);
 
+    /**
+     * Return referenced field as SObjectField
+     */
     public abstract SObjectField getField();
 
-    // factory methods
+    /**
+     * Returns a FieldReference of the given SObjectField.
+     * @param field represents field for which FieldReference is created
+     * @return FieldReference of the given field
+     */
     public static FieldReference build(SObjectField field) {
         return new SchemaFieldReference(field);
     }
 
+    /**
+     * Returns a FieldReference of the given String field and SObjectType. 
+     * If there is no '.' character, the reference behaves as it would with the equivalent Schema reference. 
+     * If the string contains '.', the reference will traverse sObject relationships.
+     * @param sobjType represents SObjectType of sobject for which FieldReference is created
+     * @param field represents field for which FieldReference is created
+     * @return FieldReference of the given field
+     */
     public static FieldReference build(SObjectType sobjType, String field) {
         Integer index = field.indexOf('.'); 
         if (index == -1) {

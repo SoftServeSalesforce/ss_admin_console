@@ -1,4 +1,6 @@
 public with sharing class PlatformEventFeedLogger implements FeedLogger {
+
+    //TODO error to event
     public void error(String messageError) {
         System.debug('messageError: ' + messageError);
     }

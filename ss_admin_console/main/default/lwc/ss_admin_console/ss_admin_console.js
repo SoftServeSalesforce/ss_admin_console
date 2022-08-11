@@ -1,6 +1,5 @@
 import {LightningElement, track, api} from 'lwc';
 import action from '@salesforce/apex/SSACController.action';
-import test from '@salesforce/apex/SSACController.test';
 import getDataTypes from '@salesforce/apex/SSACController.getDataTypes';
 import getJobClasses from '@salesforce/apex/SSACController.getJobClasses';
 import userId from '@salesforce/user/Id';

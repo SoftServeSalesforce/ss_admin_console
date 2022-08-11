@@ -3,7 +3,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
     SSACResultsUtil util;
 
     public BaseDataFeeder(DataSupplier supplier) {
-        this.supplier = supplier;  
+        this.supplier = supplier;
     }
 
     public void feed(Boolean updateRecords, Boolean checkOnly, FeedLogger logger) {
@@ -59,9 +59,11 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
     public class LoggerConnector {
        
         SSACResultsUtil util;
+        
         public LoggerConnector() {
             this.util = new SSACResultsUtil();
         }
+
         public void log(List<SSACResult> results, Schema.SObjectType sObjectType, FeedLogger logger) {
             Map<String, List<SSACResult>> resultsByStatus = genarateResultsMap(results);
 

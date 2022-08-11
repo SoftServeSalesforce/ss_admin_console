@@ -3,7 +3,6 @@ public inherited sharing class StaticDataSupplier implements DataSupplier {
     private List<SObject> data;
 
     public StaticDataSupplier(List<String> keyFields, List<String> dataFields, List<SObject> data) {
-        // TODO verify input parameters
         SObjectType objectType = data.getSObjectType();
         if (data != null && !data.isEmpty() 
             && keyFields !=  null && !keyFields.isEmpty()

@@ -1,18 +1,31 @@
-public class DataFilter {
+/**
+ *  Provides a data filtration dividing records to three status: Changed/Duplicated/Ok
+ *  If at least one key field of current record is changed, record is Ok and ready to be inserted
+ *  If key fields are not changed but non key fields changed, record is Changed and ready to be updated
+ *  If data fields are not changed, record is Duplicated and upsertion is skipped
+ */
+public inherited sharing class DataFilter {
     private DataSupplier supplier;
     private List<FieldReference> keyFields;
     private List<FieldReference> dataFields;
     private SObjectType objectType;
 
+    /**
+     * @param supplier 
+     */
     public DataFilter(DataSupplier supplier) {
         this.supplier = supplier;
-
         DataDefinition metadata = supplier.getMetadata();
         this.keyFields = metadata.keyFields;
         this.dataFields = metadata.dataFields;
         this.objectType = metadata.objectType;
     }
 
+    /** Filter method for determining OK, Duplicated and Changed records.
+     * 
+     *  @param records contains sample data from constants 
+     *  @return list of filtered records with determined status
+     */
     public List<SSACResult> filter() {
         if(supplier.supply() == null && supplier.supply().isEmpty()){
             return new List<SSACResult>();

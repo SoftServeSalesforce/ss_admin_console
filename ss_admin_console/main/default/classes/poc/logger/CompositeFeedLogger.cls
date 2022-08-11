@@ -1,6 +1,5 @@
 public with sharing class CompositeFeedLogger implements FeedLogger {
 
-    //Collection of FeedLoger ojects.
     private FeedLogger[] feedLoggers;
 
     public CompositeFeedLogger(FeedLogger[] loggers) {
@@ -9,15 +8,13 @@ public with sharing class CompositeFeedLogger implements FeedLogger {
 
     public void error(String messageError) {
         for (FeedLogger feedLogger : feedLoggers) {
-            feedLogger.error(messageError);  //Delegation
+            feedLogger.error(messageError);
         }
     }
 
     public void log(String messageTitleLog, String messageLog, String statusLog) {
         for (FeedLogger feedLogger : feedLoggers) {
-            feedLogger.log(messageTitleLog, messageLog, statusLog);  //Delegation
+            feedLogger.log(messageTitleLog, messageLog, statusLog);
         }
     }
-
-
 }

@@ -32,9 +32,6 @@ public inherited sharing class SSACController {
         return new SSACUtil().getJobClasses(interfaceName);
     }
 
-
-    //test = checkonly
-    //update if to update existent records
     @AuraEnabled
     public static String action(String actionType, Boolean updateRecords, Boolean checkOnly) {
         List<DataSupplierFactoryWrapper> factories = getDataFeederFactories();
@@ -74,85 +71,6 @@ public inherited sharing class SSACController {
             return 'Test for scheduled job ' + actionType + ' started';
         } */
         return 'Action Started';
-    }
-
-
-
-
-
-
-
-
-
-
-    @AuraEnabled
-    public static String test(String actionType) {
-        /*
-        List<DataSupplierFactoryWrapper> factories = getDataFeederFactories();
-        String factoryName;
-        for (DataSupplierFactoryWrapper wrapper : factories) {
-            if (wrapper.description == actionType) {
-                factoryName = wrapper.factoryName;
-                break;
-            }
-        }
-        if (factoryName != null) {
-            Type factoryType = Type.forName(factoryName);
-            DataFeederFactory feederFactory = (DataFeederFactory) factoryType.newInstance();
-            DataFeeder df = feederFactory.getDataFeeder();
-            try {
-                df.feed(false, true, new PlatformEventFeedLogger());
-            } finally {
-                new PlatformEventFeedLogger().publishResultLog(actionType, 'Test');
-            }
-            //TODO: fix the sequence of logging 'Test Started' message
-            return 'Test Started';
-        }
-        /*if (TypeUtils.isBatchable(actionType)) {
-            new BaseBatchableFeeder(actionType).feed(false);
-            return 'Test for batch job ' + actionType + ' started';
-        }
-        if (TypeUtils.isSchedulable(actionType)) {
-            new BaseSchedulableFeeder(actionType).feed(false);
-            return 'Test for scheduled job ' + actionType + ' started';
-        } */
-        return 'Test Started';
-    }
-
-    @AuraEnabled
-    public static String execute(String actionType, Boolean updateRecords) {
-        /*
-        //TODO: fix issue with updateRecords parameter (null)
-        List<DataSupplierFactoryWrapper> factories = getDataFeederFactories();
-        String factoryName;
-        for (DataSupplierFactoryWrapper wrapper : factories) {
-            if (wrapper.description == actionType) {
-                factoryName = wrapper.factoryName;
-                break;
-            }
-        }
-
-        Type factoryType = Type.forName(factoryName);
-        DataFeederFactory feederFactory = (DataFeederFactory) factoryType.newInstance();
-
-        DataFeeder df = feederFactory.getDataFeeder();
-        if (df != null) {
-            try {
-                df.feed(updateRecords, false, new PlatformEventFeedLogger());
-            } finally {
-                new PlatformEventFeedLogger().publishResultLog(actionType, 'Execute');
-            }
-            return 'Execution Started';
-        }/*
-        if (TypeUtils.isBatchable(actionType)) {
-            new BaseBatchableFeeder(actionType).feed(true);
-            return 'Execution for batch job ' + actionType + ' started';
-        }
-        if (TypeUtils.isSchedulable(actionType)) {
-            new BaseSchedulableFeeder(actionType).feed(true);
-            return 'Execution for scheduled job ' + actionType + ' started';
-        } */
-        return 'Execution Started';
     }
 
     public class DataSupplierFactoryWrapper {

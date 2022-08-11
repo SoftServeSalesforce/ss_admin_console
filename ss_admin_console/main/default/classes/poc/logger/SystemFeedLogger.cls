@@ -4,8 +4,8 @@ public with sharing class SystemFeedLogger implements FeedLogger {
     }
 
     public void log(String messageTitleLog, String messageLog, String statusLog) {
-        System.debug('messageTitleLog: ' + messageTitleLog);
-        System.debug('messageLog: ' + messageLog);
-        System.debug('statusLog: ' + statusLog);
+        System.debug('messageTitle: ' + messageTitleLog);
+        System.debug('message: ' + messageLog);
+        System.debug('status: ' + statusLog);
     }
 }

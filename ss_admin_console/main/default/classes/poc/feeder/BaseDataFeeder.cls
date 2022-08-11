@@ -6,7 +6,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         this.supplier = supplier;  
     }
 
-    public void feed(Boolean updateRecords, FeedLogger logger) {
+    public void feed(Boolean updateRecords, Boolean checkOnly, FeedLogger logger) {
         SSACResultsUtil util = new SSACResultsUtil();
         List<SSACResult> results = new DataFilter(supplier).filter();
         List<SSACResult> okResults = util.getResultsByStatus(results, SSACConstants.OK_STATUS);
@@ -14,8 +14,12 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         if (updateRecords) {
             if (!results.isEmpty()) {
                 try {
-                    Database.upsert(this.convertToSObject(results), true);
-                    new LoggerConnector().log(results, supplier.getMetadata().objectType, logger);
+                    Database.UpsertResult[] upsertedResults = Database.upsert(this.convertToSObject(results), true);
+                    if(checkOnly) {
+                        new LoggerConnector().log(results, supplier.getMetadata().objectType, logger);
+                    } else {
+                        new LoggerConnector().logUpsert(upsertedResults, supplier.getMetadata().objectType, logger);
+                    }
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
@@ -24,7 +28,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
             if (!results.isEmpty()) {
                 try {
                     Database.SaveResult[] insertedResults = Database.insert(this.convertToSObject(okResults), true);
-                    new LoggerConnector().logUpsert(insertedResults, supplier.getMetadata().objectType, logger, updateRecords);
+                    new LoggerConnector().logInsert(insertedResults, supplier.getMetadata().objectType, logger);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
@@ -74,23 +78,39 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
             }
         }
 
-        public void logUpsert(Database.SaveResult[] updatedResults, Schema.SObjectType sObjectType, FeedLogger logger, Boolean updateResults) {
+        public void logUpsert(Database.UpsertResult[] upsertedResulits, Schema.SObjectType sObjectType, FeedLogger logger) {
             List<SSACResult> results = new List<SSACResult>();
-            for (Database.SaveResult result : updatedResults) {
+            for (Database.UpsertResult result : upsertedResulits) {
                 if (result.isSuccess()) {
-                    if (updateResults) {
                     results.add(new SSACResult()
                             .setStatus(SSACConstants.UPDATED_STATUS)
                             .setRecordId(result.getId())
                             .setSObjectApiName(sObjectType.getDescribe().getName()));
                     log(results, sObjectType, logger);
-                    } else {
-                        results.add(new SSACResult()
-                        .setStatus(SSACConstants.INSERTED_STATUS)
-                        .setRecordId(result.getId())
-                        .setSObjectApiName(sObjectType.getDescribe().getName()));
-                    log(results, sObjectType, logger);
+                } else {
+                    String errorMessage = '';
+                    for (Database.Error err : result.getErrors()) {
+                        errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage()
+                                + String.valueOf(sObjectType) + ' fields that affected this error: ' + err.getFields() + '. ';
                     }
+                    results.add(new SSACResult()
+                            .setStatus(SSACConstants.FAILED_STATUS)
+                            .setErrorMessage(errorMessage)
+                            .setSObjectApiName(sObjectType.getDescribe().getName()));
+                    log(results, sObjectType, logger);
+                }
+            }
+        }
+
+        public void logInsert(Database.SaveResult[] savedResulits, Schema.SObjectType sObjectType, FeedLogger logger) {
+            List<SSACResult> results = new List<SSACResult>();
+            for (Database.SaveResult result : savedResulits) {
+                if (result.isSuccess()) {
+                    results.add(new SSACResult()
+                            .setStatus(SSACConstants.INSERTED_STATUS)
+                            .setRecordId(result.getId())
+                            .setSObjectApiName(sObjectType.getDescribe().getName()));
+                    log(results, sObjectType, logger);
                 } else {
                     String errorMessage = '';
                     for (Database.Error err : result.getErrors()) {

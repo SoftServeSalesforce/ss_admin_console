@@ -1,5 +1,5 @@
 import {LightningElement, track, api} from 'lwc';
-import execute from '@salesforce/apex/SSACController.execute';
+import action from '@salesforce/apex/SSACController.action';
 import test from '@salesforce/apex/SSACController.test';
 import getDataTypes from '@salesforce/apex/SSACController.getDataTypes';
 import getJobClasses from '@salesforce/apex/SSACController.getJobClasses';
@@ -169,7 +169,7 @@ export default class Diagnostic extends LightningElement {
         this.actionDisabled = true;
         let type = this.actionTypes[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
-        action({actionType: type, updateRecords: this.updateRecords, checkOnly: true})
+        action({actionType: type, updateRecords: this.updateRecords, checkOnly: false})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })

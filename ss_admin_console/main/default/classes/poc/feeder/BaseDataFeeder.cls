@@ -3,42 +3,28 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
     SSACResultsUtil util;
 
     public BaseDataFeeder(DataSupplier supplier) {
-        this.supplier = supplier;
-        
+        this.supplier = supplier;  
     }
 
-    public void feed(Boolean updateRecords, Boolean checkOnly, FeedLogger logger) {
+    public void feed(Boolean updateRecords, FeedLogger logger) {
         SSACResultsUtil util = new SSACResultsUtil();
         List<SSACResult> results = new DataFilter(supplier).filter();
         List<SSACResult> okResults = util.getResultsByStatus(results, SSACConstants.OK_STATUS);
         List<SSACResult> changedResults = util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS);
-        if (checkOnly) {
+        if (updateRecords) {
             if (!results.isEmpty()) {
-                Savepoint sp = Database.setSavepoint();
                 try {
                     Database.upsert(this.convertToSObject(results), true);
                     new LoggerConnector().log(results, supplier.getMetadata().objectType, logger);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                } finally {
-                    Database.rollback(sp);
                 }
             }
         } else {
             if (!results.isEmpty()) {
-                System.debug(this.convertToSObject(changedResults));
-                System.debug(this.convertToSObject(okResults));
                 try {
-                    if (updateRecords) {
-                        System.debug('here');
-                        System.debug(this.convertToSObject(changedResults));
-                        Database.SaveResult[] updatedResults = Database.update(this.convertToSObject(changedResults), true);
-                        new LoggerConnector().logUpsert(updatedResults, supplier.getMetadata().objectType, logger, updateRecords);
-                    } else {
-                        System.debug('here');
-                        Database.SaveResult[] insertedResults = Database.insert(this.convertToSObject(okResults), true);
-                        new LoggerConnector().logUpsert(insertedResults, supplier.getMetadata().objectType, logger, updateRecords);
-                    }
+                    Database.SaveResult[] insertedResults = Database.insert(this.convertToSObject(okResults), true);
+                    new LoggerConnector().logUpsert(insertedResults, supplier.getMetadata().objectType, logger, updateRecords);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }

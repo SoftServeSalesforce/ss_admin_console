@@ -169,7 +169,7 @@ export default class Diagnostic extends LightningElement {
         this.actionDisabled = true;
         let type = this.actionTypes[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
-        execute({actionType: type}, {updateRecords: this.updateRecords})
+        action({actionType: type, updateRecords: this.updateRecords, checkOnly: true})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })
@@ -182,7 +182,7 @@ export default class Diagnostic extends LightningElement {
         this.actionDisabled = true;
         let type = this.actionTypes[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
-        test({actionType: type})
+        action({actionType: type, updateRecords: this.updateRecords, checkOnly: true})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })

@@ -1,4 +1,4 @@
-public with sharing class SSACResultsUtil {
+public inherited sharing class SSACResultsUtil {
 
     private static String ID_SEPARATOR = ', ';
 
@@ -9,30 +9,35 @@ public with sharing class SSACResultsUtil {
                 diagnosticResults.add(result);
             }
         }
-
         return diagnosticResults;
     }
 
-    public List<SSACResult> generateDiagnosticResults(Database.SaveResult[] saveResults, String sObjectApiName) {
+    public List<SSACResult> generateDiagnosticResultsUpsert(Database.UpsertResult[] upsertResults, Schema.SObjectType sObjectType) {
         List<SSACResult> results = new List<SSACResult>();
-        for (Database.SaveResult result : saveResults) {
+        for (Database.UpsertResult result : upsertResults) {
             if (result.isSuccess()) {
                 results.add(new SSACResult()
-                        .setStatus(SSACConstants.OK_STATUS)
+                        .setStatus(SSACConstants.UPSERTED_STATUS)
                         .setRecordId(result.getId())
-                        .setSObjectApiName(sObjectApiName));
+                        .setSObjectApiName(sObjectType.getDescribe().getName()));
             } else {
-                String errorMessage = '';
-                for (Database.Error err : result.getErrors()) {
-                    errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage()
-                            + sObjectApiName + ' fields that affected this error: ' + err.getFields() + '. ';
-                }
-                results.add(new SSACResult()
-                        .setStatus(SSACConstants.FAILED_STATUS)
-                        .setErrorMessage(errorMessage)
-                        .setSObjectApiName(sObjectApiName));
+                results = this.generateDiagnosticError(result, sObjectType);
             }
         }
+        return results;
+    }
+
+    public List<SSACResult> generateDiagnosticError(Database.UpsertResult result, Schema.SObjectType sObjectType) {
+        List<SSACResult> results = new List<SSACResult>();
+            String errorMessage = '';
+            for (Database.Error err : result.getErrors()) {
+                errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage()
+                        + String.valueOf(sObjectType) + ' fields that affected this error: ' + err.getFields() + '. ';
+            }
+            results.add(new SSACResult()
+                    .setStatus(SSACConstants.FAILED_STATUS)
+                    .setErrorMessage(errorMessage)
+                    .setSObjectApiName(sObjectType.getDescribe().getName()));
         return results;
     }
 
@@ -62,7 +67,7 @@ public with sharing class SSACResultsUtil {
 
     public List<Id> getIds(List<SSACResult> results) {
         List<Id> ids = new List<Id>();
-        for (SSACResult result: results) {
+        for (SSACResult result : results) {
             ids.add(result.recordId);
         }
         return ids;

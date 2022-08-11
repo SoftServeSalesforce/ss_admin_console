@@ -1,16 +1,20 @@
-public with sharing class SSACProductDataAction extends SSACAsyncAction {
+public inherited sharing class SSACProductDataAction extends SSACAsyncAction {
 
     public override List<SSACResult> test() {
         List<SSACResult> result = new SSACSObjectAction(
-                ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA, ProductConstants.PRODUCT_CODE_API_NAME).test();
+            ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA.values(),
+            ProductConstants.PRODUCT_KEYFIELDS,
+            ProductConstants.PRODUCT_DATAFIELDS).test();
         result.addAll(new SSACSObjectAction(
-                ProductConstants.PRICE_BOOK_API_NAME, ProductConstants.PRICE_BOOK_DATA, ProductConstants.NAME_API_NAME).test());
+            ProductConstants.PRICE_BOOK_API_NAME, ProductConstants.PRICE_BOOK_DATA.values(),
+            ProductConstants.PRICEBOOK_KEYFIELDS,
+            ProductConstants.PRICEBOOK_DATAFIELDS).test());
         for (String priceBookName : ProductConstants.PRICE_BOOK_ENTRY_DATA.keySet()) {
             List<SSACResult> entryResults = new SSACSObjectAction(
-                    ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
-                    ProductConstants.PRICE_BOOK_ENTRY_DATA.get(priceBookName),
-                    ProductConstants.PRODUCT_CODE_API_NAME,
-                    'Pricebook2.Name = \'' + priceBookName + '\'').test();
+                ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
+                this.generateTestEntries(priceBookName).values(),
+                ProductConstants.PRICEBOOK_ENTRY_KEYFIELDS,
+                ProductConstants.PRICEBOOK_ENTRY_DATAFIELDS).test();
             result.addAll(entryResults);
         }
         new SSACLogger().publishResultLog(SSACConstants.PRODUCTS_DATA, 'Test');
@@ -19,19 +23,23 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
 
     public override List<SSACResult> execute() {
         List<SSACResult> productResults = new SSACSObjectAction(
-                ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA, ProductConstants.PRODUCT_CODE_API_NAME).execute();
+            ProductConstants.PRODUCT_API_NAME, ProductConstants.PRODUCTS_DATA.values(),
+            ProductConstants.PRODUCT_KEYFIELDS,
+            ProductConstants.PRODUCT_DATAFIELDS).execute();
         productResults.addAll(new SSACSObjectAction(
-                ProductConstants.PRICE_BOOK_API_NAME,
-                ProductConstants.PRICE_BOOK_DATA, ProductConstants.NAME_API_NAME).execute());
-
+            ProductConstants.PRICE_BOOK_API_NAME,
+            ProductConstants.PRICE_BOOK_DATA.values(),
+            ProductConstants.PRICEBOOK_KEYFIELDS,
+            ProductConstants.PRICEBOOK_DATAFIELDS).execute());
         Map<Id, Map<String, PricebookEntry>> allEntriesByPriceBookId = this.generateEntries(
-                ProductConstants.PRICE_BOOK_ENTRY_DATA, this.getPriceBooks(), this.getProductByProductCode(
-                        this.getProductCodes(ProductConstants.PRICE_BOOK_ENTRY_DATA)));
-
+            ProductConstants.PRICE_BOOK_ENTRY_DATA, this.getPriceBooks(), this.getProductByProductCode(
+                this.getProductCodes(ProductConstants.PRICE_BOOK_ENTRY_DATA)));
         for (Id i : allEntriesByPriceBookId.keySet()) {
-            List<SSACResult> entryResults = new SSACSObjectAction(ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
-                    allEntriesByPriceBookId.get(i), ProductConstants.PRODUCT_CODE_API_NAME,
-                    'Pricebook2Id = \'' + i + '\'').execute();
+            List<SSACResult> entryResults = new SSACSObjectAction(
+                ProductConstants.PRICE_BOOK_ENTRY_API_NAME,
+                allEntriesByPriceBookId.get(i).values(),
+                ProductConstants.PRICEBOOK_ENTRY_KEYFIELDS,
+                ProductConstants.PRICEBOOK_ENTRY_DATAFIELDS).execute();
             productResults.addAll(entryResults);
         }
         new SSACLogger().publishResultLog(SSACConstants.PRODUCTS_DATA, 'Execute');
@@ -49,17 +57,16 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
 
     @TestVisible
     private Map<Id, Map<String, PricebookEntry>> generateEntries(Map<String, Map<String, PricebookEntry>> pricebookEntries,
-            Map<String, Pricebook2> priceBookByName, Map<String, Product2> productByProductCode) {
+        Map<String, Pricebook2> priceBookByName, Map<String, Product2> productByProductCode) {
         Map<Id, Map<String, PricebookEntry>> allEntries = new Map<Id, Map<String, PricebookEntry>>();
         for (String priceBookName : pricebookEntries.keySet()) {
             if (priceBookByName.containsKey(priceBookName)) {
                 allEntries.put(priceBookByName.get(priceBookName).Id,
-                        this.getPriceBookEntries(priceBookByName.get(priceBookName), pricebookEntries.get(priceBookName),
-                                productByProductCode)
+                    this.getPriceBookEntries(priceBookByName.get(priceBookName), pricebookEntries.get(priceBookName),
+                            productByProductCode)
                 );
             }
         }
-
         return allEntries;
     }
 
@@ -71,7 +78,9 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
             if (productByProductCode.containsKey(entryCode)) {
                 PricebookEntry entry = pricebookEntries.get(entryCode);
                 entry.Pricebook2Id = pricebook.Id;
+                entry.Pricebook2 = new Pricebook2(Id = pricebook.Id, Name = pricebook.Name);
                 entry.Product2Id = productByProductCode.get(entryCode).Id;
+                entry.Product2 = new Product2(Id = productByProductCode.get(entryCode).Id, ProductCode = entryCode);
                 result.put(entryCode, entry);
             }
         }
@@ -104,4 +113,16 @@ public with sharing class SSACProductDataAction extends SSACAsyncAction {
 
         return priceBooks;
     }
+    
+    @TestVisible
+    private Map<String, PricebookEntry> generateTestEntries(String priceBookName) {
+        Map<String, PricebookEntry> entriesMap = ProductConstants.PRICE_BOOK_ENTRY_DATA.get(priceBookName);
+        for (String obj: entriesMap.keySet()) {
+            entriesMap.get(obj).putSObject('Pricebook2', new Pricebook2(Name = priceBookName));
+            entriesMap.get(obj).putSObject('Product2', new Product2(ProductCode = obj));
+            entriesMap.put(obj, entriesMap.get(obj));
+        }
+        return entriesMap;
+    }
+    
 }

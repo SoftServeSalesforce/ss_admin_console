@@ -1,23 +1,20 @@
-public with sharing class SSACDataHandler {
-
-    public Map<String, SObject> getValidRecords(List<SSACSObjectWrapper> wrappers,
-            Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {
-        return this.getValidRecords(wrappers, this.getParentFields(wrappers),
-                referenceFieldToKeyFields, referenceFieldToSObjectName);
-    }
-
-    public Map<String, SObject> getValidRecords(List<SSACSObjectWrapper> wrappers, Set<String> parentFields,
-            Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {
-        Map<String, Map<String, Id>> parentFieldToParentId = this.getParentIds(wrappers, parentFields,
-                referenceFieldToKeyFields, referenceFieldToSObjectName);
-        Map<String, SObject> result = this.getValidSObjects(wrappers, parentFieldToParentId);
-        return result;
-    }
+public inherited sharing class SSACDataHandler {
 
     public Map<String, SObject> wrappersToRecords(List<SSACSObjectWrapper> wrappers) {
         Map<String, SObject> records = new Map<String, SObject>();
         for (SSACSObjectWrapper wrapper : wrappers) {
             records.put(wrapper.key, wrapper.sobj);
+        }
+        return records;
+    }
+
+    public Map<String, SObject> wrappersToRecordsItem(List<SSACSObjectWrapper> wrappers) {
+        Map<String, SObject> records = this.wrappersToRecords(wrappers);
+        Integer counter = 0;
+        for(String obj: records.keySet()) {
+            records.get(obj).putSObject('Product2', new Product2(ProductCode = wrappers.get(counter).keyByReferenceFields.get('Product2Id')));
+            counter = wrappers.size() - 1 > counter ? ++counter : 0;
+            records.put(obj, records.get(obj));
         }
         return records;
     }
@@ -94,6 +91,36 @@ public with sharing class SSACDataHandler {
                     for (String parentFieldName : parentIds.keySet()) {
                         sobj.put(parentFieldName, parentIds.get(parentFieldName).get(wrapper.keyByReferenceFields.get(parentFieldName)));
                     }
+                    result.put(wrapper.key, sobj);
+                }
+            }
+        }
+        return result;
+    }
+
+    public Map<String, SObject> getValidRecords(List<SSACSObjectWrapper> wrappers, 
+            Map<String, String> referenceFieldToKeyFields, Map<String, String> referenceFieldToSObjectName) {
+
+        Map<String, Map<String, Id>> parentIds = this.getParentIds(wrappers, this.getParentFields(wrappers),
+                referenceFieldToKeyFields, referenceFieldToSObjectName);
+        Map<String, SObject> result = new Map<String, SObject>();
+        Integer counter = 0;
+        for (SSACSObjectWrapper wrapper : wrappers) {
+            if (wrapper.keyByReferenceFields == null || wrapper.keyByReferenceFields.isEmpty()) {
+                result.put(wrapper.key, wrapper.sobj);
+            } else {
+                if (this.allParentsExist(wrapper, parentIds)) {
+                    SObject sobj = wrapper.sobj;
+                    for (String parentFieldName : parentIds.keySet()) {
+                        String parentId = parentIds.get(parentFieldName).get(wrapper.keyByReferenceFields.get(parentFieldName));
+                        sobj.put(parentFieldName, parentId);
+                        Schema.SObjectType sobjType  = Schema.getGlobalDescribe().get(referenceFieldToSObjectName.get(parentFieldName));
+                        SObject newSObj = sobjType.newSObject();
+                        newSObj.put(referenceFieldToKeyFields.get(parentFieldName), wrappers.get(counter).keyByReferenceFields.get(parentFieldName));
+                        newSObj.Id = parentId;
+                        sobj.putSObject(referenceFieldToSObjectName.get(parentFieldName), newSObj);
+                    }
+                    counter = wrappers.size() - 1 > counter ? ++counter : 0;
                     result.put(wrapper.key, sobj);
                 }
             }

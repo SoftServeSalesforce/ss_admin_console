@@ -34,6 +34,7 @@ public inherited sharing class SSACController {
 
     @AuraEnabled
     public static String action(String actionType, Boolean updateRecords, Boolean checkOnly) {
+        FeedLogger logger = new CompositeFeedLogger(new List<FeedLogger>{new PlatformEventFeedLogger(), new SystemFeedLogger()});
         List<DataSupplierFactoryWrapper> factories = getDataFeederFactories();
         String factoryName;
         for (DataSupplierFactoryWrapper wrapper : factories) {
@@ -49,16 +50,16 @@ public inherited sharing class SSACController {
             if (checkOnly) {
                 Savepoint sp = Database.setSavepoint();
                 try {
-                    df.feed(true, checkOnly, new PlatformEventFeedLogger());
+                    df.feed(true, checkOnly, logger);
                 } finally {
                     Database.rollback(sp);
                 }
-                new PlatformEventFeedLogger().publishResultLog(actionType, 'Test');
+                new PlatformEventFeedLogger().publishResultLog(actionType, SSACConstants.TEST_ACTION_TYPE);
             } else {
                 try {
-                    df.feed(updateRecords, checkOnly, new PlatformEventFeedLogger());
+                    df.feed(updateRecords, checkOnly, logger);
                 } finally {
-                    new PlatformEventFeedLogger().publishResultLog(actionType, 'Execute');
+                    new PlatformEventFeedLogger().publishResultLog(actionType, SSACConstants.EXECUTE_ACTION_TYPE);
                 }
             }
         }

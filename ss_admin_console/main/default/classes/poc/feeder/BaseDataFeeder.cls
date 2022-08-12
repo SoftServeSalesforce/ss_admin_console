@@ -20,9 +20,12 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
                     } else {
                         new LoggerConnector().logUpsert(upsertedResults, supplier.getMetadata().objectType, logger);
                     }
+                    //TODO: check if really need a try catch block here
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
+            } else {
+                logger.log('Nothing to test', null, null);
             }
         } else {
             if (!results.isEmpty()) {
@@ -32,6 +35,8 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
+            } else {
+                logger.log('Nothing to execute', null, null);
             }
         }
     }
@@ -59,7 +64,6 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
     public class LoggerConnector {
        
         SSACResultsUtil util;
-        
         public LoggerConnector() {
             this.util = new SSACResultsUtil();
         }
@@ -68,15 +72,16 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
             Map<String, List<SSACResult>> resultsByStatus = genarateResultsMap(results);
 
             for (String status : resultsByStatus.keySet()) {
-                if (resultsByStatus.get(status) != null && !resultsByStatus.get(status).isEmpty()) {
+                List<SSACResult> res = resultsByStatus.get(status);
+                if (res != null && !res.isEmpty()) {
                     if (status == SSACConstants.FAILED_STATUS) {
-                        logger.log(this.handleMessageTitle(String.valueOf(sObjectType), status), util.errorsToString(resultsByStatus.get(status)), status);
+                        logger.error(util.errorsToString(res));
                     } else if (status == SSACConstants.UPDATED_STATUS || status == SSACConstants.INSERTED_STATUS) {
-                        logger.log(this.handleMessageTitle(String.valueOf(sObjectType), status), this.handleMessageUpsertedText(resultsByStatus.get(status)), status);
+                        logger.log(this.handleMessageTitle(String.valueOf(sObjectType), status), this.handleMessageUpsertedText(res), status);
                     } else {
-                        logger.log(this.handleMessageTitle(String.valueOf(sObjectType), status), this.handleMessageText(resultsByStatus.get(status)), status);
+                        logger.log(this.handleMessageTitle(String.valueOf(sObjectType), status), this.handleMessageText(res), status);
                     }
-                }
+                } 
             }
         }
 

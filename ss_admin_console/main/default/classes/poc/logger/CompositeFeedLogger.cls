@@ -12,9 +12,9 @@ public with sharing class CompositeFeedLogger implements FeedLogger {
         }
     }
 
-    public void log(String messageTitleLog, String messageLog, String statusLog) {
+    public void log(String messageTitle, String message, String status) {
         for (FeedLogger feedLogger : feedLoggers) {
-            feedLogger.log(messageTitleLog, messageLog, statusLog);
+            feedLogger.log(messageTitle, message, status);
         }
     }
 }

@@ -1,13 +1,13 @@
 public inherited sharing class SSACController {
 
-    private static Map<String, DataSupplier> actions = new Map<String, DataSupplier> {
-            SSACConstants.ACCOUNTS_DATA => SampleDataSuppliers.getAccountSampleData(),
-            SSACConstants.CONTACTS_DATA => SampleDataSuppliers.getContactSampleData()
-    };
-
     @AuraEnabled
     public static List<String> getDataTypes() {
-        return new List<String>(actions.keySet());
+        List<DataSupplierFactoryWrapper> factories = getDataFeederFactories();
+        List<String> dataTypes = new List<String>();
+        for (DataSupplierFactoryWrapper wrapper : factories) {
+            dataTypes.add(wrapper.description);
+        }
+        return dataTypes;
     }
 
     @AuraEnabled
@@ -24,7 +24,6 @@ public inherited sharing class SSACController {
                 }
             }
         }
-
         return feederFactories;
     }
 
@@ -34,51 +33,53 @@ public inherited sharing class SSACController {
     }
 
     @AuraEnabled
-    public static String test(String actionType) {
-        DataSupplier ds = actions.get(actionType);
-        if (ds != null) {
-            BaseDataFeeder bdf = new BaseDataFeeder(ds);
-            bdf.feed(false, new SystemFeedLogger());
-            new SystemFeedLogger().publishResultLog(actionType, 'Test');
-            return 'Test Started';
+    public static String action(String actionType, Boolean updateRecords, Boolean checkOnly) {
+        FeedLogger logger = new CompositeFeedLogger(new List<FeedLogger>{new PlatformEventFeedLogger(), new SystemFeedLogger()});
+        List<DataSupplierFactoryWrapper> factories = getDataFeederFactories();
+        String factoryName;
+        for (DataSupplierFactoryWrapper wrapper : factories) {
+            if (wrapper.description == actionType) {
+                factoryName = wrapper.factoryName;
+                break;
+            }
         }
-        if (TypeUtils.isBatchable(actionType)) {
+        if (factoryName != null) {
+            Type factoryType = Type.forName(factoryName);
+            DataFeederFactory feederFactory = (DataFeederFactory) factoryType.newInstance();
+            DataFeeder df = feederFactory.getDataFeeder();
+            if (checkOnly) {
+                Savepoint sp = Database.setSavepoint();
+                try {
+                    df.feed(true, checkOnly, logger);
+                } finally {
+                    Database.rollback(sp);
+                }
+                new PlatformEventFeedLogger().publishResultLog(actionType, SSACConstants.TEST_ACTION_TYPE);
+            } else {
+                try {
+                    df.feed(updateRecords, checkOnly, logger);
+                } finally {
+                    new PlatformEventFeedLogger().publishResultLog(actionType, SSACConstants.EXECUTE_ACTION_TYPE);
+                }
+            }
+        }
+        /*if (TypeUtils.isBatchable(actionType)) {
             new BaseBatchableFeeder(actionType).feed(false);
             return 'Test for batch job ' + actionType + ' started';
         }
         if (TypeUtils.isSchedulable(actionType)) {
             new BaseSchedulableFeeder(actionType).feed(false);
             return 'Test for scheduled job ' + actionType + ' started';
-        } 
-        return 'Test Started';
-    }
-
-    @AuraEnabled
-    public static String execute(String actionType) {
-        DataSupplier ds = actions.get(actionType);
-        if (ds != null) {
-            BaseDataFeeder bdf = new BaseDataFeeder(ds);
-            bdf.feed(true, new SystemFeedLogger());
-            new SystemFeedLogger().publishResultLog(actionType, 'Execute');
-            return 'Execution Started';
-        }
-        if (TypeUtils.isBatchable(actionType)) {
-            new BaseBatchableFeeder(actionType).feed(true);
-            return 'Execution for batch job ' + actionType + ' started';
-        }
-        if (TypeUtils.isSchedulable(actionType)) {
-            new BaseSchedulableFeeder(actionType).feed(true);
-            return 'Execution for scheduled job ' + actionType + ' started';
-        } 
-        return 'Execution Started';
+        } */
+        return 'Action Started';
     }
 
     public class DataSupplierFactoryWrapper {
-        public String supplierName {get; private set;}
+        public String description {get; private set;}
         public String factoryName {get; private set;}
 
-        public DataSupplierFactoryWrapper(String supplierName, String factoryName) {
-            this.supplierName = supplierName;
+        public DataSupplierFactoryWrapper(String description, String factoryName) {
+            this.description = description;
             this.factoryName = factoryName;
         }
     }

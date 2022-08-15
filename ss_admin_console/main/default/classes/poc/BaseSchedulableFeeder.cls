@@ -1,5 +1,6 @@
 // TODO What does this class do?
 public with sharing class BaseSchedulableFeeder {
+    /*
     private String className;
     private SSACLogger logger;
 
@@ -61,4 +62,6 @@ public with sharing class BaseSchedulableFeeder {
                 'Error occurred: Cron Expression is empty, ' +
                         'please fill in cron expression in Job Setting custom metadata', SSACConstants.FAILED_STATUS);
     }
+
+     */
 }

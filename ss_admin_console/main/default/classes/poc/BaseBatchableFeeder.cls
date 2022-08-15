@@ -1,5 +1,6 @@
 // TODO What does this class do?
 public with sharing class BaseBatchableFeeder {
+    /*
     private String className;
     // TODO To be replaced with use of FeedLogger provided as parameter to feed() method
     private SSACLogger oldLogger;
@@ -38,4 +39,5 @@ public with sharing class BaseBatchableFeeder {
                 'Error occurred: Job size is empty, ' +
                         'please fill in job sine in Job Setting custom metadata: Job Size', SSACConstants.FAILED_STATUS);
     }
+     */
 }

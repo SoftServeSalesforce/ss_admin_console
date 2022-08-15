@@ -102,19 +102,11 @@ public inherited sharing class DataFilter {
     private List<SObject> getExistentRecords(List<SObject> records) {
         List<Set<Object>> keyFieldValues = this.getKeyFieldValues(records);
         Integer fieldsNumber = keyFieldValues.size();
-<<<<<<<< HEAD:ss_admin_console/main/default/classes/SSACDataFilter.cls
-        //SetUtils sc = new SetUtils();
-========
->>>>>>>> origin/ongoing-improvements:ss_admin_console/main/default/classes/poc/DataFilter.cls
         Object pr0 = (fieldsNumber > 0) ?  SetUtils.toSetOfType(keyFields[0], keyFieldValues[0]) : null;
         Object pr1 = (fieldsNumber > 1) ?  SetUtils.toSetOfType(keyFields[1], keyFieldValues[1]) : null;
         Object pr2 = (fieldsNumber > 2) ?  SetUtils.toSetOfType(keyFields[2], keyFieldValues[2]) : null;
         Object pr3 = (fieldsNumber > 3) ?  SetUtils.toSetOfType(keyFields[3], keyFieldValues[3]) : null;
         Object pr4 = (fieldsNumber > 4) ?  SetUtils.toSetOfType(keyFields[4], keyFieldValues[4]) : null;
-<<<<<<<< HEAD:ss_admin_console/main/default/classes/SSACDataFilter.cls
-
-========
->>>>>>>> origin/ongoing-improvements:ss_admin_console/main/default/classes/poc/DataFilter.cls
         String query = this.buildQuery();
         return Database.query(query);
     }

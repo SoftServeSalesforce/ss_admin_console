@@ -1,5 +1,4 @@
 public interface FeedLogger {
-    // TODO add overloaded methods as needed
-    void error(String message);
-    void log(String message, String type, String sObjectName, String data);
+    void error(String messageError);
+    void log(String messageTitle, String message, String status);
 }

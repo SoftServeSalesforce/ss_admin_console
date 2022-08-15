@@ -3,15 +3,25 @@ public inherited sharing class StaticDataSupplier implements DataSupplier {
     private List<SObject> data;
 
     public StaticDataSupplier(List<String> keyFields, List<String> dataFields, List<SObject> data) {
-        // TODO verify input parameters
         SObjectType objectType = data.getSObjectType();
-        this.data = data;
+        if (data != null && !data.isEmpty() 
+            && keyFields !=  null && !keyFields.isEmpty()
+            && dataFields !=  null && !dataFields.isEmpty()) {
+            this.data = data;
+        } else {
+            throw new EmptyDataException('Data can not be null or empty!');
+        }
         this.metadata = new DataDefinition(objectType, toFieldReferences(objectType, keyFields), toFieldReferences(objectType, dataFields));
     }
 
     public StaticDataSupplier(List<SObjectField> keyFields, List<SObjectField> dataFields, List<SObject> data) {
-        // TODO verify input parameters
-        this.data = data;
+        if (data != null && !data.isEmpty() 
+            && keyFields !=  null && !keyFields.isEmpty()
+            && dataFields !=  null && !dataFields.isEmpty()) {
+            this.data = data;
+        } else {
+            throw new EmptyDataException('Data can not be null or empty!');
+        }
         this.metadata = new DataDefinition(data.getSObjectType(), toFieldReferences(keyFields), toFieldReferences(dataFields));
     }
 

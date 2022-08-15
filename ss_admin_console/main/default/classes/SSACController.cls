@@ -1,14 +1,13 @@
 public inherited sharing class SSACController {
 
-    private static Map<String, ISSACAction> actions = new Map<String, ISSACAction> {
-            SSACConstants.CUSTOMERS_DATA => new SSACCustomerDataAction(),
-            SSACConstants.PRODUCTS_DATA => new SSACProductDataAction(),
-            SSACConstants.OPPORTUNITY_DATA => new SSACOpportunityDataAction()
-    };
-
     @AuraEnabled
     public static List<String> getDataTypes() {
-        return new List<String>(actions.keySet());
+        List<DataSupplierFactoryWrapper> factories = getDataFeederFactories();
+        List<String> dataTypes = new List<String>();
+        for (DataSupplierFactoryWrapper wrapper : factories) {
+            dataTypes.add(wrapper.description);
+        }
+        return dataTypes;
     }
 
     @AuraEnabled
@@ -25,7 +24,7 @@ public inherited sharing class SSACController {
                 }
             }
         }
-        return new List<DataSupplierFactoryWrapper>();
+        return feederFactories;
     }
 
     @AuraEnabled
@@ -34,49 +33,53 @@ public inherited sharing class SSACController {
     }
 
     @AuraEnabled
-    public static String test(String actionType) {
-        ISSACAction item = actions.get(actionType);
-        if (item instanceof SSACAsyncAction) {
-            ((SSACAsyncAction) item).testAsync();
-            return 'Test Started';
+    public static String action(String actionType, Boolean updateRecords, Boolean checkOnly) {
+        FeedLogger logger = new CompositeFeedLogger(new List<FeedLogger>{new PlatformEventFeedLogger(), new SystemFeedLogger()});
+        List<DataSupplierFactoryWrapper> factories = getDataFeederFactories();
+        String factoryName;
+        for (DataSupplierFactoryWrapper wrapper : factories) {
+            if (wrapper.description == actionType) {
+                factoryName = wrapper.factoryName;
+                break;
+            }
         }
-        if (TypeUtils.isBatchable(actionType)) {
-            new SSACBatchableAction(actionType).test();
+        if (factoryName != null) {
+            Type factoryType = Type.forName(factoryName);
+            DataFeederFactory feederFactory = (DataFeederFactory) factoryType.newInstance();
+            DataFeeder df = feederFactory.getDataFeeder();
+            if (checkOnly) {
+                Savepoint sp = Database.setSavepoint();
+                try {
+                    df.feed(true, checkOnly, logger);
+                } finally {
+                    Database.rollback(sp);
+                }
+                new PlatformEventFeedLogger().publishResultLog(actionType, SSACConstants.TEST_ACTION_TYPE);
+            } else {
+                try {
+                    df.feed(updateRecords, checkOnly, logger);
+                } finally {
+                    new PlatformEventFeedLogger().publishResultLog(actionType, SSACConstants.EXECUTE_ACTION_TYPE);
+                }
+            }
+        }
+        /*if (TypeUtils.isBatchable(actionType)) {
+            new BaseBatchableFeeder(actionType).feed(false);
             return 'Test for batch job ' + actionType + ' started';
         }
         if (TypeUtils.isSchedulable(actionType)) {
-            new SSACScheduledAction(actionType).test();
+            new BaseSchedulableFeeder(actionType).feed(false);
             return 'Test for scheduled job ' + actionType + ' started';
-        }
-        item.test();
-        return 'Test Started';
-    }
-
-    @AuraEnabled
-    public static String execute(String actionType) {
-        ISSACAction item = actions.get(actionType);
-        if (item instanceof SSACAsyncAction) {
-            ((SSACAsyncAction) item).executeAsync();
-            return 'Execution Started';
-        }
-        if (TypeUtils.isBatchable(actionType)) {
-            new SSACBatchableAction(actionType).execute();
-            return 'Execution for batch job ' + actionType + ' started';
-        }
-        if (TypeUtils.isSchedulable(actionType)) {
-            new SSACScheduledAction(actionType).execute();
-            return 'Execution for scheduled job ' + actionType + ' started';
-        }
-        item.execute();
-        return 'Execution Started';
+        } */
+        return 'Action Started';
     }
 
     public class DataSupplierFactoryWrapper {
-        public String supplierName {get; private set;}
+        public String description {get; private set;}
         public String factoryName {get; private set;}
 
-        public DataSupplierFactoryWrapper(String supplierName, String factoryName) {
-            this.supplierName = supplierName;
+        public DataSupplierFactoryWrapper(String description, String factoryName) {
+            this.description = description;
             this.factoryName = factoryName;
         }
     }

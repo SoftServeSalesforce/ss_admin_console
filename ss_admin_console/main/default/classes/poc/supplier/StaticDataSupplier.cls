@@ -11,7 +11,8 @@ public inherited sharing class StaticDataSupplier implements DataSupplier {
         } else {
             throw new EmptyDataException('Data can not be null or empty!');
         }
-        this.metadata = new DataDefinition(objectType, toFieldReferences(objectType, keyFields), toFieldReferences(objectType, dataFields));
+        // TODO To be replaced with DataDefinitionBuilder
+        //this.metadata = new DataDefinition(objectType, toFieldReferences(objectType, keyFields), toFieldReferences(objectType, dataFields));
     }
 
     public StaticDataSupplier(List<SObjectField> keyFields, List<SObjectField> dataFields, List<SObject> data) {
@@ -22,7 +23,14 @@ public inherited sharing class StaticDataSupplier implements DataSupplier {
         } else {
             throw new EmptyDataException('Data can not be null or empty!');
         }
-        this.metadata = new DataDefinition(data.getSObjectType(), toFieldReferences(keyFields), toFieldReferences(dataFields));
+        // TODO To be replaced with DataDefinitionBuilder
+        //this.metadata = new DataDefinition(data.getSObjectType(), toFieldReferences(keyFields), toFieldReferences(dataFields));
+    }
+
+    public StaticDataSupplier(DataDefinition metadata, List<SObject> data) {
+        // TODO verify input parameters
+        this.data = data;
+        this.metadata = metadata;
     }
 
     public List<SObject> supply() {
@@ -48,4 +56,16 @@ public inherited sharing class StaticDataSupplier implements DataSupplier {
         }
         return result;
     }
+
+    /*
+    private static List<DataDefinition.ReferenceFieldDefinition> toReferenceDefinitions(List<SObjectField> referenceFields,
+            List<List<SObjectField>> referencedSObjectKeyFields) {
+        List<DataDefinition.ReferenceFieldDefinition> referenceDefinitions = new List<DataDefinition.ReferenceFieldDefinition>();
+        for (Integer i = 0; i < referenceFields.size(); i++) {
+            referenceDefinitions.add(new DataDefinition.ReferenceFieldDefinition(referenceFields[i],
+                    toFieldReferences(referencedSObjectKeyFields[i])));
+        }
+        return referenceDefinitions;
+    }
+    */
 }

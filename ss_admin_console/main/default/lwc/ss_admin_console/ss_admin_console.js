@@ -1,6 +1,5 @@
 import {LightningElement, track, api} from 'lwc';
-import execute from '@salesforce/apex/SSACController.execute';
-import test from '@salesforce/apex/SSACController.test';
+import action from '@salesforce/apex/SSACController.action';
 import getDataTypes from '@salesforce/apex/SSACController.getDataTypes';
 import getJobClasses from '@salesforce/apex/SSACController.getJobClasses';
 import userId from '@salesforce/user/Id';
@@ -17,6 +16,7 @@ export default class Diagnostic extends LightningElement {
     @track types = [];
     @track batchClasses = [];
     @track scheduledClasses = [];
+    @track updateRecords = false;
     logPayload = {};
     jobResultPayload = {};
     sObjectLoadLog = '/event/SObjectLoadEvent__e';
@@ -91,9 +91,7 @@ export default class Diagnostic extends LightningElement {
                 this.logPayload.data.payload.Message_Title__c,
                 this.logPayload.data.payload.Message__c,
                 this.logPayload.data.payload.CreatedDate));
-            this.logs.push(this.handleHeaderMessage(this.handleFinishMessage(
-                this.logPayload.data.payload.SObject_Type__c,
-                this.logPayload.data.payload.Action_Type__c)));
+            this.logs.push(this.handleHeaderMessage(this.handleFinishMessage()));
         };
         subscribe(this.sObjectLoadLog, -1, messageCallback).then(response => {
             this.subscription = response;
@@ -107,9 +105,7 @@ export default class Diagnostic extends LightningElement {
                 return;
             }
             if (this.jobResultPayload.data.payload.Action_Type__c) {
-                this.logs.push(this.handleHeaderMessage(this.handleFinishMessage(
-                    this.jobResultPayload.data.payload.Action_Name__c,
-                    this.jobResultPayload.data.payload.Action_Type__c)));
+                this.logs.push(this.handleHeaderMessage(this.handleFinishMessage()));
             }
             if (this.actionTypes.length != this.actionNumber && this.jobResultPayload.data.payload.Action_Type__c) {
                 if (this.jobResultPayload.data.payload.Action_Type__c === 'Test') {
@@ -144,7 +140,9 @@ export default class Diagnostic extends LightningElement {
             log += this.setColor('darkgoldenrod', messageTitle);
         } else if (messageType == 'CHANGED') {
             log += this.setColor('brown', messageTitle);
-        } else if (messageType == 'UPSERTED') {
+        } else if (messageType == 'UPDATED') {
+            log += this.setColor('blue', messageTitle);
+        } else if (messageType == 'INSERTED') {
             log += this.setColor('blue', messageTitle);
         }
         if (message) {
@@ -154,8 +152,12 @@ export default class Diagnostic extends LightningElement {
         return log;
     };
 
-    handleFinishMessage(objectType, actionType) {
-        return actionType + ' action was finished - ' + objectType;
+    handleFinishMessage() {
+        return 'Action was finished';
+    }
+
+    handleCheckboxChange(event) {
+        this.updateRecords = event.target.checked;        
     }
 
     setColor(color, message) {
@@ -166,7 +168,7 @@ export default class Diagnostic extends LightningElement {
         this.actionDisabled = true;
         let type = this.actionTypes[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
-        execute({actionType: type})
+        action({actionType: type, updateRecords: this.updateRecords, checkOnly: false})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })
@@ -179,7 +181,7 @@ export default class Diagnostic extends LightningElement {
         this.actionDisabled = true;
         let type = this.actionTypes[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
-        test({actionType: type})
+        action({actionType: type, updateRecords: this.updateRecords, checkOnly: true})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })

@@ -70,7 +70,7 @@ node {
             if (rc != 0) { error 'hub org authorization failed' }
 
             if (isPrToMain) {
-                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:source:deploy --checkonly --testlevel RunLocalTests --targetusername ${ORG_USERNAME} -p ss_admin_console"
+                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:source:deploy --checkonly --testlevel RunLocalTests --targetusername ${ORG_USERNAME} -p ss_admin_console --verbose"
                 if (rc != 0) {
                     error 'Validation failed'
                 }

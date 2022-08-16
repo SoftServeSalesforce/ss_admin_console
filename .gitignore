@@ -43,3 +43,7 @@ $RECYCLE.BIN/
 
 .sf/
 .sfdx/
+
+# Outputs
+
+/out/

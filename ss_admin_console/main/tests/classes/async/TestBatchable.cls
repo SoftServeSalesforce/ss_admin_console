@@ -1,3 +1,4 @@
+@IsTest
 public with sharing class TestBatchable implements Database.Batchable<SObject> {
 
     public Database.QueryLocator start(Database.BatchableContext bc) {

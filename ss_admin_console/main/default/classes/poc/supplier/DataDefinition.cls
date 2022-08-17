@@ -15,10 +15,10 @@ public inherited sharing class DataDefinition {
     }
 
     public class DataDefinitionBuilder {
-        public SObjectType objectType;
-        public List<FieldReference> keyFields = new List<FieldReference>();
-        public List<FieldReference> dataFields = new List<FieldReference>();
-        public List<ReferenceFieldDefinition> referenceFields = new List<ReferenceFieldDefinition>();
+        private SObjectType objectType;
+        private List<FieldReference> keyFields = new List<FieldReference>();
+        private List<FieldReference> dataFields = new List<FieldReference>();
+        private List<ReferenceFieldDefinition> referenceFields = new List<ReferenceFieldDefinition>();
 
         public DataDefinitionBuilder(SObjectType objectType) {
             this.objectType = objectType;
@@ -46,6 +46,12 @@ public inherited sharing class DataDefinition {
 
         public DataDefinitionBuilder addReferenceField(SObjectField referenceField, List<SObjectField> referencedKeyFields) {
             ReferenceFieldDefinition rfd = new ReferenceFieldDefinition();
+            if (referenceField == null) {
+                throw new IllegalArgumentException('\'referenceField\' parameter can not be null.');
+            }
+            if (referencedKeyFields == null || referencedKeyFields.isEmpty()) {
+                throw new IllegalArgumentException('\'referencedKeyFields\' parameter can not be null or empty.');
+            }
             rfd.referenceField = referenceField;
             rfd.referencedKeyFields = toFieldReferences(referencedKeyFields);
             referenceFields.add(rfd);
@@ -54,37 +60,32 @@ public inherited sharing class DataDefinition {
 
         public DataDefinitionBuilder addReferenceField(SObjectField referenceField, List<String> referencedKeyFields) {
             ReferenceFieldDefinition rfd = new ReferenceFieldDefinition();
-            if (referenceField != null) {
-                rfd.referenceField = referenceField;
-            } else {
-                throw new IllegalArgumentException('ReferenceField parameter can not be null.');
+            if (referenceField == null) {
+                throw new IllegalArgumentException('\'referenceField\' parameter can not be null.');
             }
-            if (referencedKeyFields != null && !referencedKeyFields.isEmpty()) {
-                rfd.referencedKeyFields = toFieldReferences(objectType, referencedKeyFields);
-            } else {
-                throw new IllegalArgumentException('ReferenceKeyFields parameter can not be null or empty.');
+            if (referencedKeyFields == null || referencedKeyFields.isEmpty()) {
+                throw new IllegalArgumentException('\'referencedKeyFields\' parameter can not be null or empty.');
             }
+            rfd.referenceField = referenceField;
+            rfd.referencedKeyFields = toFieldReferences(objectType, referencedKeyFields);
             referenceFields.add(rfd);
             return this;
         }
 
         public DataDefinition build() {
             DataDefinition dd = new DataDefinition();
-            if (objectType != null) {
-                dd.objectType = objectType;
-            } else {
-                throw new IllegalArgumentException('Objectype parameter can not be null.');
+            if (objectType == null) {
+                throw new IllegalArgumentException('\'objecType\' parameter can not be null.');
             }
-            if (keyFields != null && !keyFields.isEmpty()) {
-                dd.keyFields = keyFields;
-            } else {
-                throw new IllegalArgumentException('Keyfields parameter can not be null or empty.');
+            if (keyFields == null || keyFields.isEmpty()) {
+                throw new IllegalArgumentException('\'keyFields\' parameter can not be null or empty.');
             }
-            if (dataFields != null && !dataFields.isEmpty()) {
-                dd.dataFields = dataFields;
-            } else {
-                throw new IllegalArgumentException('Datafields parameter can not be null or empty.');
+            if (dataFields == null || dataFields.isEmpty()) {
+                throw new IllegalArgumentException('\'dataFields\' parameter can not be null or empty.');
             }
+            dd.objectType = objectType;
+            dd.keyFields = keyFields;
+            dd.dataFields = dataFields;
             dd.referenceFields = referenceFields;
             return dd;
         }

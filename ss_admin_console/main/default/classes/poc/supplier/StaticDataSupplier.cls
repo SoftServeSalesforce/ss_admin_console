@@ -3,16 +3,14 @@ public inherited sharing class StaticDataSupplier implements DataSupplier {
     private List<SObject> data;
 
     public StaticDataSupplier(DataDefinition metadata, List<SObject> data) {
-        if (data != null && !data.isEmpty()) {
-            this.data = data;
-        } else {
-            throw new IllegalArgumentException('Data can not be null or empty!');
+        if (data == null || data.isEmpty()) {
+            throw new IllegalArgumentException('\'data\' can not be null or empty!');
         }
-        if (metadata != null) {
-            this.metadata = metadata;
-        } else {
-            throw new IllegalArgumentException('Metadata can not be null!');
+        if (metadata == null) {
+            throw new IllegalArgumentException('\'metadata\' can not be null!');
         }
+        this.data = data;
+        this.metadata = metadata;
     }
 
     public List<SObject> supply() {

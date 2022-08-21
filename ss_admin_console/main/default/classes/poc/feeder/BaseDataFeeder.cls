@@ -11,32 +11,37 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         List<SSACResult> results = new DataFilter(supplier).filter();
         List<SSACResult> okResults = util.getResultsByStatus(results, SSACConstants.OK_STATUS);
         List<SSACResult> changedResults = util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS);
+        List<SSACResult> recordsToUpsert = new List<SSACResult>();
+        recordsToUpsert.addAll(okResults);
+        recordsToUpsert.addAll(changedResults);
+        fflib_SObjectUnitOfWork uow = new UnitOfWorkHelper().linkSObjects(this.convertToSObject(recordsToUpsert), supplier.getMetadata().objectType);
         if (updateRecords) {
             if (!results.isEmpty()) {
                 try {
-                    Database.UpsertResult[] upsertedResults = Database.upsert(this.convertToSObject(results), true);
-                    if(checkOnly) {
+                    Database.UpsertResult[] upsertedResults = Database.upsert(this.convertToSObject(recordsToUpsert));
+                    if (checkOnly) {
                         new LoggerConnector().log(results, supplier.getMetadata().objectType, logger);
                     } else {
-                        new LoggerConnector().logUpsert(upsertedResults, supplier.getMetadata().objectType, logger);
+                        if (!recordsToUpsert.isEmpty()){
+                            new LoggerConnector().logUpsert(upsertedResults, supplier.getMetadata().objectType, logger);
+                        } else {
+                            logger.log(String.valueOf(supplier.getMetadata().objectType), 'No records to be upserted.', 'FAILED');
+                        }
                     }
-                    //TODO: check if really need a try catch block here
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
-            } else {
-                logger.log('Nothing to test', null, null);
             }
         } else {
-            if (!results.isEmpty()) {
+            if (!recordsToUpsert.isEmpty()) {
                 try {
-                    Database.SaveResult[] insertedResults = Database.insert(this.convertToSObject(okResults), true);
+                    Database.SaveResult[] insertedResults = Database.insert(this.convertToSObject(okResults));
                     new LoggerConnector().logInsert(insertedResults, supplier.getMetadata().objectType, logger);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
             } else {
-                logger.log('Nothing to execute', null, null);
+                logger.log(String.valueOf(supplier.getMetadata().objectType), 'No records to be inserted.', 'FAILED');
             }
         }
     }
@@ -77,17 +82,17 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
                     if (status == SSACConstants.FAILED_STATUS) {
                         logger.error(util.errorsToString(res));
                     } else if (status == SSACConstants.UPDATED_STATUS || status == SSACConstants.INSERTED_STATUS) {
-                        logger.log(this.handleMessageTitle(String.valueOf(sObjectType), status), this.handleMessageUpsertedText(res), status);
+                        logger.log(String.valueOf(sObjectType), this.handleMessageUpsertedText(res), status);
                     } else {
-                        logger.log(this.handleMessageTitle(String.valueOf(sObjectType), status), this.handleMessageText(res), status);
+                        logger.log(String.valueOf(sObjectType), this.handleMessageText(res), status);
                     }
                 } 
             }
         }
 
-        public void logUpsert(Database.UpsertResult[] upsertedResulits, Schema.SObjectType sObjectType, FeedLogger logger) {
+        public void logUpsert(Database.UpsertResult[] upsertedResults, Schema.SObjectType sObjectType, FeedLogger logger) {
             List<SSACResult> results = new List<SSACResult>();
-            for (Database.UpsertResult result : upsertedResulits) {
+            for (Database.UpsertResult result : upsertedResults) {
                 if (result.isSuccess()) {
                     results.add(new SSACResult()
                             .setStatus(SSACConstants.UPDATED_STATUS)
@@ -130,24 +135,6 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
                             .setSObjectApiName(sObjectType.getDescribe().getName()));
                     log(results, sObjectType, logger);
                 }
-            }
-        }
-
-        //TODO: replace it to lwc
-        @TestVisible
-        private String handleMessageTitle(String sObjectApiName, String status) {
-            if (status == SSACConstants.DUPLICATED_STATUS) {
-                return 'The following ' + sObjectApiName + '\'s records already exist: ';
-            } else if (status == SSACConstants.OK_STATUS) {
-                return 'The following ' + sObjectApiName + '\'s records should be inserted: ';
-            } else if (status == SSACConstants.CHANGED_STATUS) {
-                return 'The following ' + sObjectApiName + '\'s records could be updated: ';
-            } else if (status == SSACConstants.INSERTED_STATUS) {
-                return 'Successfully inserted ' + sObjectApiName + '\'s records. ';    
-            } else if (status == SSACConstants.UPDATED_STATUS) {
-                return 'Successfully updated ' + sObjectApiName + '\'s records. ';
-            } else {
-                return 'Error occured: ';
             }
         }
 

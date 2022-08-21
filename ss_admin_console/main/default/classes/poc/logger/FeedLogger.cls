@@ -1,4 +1,4 @@
 public interface FeedLogger {
     void error(String messageError);
-    void log(String messageTitle, String message, String status);
+    void log(String sObjectType, String message, String status);
 }

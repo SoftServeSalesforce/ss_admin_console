@@ -2,16 +2,16 @@ public with sharing class PlatformEventFeedLogger implements FeedLogger {
 
     public void error(String messageError) {
         SObjectLoadEvent__e event = new SObjectLoadEvent__e(
-                Message_title__c = 'Error occured: ',
+                sObjectType__c = 'Error occured: ',
                 Message__c = messageError,
                 Message_Type__c = null
         );
         EventBus.publish(event);
     }
 
-    public void log(String messageTitle, String message, String status) {
+    public void log(String sObjectType, String message, String status) {
         SObjectLoadEvent__e event = new SObjectLoadEvent__e(
-                Message_title__c = messageTitle,
+                sObjectType__c = sObjectType,
                 Message__c = message,
                 Message_Type__c = status
         );

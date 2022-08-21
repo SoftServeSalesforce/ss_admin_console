@@ -85,10 +85,11 @@ export default class Diagnostic extends LightningElement {
             if (this.logPayload.data.payload.CreatedById !== userId) {
                 return;
             }
+            console.log(this.logPayload.data.payload);
             this.logsExist = true;
             this.logs.push(this.handleMessage(
                 this.logPayload.data.payload.Message_Type__c,
-                this.logPayload.data.payload.Message_Title__c,
+                this.logPayload.data.payload.sObjectType__c,
                 this.logPayload.data.payload.Message__c,
                 this.logPayload.data.payload.CreatedDate));
             this.logs.push(this.handleHeaderMessage(this.handleFinishMessage()));
@@ -103,9 +104,6 @@ export default class Diagnostic extends LightningElement {
             this.jobResultPayload = JSON.parse(JSON.stringify(response));
             if (this.jobResultPayload.data.payload.CreatedById !== userId) {
                 return;
-            }
-            if (this.jobResultPayload.data.payload.Action_Type__c) {
-                this.logs.push(this.handleHeaderMessage(this.handleFinishMessage()));
             }
             if (this.actionTypes.length != this.actionNumber && this.jobResultPayload.data.payload.Action_Type__c) {
                 if (this.jobResultPayload.data.payload.Action_Type__c === 'Test') {
@@ -130,25 +128,26 @@ export default class Diagnostic extends LightningElement {
         });
     };
 
-    handleMessage(messageType, messageTitle, message, messageDate) {
+    handleMessage(messageType, sObjectApiName, message, messageDate) {
         let log = messageDate + ': ';
-        if (messageType == 'DUPLICATED' || messageType == 'FAILED') {
-            log += this.setColor('red', messageTitle);
+        if (messageType == 'DUPLICATED') {
+            log += this.setColor('red', 'The following ' + sObjectApiName + '\'s records already exist: ');
         } else if (messageType == 'OK') {
-            log += this.setColor('green', messageTitle);
-        } else if (messageType == 'WARNING') {
-            log += this.setColor('darkgoldenrod', messageTitle);
+            log += this.setColor('green', 'The following ' + sObjectApiName + '\'s records should be inserted: ');
         } else if (messageType == 'CHANGED') {
-            log += this.setColor('brown', messageTitle);
+            log += this.setColor('brown', 'The following ' + sObjectApiName + '\'s records could be updated: ');
         } else if (messageType == 'UPDATED') {
-            log += this.setColor('blue', messageTitle);
+            log += this.setColor('blue', 'Successfully updated ' + sObjectApiName + '\'s records. ');
         } else if (messageType == 'INSERTED') {
-            log += this.setColor('blue', messageTitle);
+            log += this.setColor('blue', 'Successfully inserted ' + sObjectApiName + '\'s records. ');
+        }else if (messageType == 'UPSERTED') {
+            log += this.setColor('blue', 'Successfully upserted ' + sObjectApiName + '\'s records. ');
+        } else if (messageType == 'FAILED') {
+            log += this.setColor('red', 'Error occured. Ask administator for help');
         }
         if (message) {
             log += ' ' + message;
         }
-
         return log;
     };
 

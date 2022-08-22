@@ -13,6 +13,8 @@ public inherited sharing class DataDefinitionTest {
         DataDefinition dd = ddb.build();
         Test.stopTest();
         System.assertEquals(2, dd.keyFields.size());
+        System.assertEquals(String.valueOf(OpportunityLineItem.Quantity), dd.keyFields[0].toString());
+        System.assertEquals('Product2.ProductCode', dd.keyFields[1].toString());
         System.assertEquals(2, dd.dataFields.size());
         System.assertEquals(2, dd.referenceFields.size());
     }

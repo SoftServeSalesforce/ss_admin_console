@@ -49,5 +49,6 @@ public inherited sharing class StaticDataSupplierTest {
         List<SObject> data = sdd.supply();
         Test.stopTest();
         System.assertEquals(1, data.size());
+        System.assertEquals('Social Software', data[0].get('Name'));
     }
 }

@@ -11,23 +11,19 @@ public inherited sharing class DataDefinitionTest {
 
         Test.startTest();
         DataDefinition dd = ddb.build();
+        Test.stopTest();
         System.assertEquals(2, dd.keyFields.size());
         System.assertEquals(2, dd.dataFields.size());
         System.assertEquals(2, dd.referenceFields.size());
-        Test.stopTest();
     }
 
     @IsTest
-    static void testDDBInvalidSObjectTypeBuild() {
-        DataDefinition.DataDefinitionBuilder ddb = new DataDefinition.DataDefinitionBuilder(null);
-        
+    static void testDDBInvalidSObjectType() {
         Test.startTest();
         try {
-            ddb.build();
+            DataDefinition.DataDefinitionBuilder ddb = new DataDefinition.DataDefinitionBuilder(null);
             System.assert(false, 'IllegalArgumentException is expected here');
-        } catch (Exception e) {
-            System.assert(e instanceof IllegalArgumentException);
-        }
+        } catch (IllegalArgumentException e) {}
         Test.stopTest();
     }
 
@@ -39,9 +35,7 @@ public inherited sharing class DataDefinitionTest {
         try {
             ddb.build();
             System.assert(false, 'IllegalArgumentException is expected here');
-        } catch (Exception e) {
-            System.assert(e instanceof IllegalArgumentException);
-        }
+        } catch (IllegalArgumentException e) {}
         Test.stopTest();
     }
 
@@ -54,9 +48,7 @@ public inherited sharing class DataDefinitionTest {
         try {
             ddb.build();
             System.assert(false, 'IllegalArgumentException is expected here');
-        } catch (Exception e) {
-            System.assert(e instanceof IllegalArgumentException);
-        }
+        } catch (IllegalArgumentException e) {}
         Test.stopTest();
     }
 
@@ -66,11 +58,21 @@ public inherited sharing class DataDefinitionTest {
 
         Test.startTest();
         try {
-            ddb.addKeyField('Invalid');
+            ddb.addKeyField('');
             System.assert(false, 'IllegalArgumentException is expected here');
-        } catch (Exception e) {
-            System.assert(e instanceof IllegalArgumentException);
-        }
+        } catch (IllegalArgumentException e) {}
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testDDBAddInvalidDataField() {
+        DataDefinition.DataDefinitionBuilder ddb = new DataDefinition.DataDefinitionBuilder(Account.SObjectType);
+
+        Test.startTest();
+        try {
+            ddb.addDataField('');
+            System.assert(false, 'IllegalArgumentException is expected here');
+        } catch (IllegalArgumentException e) {}
         Test.stopTest();
     }
 
@@ -82,9 +84,7 @@ public inherited sharing class DataDefinitionTest {
         try {
             ddb.addReferenceField(null, new String[] {'Product2.ProductCode'});
             System.assert(false, 'IllegalArgumentException is expected here');
-        } catch (Exception e) {
-            System.assert(e instanceof IllegalArgumentException);
-        }
+        } catch (IllegalArgumentException e) {}
         Test.stopTest();
     }
 
@@ -96,9 +96,7 @@ public inherited sharing class DataDefinitionTest {
         try {
             ddb.addReferenceField(OpportunityLineItem.OpportunityId, new String[] {});
             System.assert(false, 'IllegalArgumentException is expected here');
-        } catch (Exception e) {
-            System.assert(e instanceof IllegalArgumentException);
-        }
+        } catch (IllegalArgumentException e) {}
         Test.stopTest();
     }
 
@@ -110,9 +108,7 @@ public inherited sharing class DataDefinitionTest {
         try {
             ddb.addReferenceField(OpportunityLineItem.OpportunityId, new SObjectField[] {});
             System.assert(false, 'IllegalArgumentException is expected here');
-        } catch (Exception e) {
-            System.assert(e instanceof IllegalArgumentException);
-        }
+        } catch (IllegalArgumentException e) {}
         Test.stopTest();
     }
 
@@ -124,9 +120,7 @@ public inherited sharing class DataDefinitionTest {
         try {
             ddb.addReferenceField(null, new SObjectField[] {OpportunityLineItem.Opportunity.Name});
             System.assert(false, 'IllegalArgumentException is expected here');
-        } catch (Exception e) {
-            System.assert(e instanceof IllegalArgumentException);
-        }
+        } catch (IllegalArgumentException e) {}
         Test.stopTest();
     }
 }

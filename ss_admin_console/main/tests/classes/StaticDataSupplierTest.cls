@@ -8,9 +8,7 @@ public inherited sharing class StaticDataSupplierTest {
             StaticDataSupplier sdd = new StaticDataSupplier(null, new Account[] { 
                 new Account(Name = 'Social Software') });
             System.assert(false, 'IllegalArgumentException is expected here');
-        } catch (Exception e) {
-            System.assert(e instanceof IllegalArgumentException);
-        }
+        } catch (IllegalArgumentException e) {}
         Test.stopTest();
     }
 
@@ -23,9 +21,7 @@ public inherited sharing class StaticDataSupplierTest {
         try {
             StaticDataSupplier sdd = new StaticDataSupplier(metadata, new List<SObject>());
             System.assert(false, 'IllegalArgumentException is expected here');
-        } catch (Exception e) {
-            System.assert(e instanceof IllegalArgumentException);
-        }
+        } catch (IllegalArgumentException e) {}
         Test.stopTest();
     }
 

@@ -32,11 +32,27 @@ public inherited sharing class SSACUtilTest {
 
     @isTest
     static void testGetSubClasses() {
-        List<Type> factoryTypes = new List<Type>();
+        List<Type> subClasses = new List<Type>();
         SSACUtil utility = new SSACUtil();
+
+        TestSubClass1 obj1 = new TestSubClass1();
+        TestSubClass2 obj2 = new TestSubClass2();
+        TestSubClass3 obj3 = new TestSubClass3();
+
+        obj1.calculate(3);
+        obj2.calculate(4);
+        obj3.calculate(5);
+
+        System.debug('Hello World!');
+
         Test.startTest();
-        factoryTypes = utility.getSubClasses(DataFeederFactory.class);
+        subClasses = utility.getSubClasses(TestInterfaceClass.class);
+        System.debug('subClasses[0]:'+subClasses[0]);
+        System.debug('subClasses[1]:'+subClasses[1]);
+        System.debug('subClasses[2]:'+subClasses[2]);
+        System.debug('subClasses[3]:'+subClasses[3]);
         Test.stopTest();
-        System.assertNotEquals(null, factoryTypes, 'getSubClasses successfully recovered.');
+
+        System.assertEquals(4, subClasses.size());
     }
 }

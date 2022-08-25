@@ -1,5 +1,18 @@
 public with sharing class PlatformEventFeedLogger implements FeedLogger {
+    @TestVisible
+    private static PlatformEventFeedLogger instance;
 
+    private PlatformEventFeedLogger() {
+
+    }
+
+    public static PlatformEventFeedLogger getInstance() {
+        if (instance == null) {
+            instance = new PlatformEventFeedLogger();
+        }
+        return instance;
+    }
+        
     public void error(String messageError) {
         SObjectLoadEvent__e event = new SObjectLoadEvent__e(
                 Message_title__c = 'Error occured: ',

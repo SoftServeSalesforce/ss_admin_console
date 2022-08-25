@@ -1,4 +1,18 @@
 public with sharing class SystemFeedLogger implements FeedLogger {
+    @TestVisible
+    private static SystemFeedLogger instance;
+
+    private SystemFeedLogger() {
+
+    }
+
+    public static SystemFeedLogger getInstance() {
+        if (instance == null) {
+            instance = new SystemFeedLogger();
+        }
+        return instance;
+    }
+
     public void error(String messageError) {
         System.debug('messageError: ' + messageError);
     }

@@ -39,7 +39,7 @@ public inherited sharing class SSACUtilTest {
         TestSubClass3 obj3 = new TestSubClass3();
 
         Test.startTest();
-        List<Type> subClasses = utility.getSubClasses(TestInterfaceClass.class);
+        List<Type> subClasses = utility.getSubClasses(TestInterface.class);
         Test.stopTest();
 
         System.assertEquals(4, subClasses.size());

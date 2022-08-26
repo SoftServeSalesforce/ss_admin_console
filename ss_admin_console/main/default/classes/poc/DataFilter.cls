@@ -23,7 +23,6 @@ public inherited sharing class DataFilter {
 
     /** 
      * Determines OK, Duplicated and Changed records.
-     *  @param records contains sample data from constants 
      *  @return list of filtered records with determined status
      */
     public List<SSACResult> filter() {

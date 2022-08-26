@@ -50,14 +50,14 @@ public inherited sharing class SSACController {
             if (checkOnly) {
                 Savepoint sp = Database.setSavepoint();
                 try {
-                    df.feed(true, checkOnly, logger);
+                    df.feed(true, logger);
                 } finally {
                     Database.rollback(sp);
                 }
                 new PlatformEventFeedLogger().publishResultLog(actionType, SSACConstants.TEST_ACTION_TYPE);
             } else {
                 try {
-                    df.feed(updateRecords, checkOnly, logger);
+                    df.feed(updateRecords, logger);
                 } finally {
                     new PlatformEventFeedLogger().publishResultLog(actionType, SSACConstants.EXECUTE_ACTION_TYPE);
                 }

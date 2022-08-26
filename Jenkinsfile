@@ -91,17 +91,19 @@ node {
                 is_scratch_org_exists = true
             }
 
-            stage('Push To Scratch Org') {
-                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:source:push --targetusername ${SFDC_USERNAME}"
+    withCredentials([file(credentialsId: JWT_KEY_FILE_CRED_NAME, variable: 'jwt_key_file')]) {
+
+        stage('Deploy To Org') {
+            rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${ORG_USERNAME} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
+            if (rc != 0) { error 'hub org authorization failed' }
+
+            if (isPrToMain) {
+                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:source:deploy --checkonly --testlevel RunLocalTests --targetusername ${ORG_USERNAME} -p \"fflib, ss_admin_console\""
                 if (rc != 0) {
                     error 'push failed'
                 }
-            }
-        } else {
-            stage('Deploy To Org') {
-                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${ORG_USERNAME} --jwtkeyfile ${JWT_KEY_LOCATION} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
-                if (rc != 0) { error 'hub org authorization failed' }
-                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:source:deploy --targetusername ${ORG_USERNAME} -p force-app"
+            } else {
+                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:source:deploy --targetusername ${ORG_USERNAME} -p \"fflib, ss_admin_console\""
                 if (rc != 0) {
                     error 'Deploy failed'
                 }

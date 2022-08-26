@@ -1,6 +1,9 @@
 {
   "packageDirectories": [
     {
+      "path": "fflib"
+    },
+    {
       "path": "ss_admin_console",
       "default": true
     }

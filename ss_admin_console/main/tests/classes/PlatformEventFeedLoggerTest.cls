@@ -8,7 +8,6 @@ public with sharing class PlatformEventFeedLoggerTest {
         Test.stopTest();
         
         System.assertEquals(feedLogger1, feedLogger2);
-        //System.assertEquals(feedLogger1.getInstance(), feedLogger2.getInstance());
     }
 }
 

@@ -2,7 +2,11 @@ public with sharing class PlatformEventFeedLogger implements FeedLogger {
     @TestVisible
     private static PlatformEventFeedLogger instance;
 
-    private static PlatformEventFeedLogger getInstance() {
+    private PlatformEventFeedLogger() {
+
+    }
+
+    public static PlatformEventFeedLogger getInstance() {
         if (instance == null) {
             instance = new PlatformEventFeedLogger();
         }

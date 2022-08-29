@@ -4,12 +4,15 @@ public inherited sharing class ContactsDataFeederFactory implements DataFeederFa
     }
 
     public DataFeeder getDataFeeder() {
+        DataDefinition.DataDefinitionBuilder dataDefinitionBuilder = new DataDefinition.DataDefinitionBuilder(Contact.SObjectType).
+                addKeyField(Contact.Email).addKeyField(Contact.LastName).addKeyField('Account.Name').addDataField(Contact.Email).
+                addDataField(Contact.LastName).addDataField(Contact.FirstName).addDataField('Account.Name').
+                addReferenceField(Contact.AccountId, new String[] {'Account.Name'});
         return new BaseDataFeeder(
                 new StaticDataSupplier(
-                    new List<SObjectField>{Contact.Email, Contact.LastName},
-                    new List<SObjectField>{Contact.Email, Contact.LastName, Contact.FirstName},
+                    dataDefinitionBuilder.build(),
                     new Contact[] {
-                        new Contact(LastName = 'Smith', FirstName = 'Olivia', Email = 'OliviaSmith@testmail.com', Account = new Account(Name='fdjkd Software')),
+                        new Contact(LastName = 'Smith', FirstName = 'Olivia', Email = 'OliviaSmith@testmail.com', Account = new Account(Name='Social Software')),
                         new Contact(LastName = 'Brown', FirstName = 'Emma', Email = 'EmmaBrown@testmail.com', Account = new Account(Name='Adept Software')),
                         new Contact(LastName = 'Wilson', FirstName = 'Amelia', Email = 'AmeliaWilson@testmail.com', Account = new Account(Name='Boss Software'))
                         // new Contact(LastName = 'Thomson', FirstName = 'Ava', Email = 'AvaThomson@testmail.com'),

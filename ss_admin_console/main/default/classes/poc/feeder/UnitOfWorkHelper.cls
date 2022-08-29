@@ -14,23 +14,18 @@ public with sharing class UnitOfWorkHelper {
             new fflib_SObjectUnitOfWork( 
                 new Schema.SObjectType[] {supplier.getMetadata().objectType});
                 
-            System.debug('16 line');
             List<SObject> existentParentRecords = getParentRecords();
-            System.debug('18 line' + existentParentRecords);
             Map<String, SObject> existentMap = generateExistentParentRecordsMap(existentParentRecords);
-            System.debug('19 line');
             for (SObject item : data) {
                 String parentFingerprint = generateRecordFingerprint(item);
                 SObject parentSObject = existentMap.get(parentFingerprint);      
                 for (FieldReference field : supplier.getMetadata().referenceFields[0].referencedKeyFields) {
-                    System.debug('24 line');
                     if (field.getFrom(item) == field.getFrom(parentSObject)) {
                         SObject sRefObj = Schema.getGlobalDescribe().get(parentSObjectType).newSObject();
                         sRefObj.put('Id', parentSObject.Id);
                         item.putSObject(parentSObjectType, sRefObj);
                     }
                 }
-            System.debug(JSON.serializePretty(item));
             //uow.registerNew(item);
             }
         return uow;

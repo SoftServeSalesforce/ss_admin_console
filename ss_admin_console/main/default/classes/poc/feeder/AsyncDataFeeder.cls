@@ -8,7 +8,7 @@ public inherited sharing class AsyncDataFeeder implements DataFeeder {
         this.logger = logger;
     }
 
-    public void feed(Boolean updateRecords,FeedLogger logger) {
+    public void feed(Boolean updateRecords, FeedLogger logger) {
         if (originalFeeder instanceof AsyncDataFeeder) {
             originalFeeder.feed(updateRecords, logger);
         } else {

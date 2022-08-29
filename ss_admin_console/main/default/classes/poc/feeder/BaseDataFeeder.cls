@@ -52,7 +52,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
     }
 
     @TestVisible
-    public List<SObject> convertToSObject(List<SSACResult> results) {
+    private List<SObject> convertToSObject(List<SSACResult> results) {
         List<SObject> records = new List<SObject>();
         Integer counter = 0;
         for (SObject item : supplier.supply()) {

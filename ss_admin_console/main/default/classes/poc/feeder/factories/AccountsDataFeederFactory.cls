@@ -4,12 +4,13 @@ public inherited sharing class AccountsDataFeederFactory implements DataFeederFa
     }
 
     public DataFeeder getDataFeeder() {
+        DataDefinition.DataDefinitionBuilder dataDefinitionBuilder = new DataDefinition.DataDefinitionBuilder(Account.SObjectType).
+                addKeyField(Account.Name).addDataField(Account.Name);
         return new BaseDataFeeder(
                 new StaticDataSupplier(
-                    new List<SObjectField>{Account.Name},
-                    new List<SObjectField>{Account.Name},
+                    dataDefinitionBuilder.build(),
                     new Account[] {
-                        new Account(Name = 'gfgfdgfdgfdfg Software'),
+                        new Account(Name = 'Social Software'),
                         new Account(Name = 'Adept Software'),
                         new Account(Name = 'Boss Software'),
                         new Account(Name = 'Scope Software'),

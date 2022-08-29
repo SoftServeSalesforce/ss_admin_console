@@ -10,11 +10,11 @@ public with sharing class CompositeDataFeeder implements DataFeeder {
         this.logger = logger;
     }
 
-    public void feed(Boolean updateRecords, Boolean checkOnly, FeedLogger logger) {
+    public void feed(Boolean updateRecords, FeedLogger logger) {
         Savepoint sp = Database.setSavepoint();
         try {
             for (DataFeeder feeder : feeders) {
-                feeder.feed(updateRecords, checkOnly, logger);
+                feeder.feed(updateRecords, logger);
             }
         } catch (Exception e) {
             Database.rollback(sp);

@@ -1,6 +1,6 @@
 public inherited sharing class BaseDataFeeder implements DataFeeder {
     private DataSupplier supplier;
-    SSACResultsUtil util;
+    private SSACResultsUtil util;
 
     @TestVisible
     private DataFilter mockedDF;
@@ -18,6 +18,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
 
     public void feed(Boolean updateRecords, FeedLogger logger) {
         SSACResultsUtil util = new SSACResultsUtil();
+        LoggerAppender appender = new LoggerAppender(logger);
         List<SSACResult> results = createDataFilter(supplier).filter();
         List<SSACResult> okResults = util.getResultsByStatus(results, SSACConstants.OK_STATUS);
         List<SSACResult> changedResults = util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS);
@@ -30,7 +31,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
             if (!recordsToUpsert.isEmpty()) {
                 try {
                     Database.UpsertResult[] upsertedResults = Database.upsert(this.convertToSObject(recordsToUpsert));
-                    new LoggerAppender().logUpsert(upsertedResults, duplicatedResults, supplier.getMetadata().objectType, logger);
+                    appender.logUpsert(upsertedResults, duplicatedResults, supplier.getMetadata().objectType);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
@@ -41,7 +42,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
             if (!okResults.isEmpty()) {
                 try {
                     Database.SaveResult[] insertedResults = Database.insert(this.convertToSObject(okResults));
-                    new LoggerAppender().logInsert(insertedResults, supplier.getMetadata().objectType, logger);
+                    appender.logInsert(insertedResults, supplier.getMetadata().objectType);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
@@ -73,12 +74,14 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
 
     public class LoggerAppender {
        
-        SSACResultsUtil util;
-        public LoggerAppender() {
+        private SSACResultsUtil util;
+        private FeedLogger logger;
+        public LoggerAppender(FeedLogger logger) {
             this.util = new SSACResultsUtil();
+            this.logger = logger;
         }
 
-        public void logUpsert(Database.UpsertResult[] upsertedResults, List<SSACResult> duplicatedResults, Schema.SObjectType sObjectType, FeedLogger logger) {
+        public void logUpsert(Database.UpsertResult[] upsertedResults, List<SSACResult> duplicatedResults, Schema.SObjectType sObjectType) {
             List<SSACResult> upsertedRecords = new List<SSACResult>();
             if (!duplicatedResults.isEmpty()) {
                 logger.log(String.valueOf(sObjectType), this.handleMessageText(duplicatedResults), SSACConstants.DUPLICATED_STATUS);
@@ -105,7 +108,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
             }
         }
 
-        public void logInsert(Database.SaveResult[] savedResulits, Schema.SObjectType sObjectType, FeedLogger logger) {
+        public void logInsert(Database.SaveResult[] savedResulits, Schema.SObjectType sObjectType) {
             List<SSACResult> insertedResults = new List<SSACResult>();
             for (Database.SaveResult result : savedResulits) {
                 if (result.isSuccess()) {

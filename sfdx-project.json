@@ -1,7 +1,7 @@
 {
   "packageDirectories": [
     {
-      "path": "fflib"
+      "path": "3rd-party"
     },
     {
       "path": "ss_admin_console",

@@ -26,6 +26,7 @@ public inherited sharing class OpportunityConstants {
             'OpportunityId' => 'Opportunity'
     };
 
+    /*
     public final static List<SSACSObjectWrapper> OPPORTUNITY_DATA = new List<SSACSObjectWrapper>{
         new SSACSObjectWrapper('OPP_TEST-0001', new Opportunity(Name = 'OPP_TEST-0001', StageName = 'Prospecting', Amount = 72.1, CloseDate = Date.today() + 91), new Map<String, String>{
                 'AccountId' => 'Social Software'
@@ -1189,4 +1190,5 @@ public inherited sharing class OpportunityConstants {
                 'Product2Id' => 'TEST-0354', 'OpportunityId' => 'OPP_TEST-0032'
         })
     };
+     */
 }

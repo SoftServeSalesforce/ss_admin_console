@@ -40,3 +40,10 @@ $RECYCLE.BIN/
 
 # Local environment variables
 .env
+
+.sf/
+.sfdx/
+
+# Outputs
+
+/out/

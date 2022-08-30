@@ -15,6 +15,9 @@ public inherited sharing class SSACConstants {
     public static final String PRODUCTS_DATA = 'PRODUCTS DATA';
     public static final String OPPORTUNITY_DATA = 'OPPORTUNITY DATA';
 
+    public static final String ACCOUNTS_DATA = 'ACCOUNTS DATA';
+    public static final String CONTACTS_DATA = 'CONTACTS DATA';
+
     public static final String CRON_EXPRESSION_NAME = 'Job_Cron_Expression';
     public static final String SIZE_JOB_NAME = 'Job_Size';
     public static final String REFERENCE_NAME = 'REFERENCE';

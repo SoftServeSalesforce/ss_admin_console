@@ -1,6 +1,9 @@
 {
   "packageDirectories": [
     {
+      "path": "3rd-party"
+    },
+    {
       "path": "ss_admin_console",
       "default": true
     }

@@ -8,11 +8,11 @@ public inherited sharing class AsyncDataFeeder implements DataFeeder {
         this.logger = logger;
     }
 
-    public void feed(Boolean updateRecords, Boolean checkOnly, FeedLogger logger) {
+    public void feed(Boolean updateRecords, FeedLogger logger) {
         if (originalFeeder instanceof AsyncDataFeeder) {
-            originalFeeder.feed(updateRecords, checkOnly, logger);
+            originalFeeder.feed(updateRecords, logger);
         } else {
-            System.enqueueJob(new AsyncExecutor(originalFeeder, updateRecords, checkOnly, logger));
+            System.enqueueJob(new AsyncExecutor(originalFeeder, updateRecords, logger));
         }
     }
 
@@ -20,17 +20,15 @@ public inherited sharing class AsyncDataFeeder implements DataFeeder {
         private DataFeeder feeder;
         private Boolean updateRecords;
         private FeedLogger logger;
-        private Boolean checkOnly;
 
-        private AsyncExecutor(DataFeeder feeder, Boolean updateRecords, Boolean checkOnly, FeedLogger logger) {
+        private AsyncExecutor(DataFeeder feeder, Boolean updateRecords, FeedLogger logger) {
             this.feeder = feeder;
             this.updateRecords = updateRecords;
-            this.checkOnly = checkOnly;
             this.logger = logger;
         }
 
         public void execute(QueueableContext qc) {
-            feeder.feed(updateRecords, checkOnly, logger);
+            feeder.feed(updateRecords, logger);
         }
     }
 }

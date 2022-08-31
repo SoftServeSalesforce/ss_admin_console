@@ -31,17 +31,22 @@ public inherited sharing class SSACUtilTest {
     }
 
     @isTest
-    static void testGetSubClasses() {
+    static void testGetSubClassesForTestClass() {
         SSACUtil utility = new SSACUtil();
+        Test.startTest();
+        List<Type> subClasses = utility.getSubClasses(TestClass.class);
+        Test.stopTest();
 
-        TestSubClass1 obj1 = new TestSubClass1();
-        TestSubClass2 obj2 = new TestSubClass2();
-        TestSubClass3 obj3 = new TestSubClass3();
+        System.assertEquals(2, subClasses.size());
+    }
 
+    @isTest
+    static void testGetSubClassesForTestInterface() {
+        SSACUtil utility = new SSACUtil();
         Test.startTest();
         List<Type> subClasses = utility.getSubClasses(TestInterface.class);
         Test.stopTest();
 
-        System.assertEquals(4, subClasses.size());
+        System.assertEquals(2, subClasses.size());
     }
 }

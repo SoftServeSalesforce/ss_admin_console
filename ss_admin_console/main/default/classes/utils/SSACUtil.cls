@@ -15,9 +15,17 @@ public inherited sharing class SSACUtil {
     public List<Type> getSubClasses(Type theType) {
         List<Type> result = new List<Type>();
         List<ApexClass> classes = getApexClasses();
+        Integer i = 0;
         for (ApexClass aClass : classes) {
-            Type classType = Type.forName(aClass.Name);
-            if (classType != null && theType.isAssignableFrom(classType)) {
+            i++;
+            Type classType = null;
+            try {
+                classType = Type.forName(aClass.Name);
+            }
+            catch(Exception e) {
+                System.debug('i = '+i+'; theType = '+theType.toString()+'; Error for Type.forName('+aClass.Name+'): ' + e.getMessage());
+            }
+            if (classType != null && theType.isAssignableFrom(classType) && theType.toString() != classType.toString()) {
                 result.add(classType);
             }
         }
@@ -33,6 +41,6 @@ public inherited sharing class SSACUtil {
     }
 
     private List<ApexClass> getApexClasses() {
-        return [SELECT Id, Name FROM ApexClass WHERE isValid = TRUE];
+        return [SELECT Id, Name FROM ApexClass];
     }
 }

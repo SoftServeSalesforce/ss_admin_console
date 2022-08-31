@@ -1,5 +1,0 @@
-public with sharing class TestSubClass1 implements TestInterface {
-    public void calculate (double x) {
-        System.debug('Square of = ' + x*x);
-    }
-}

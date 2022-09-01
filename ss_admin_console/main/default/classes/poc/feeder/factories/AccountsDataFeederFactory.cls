@@ -10,7 +10,7 @@ public inherited sharing class AccountsDataFeederFactory implements DataFeederFa
                 new StaticDataSupplier(
                     dataDefinitionBuilder.build(),
                     new Account[] {
-                        new Account(Name = 'Sociккal Software'),
+                        new Account(Name = 'Social Software'),
                         new Account(Name = 'Adept Software'),
                         new Account(Name = 'Boss Software'),
                         new Account(Name = 'Scope Software'),

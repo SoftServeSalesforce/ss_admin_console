@@ -26,7 +26,7 @@ public inherited sharing class DataFilter {
      *  @return list of filtered records with determined status
      */
     public List<SSACResult> filter() {
-        if(supplier.supply() == null && supplier.supply().isEmpty()) {
+        if(supplier.supply() == null && supplier.supply().isEmpty()){
             return new List<SSACResult>();
         }
         List<SObject> records = supplier.supply();

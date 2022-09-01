@@ -91,7 +91,7 @@ public abstract class FieldReference {
         private SObjectField field;
 
         public SchemaFieldReference(SObjectField field) {
-            if (field == null){
+            if (field == null) {
                 throw new IllegalArgumentException('Field is invalid');
             }
             this.field = field;

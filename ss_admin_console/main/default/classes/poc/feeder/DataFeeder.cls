@@ -1,3 +1,3 @@
 public interface DataFeeder {
-    void feed(Boolean updateRecords, Boolean checkOnly, FeedLogger logger);
+    void feed(Boolean updateRecords, FeedLogger logger);
 }

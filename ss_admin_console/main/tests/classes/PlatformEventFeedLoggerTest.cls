@@ -10,4 +10,3 @@ public with sharing class PlatformEventFeedLoggerTest {
         System.assertEquals(feedLogger1, feedLogger2);
     }
 }
-

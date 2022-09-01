@@ -14,9 +14,12 @@ export default class Diagnostic extends LightningElement {
     @track actionTypes = [];
     @track actionNumber = 0;
     @track types = [];
+    @track selectingStep = 1;
     @track batchClasses = [];
     @track scheduledClasses = [];
-    @track updateRecords = false;
+    @track values = [];
+    checkboxValues = [];
+    index;
     logPayload = {};
     jobResultPayload = {};
     sObjectLoadLog = '/event/SObjectLoadEvent__e';
@@ -99,6 +102,7 @@ export default class Diagnostic extends LightningElement {
     };
 
     handleJobResultSubscribe() {
+        console.log('hello')
         const messageCallback = (response) => {
             this.jobResultPayload = JSON.parse(JSON.stringify(response));
             if (this.jobResultPayload.data.payload.CreatedById !== userId) {
@@ -154,21 +158,19 @@ export default class Diagnostic extends LightningElement {
         return 'Action was finished';
     }
 
-    handleCheckboxChange(event) {
-        this.updateRecords = event.target.checked;        
-    }
-
     setColor(color, message) {
         return '<p style="font-weight: bold; color:' + color + '">' + message + '</p>';
     }
 
     handleExecute = () => {
         this.actionDisabled = true;
-        let type = this.actionTypes[this.actionNumber];
+        let type = this.values[this.actionNumber];
+        let update = this.checkboxValues[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
-        action({actionType: type, updateRecords: this.updateRecords, checkOnly: false})
+        action({actionType: type, updateRecords: update, checkOnly: false})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
+                // this.actionDisabled = false;
             })
             .catch(error => {
                 console.log(error);
@@ -176,16 +178,24 @@ export default class Diagnostic extends LightningElement {
     };
 
     handleTest = () => {
+        console.log(this.values)
+        console.log(this.actionNumber)
+        console.log(this.values[this.actionNumber])
         this.actionDisabled = true;
-        let type = this.actionTypes[this.actionNumber];
+        let type = this.values[this.actionNumber];
+        let update = this.checkboxValues[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
-        action({actionType: type, updateRecords: this.updateRecords, checkOnly: true})
+        action({actionType: type, updateRecords: update, checkOnly: true})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
+                
+                // 
             })
             .catch(error => {
                 console.log(error);
             });
+            this.actionDisabled = false;
+            this.actionNumber = 0;
     };
 
     handleHeaderMessage(message) {
@@ -193,8 +203,12 @@ export default class Diagnostic extends LightningElement {
     }
 
     handleDataType(event) {
-        this.actionTypes = event.detail.value;
-        this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0
+        this.values = event.detail.value;
+        this.actionDisabled = !this.values || this.values.length <= 0;
+        this.checkboxValues = [];
+        for (let i = 0; i < event.detail.value.length; i++) {
+            this.checkboxValues.push(false);
+        }
     };
 
     handleActions(event) {
@@ -211,6 +225,26 @@ export default class Diagnostic extends LightningElement {
     handleSelectClassName(event) {
         this.actionTypes.push(event.detail.value);
         this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0
+    }
+
+    handleNext = () => {
+        this.selectingStep = 2;
+    };
+
+    handlePrevious = () => {
+        this.selectingStep = 1;
+        this.checkboxValues.forEach((element, index) => {
+            this.checkboxValues[index] = false;
+          });
+    };
+
+    handleChange(event) {
+        this.checkboxValues[event.target.dataset.index] = event.target.checked;
+        this.index = event.target.dataset.index;
+    }
+
+    get isDataTypesSelected(){
+        return this.selectingStep == 2;
     }
 
     get isDataLoading() {

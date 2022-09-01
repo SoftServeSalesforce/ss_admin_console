@@ -12,11 +12,12 @@ public inherited sharing class AccountsDataFeederFactoryTest {
     @IsTest
     static void testGetDataFeeder() {
         Test.startTest();
-        DataFeeder df = new AccountsDataFeederFactory().getDataFeeder();
+        BaseDataFeeder bdf = (BaseDataFeeder) new AccountsDataFeederFactory().getDataFeeder();
         Test.stopTest();
-        System.assertNotEquals(null, df);
-        System.assertNotEquals(null, df.getSupplier());
-        System.assert(df.getSupplier().supply() != null &&  !df.getSupplier().supply().isEmpty(), 'Data in supplier can not be null or empty!');
-        System.assertNotEquals(null, df.getSupplier().getMetadata());
+        
+        System.assertNotEquals(null, bdf);
+        System.assertNotEquals(null, bdf.getSupplier());
+        System.assert(bdf.getSupplier().supply() != null &&  !bdf.getSupplier().supply().isEmpty(), 'Data in supplier can not be null or empty!');
+        System.assertNotEquals(null, bdf.getSupplier().getMetadata());
     }
 }

@@ -9,10 +9,6 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         this.supplier = supplier;
     }
 
-    public DataSupplier getSupplier(){
-        return supplier;
-    }
-
     private DataFilter createDataFilter(DataSupplier supplier) {
         if (mockedDF != null) {
             return mockedDF;

@@ -12,11 +12,8 @@ public inherited sharing class ContactsDataFeederFactoryTest {
     @IsTest
     static void testGetDataFeeder() {
         Test.startTest();
-        BaseDataFeeder bdf = (BaseDataFeeder) new ContactsDataFeederFactory().getDataFeeder();
+        DataFeeder df = new ContactsDataFeederFactory().getDataFeeder();
         Test.stopTest();
-        System.assertNotEquals(null, bdf);
-        System.assertNotEquals(null, bdf.getSupplier());
-        System.assert(bdf.getSupplier().supply() != null &&  !bdf.getSupplier().supply().isEmpty(), 'Data in supplier can not be null or empty!');
-        System.assertNotEquals(null, bdf.getSupplier().getMetadata());
+        System.assertNotEquals(null, df);
     }
 }

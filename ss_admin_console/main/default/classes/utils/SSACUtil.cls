@@ -23,7 +23,7 @@ public inherited sharing class SSACUtil {
                 }
             }
             catch (Exception e) {
-                throw e;
+                System.debug('Error in SSACUtil.getSubClasses: ' + e.getMessage());
             }
         }
         return result;

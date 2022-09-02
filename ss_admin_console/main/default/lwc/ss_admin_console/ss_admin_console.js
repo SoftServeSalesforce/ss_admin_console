@@ -14,12 +14,9 @@ export default class Diagnostic extends LightningElement {
     @track actionTypes = [];
     @track actionNumber = 0;
     @track types = [];
-    @track selectingStep = 1;
     @track batchClasses = [];
     @track scheduledClasses = [];
-    @track values = [];
-    checkboxValues = [];
-    index;
+    @track updateRecords = false;
     logPayload = {};
     jobResultPayload = {};
     sObjectLoadLog = '/event/SObjectLoadEvent__e';
@@ -157,16 +154,19 @@ export default class Diagnostic extends LightningElement {
         return 'Action was finished';
     }
 
+    handleCheckboxChange(event) {
+        this.updateRecords = event.target.checked;        
+    }
+
     setColor(color, message) {
         return '<p style="font-weight: bold; color:' + color + '">' + message + '</p>';
     }
 
     handleExecute = () => {
         this.actionDisabled = true;
-        let type = this.values[this.actionNumber];
-        let update = this.checkboxValues[this.actionNumber];
+        let type = this.actionTypes[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
-        action({actionType: type, updateRecords: update, checkOnly: false})
+        action({actionType: type, updateRecords: this.updateRecords, checkOnly: false})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })
@@ -177,10 +177,9 @@ export default class Diagnostic extends LightningElement {
 
     handleTest = () => {
         this.actionDisabled = true;
-        let type = this.values[this.actionNumber];
-        let update = this.checkboxValues[this.actionNumber];
+        let type = this.actionTypes[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
-        action({actionType: type, updateRecords: update, checkOnly: true})
+        action({actionType: type, updateRecords: this.updateRecords, checkOnly: true})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })
@@ -194,12 +193,8 @@ export default class Diagnostic extends LightningElement {
     }
 
     handleDataType(event) {
-        this.values = event.detail.value;
-        this.actionDisabled = !this.values || this.values.length <= 0;
-        this.checkboxValues = [];
-        for (let i = 0; i < event.detail.value.length; i++) {
-            this.checkboxValues.push(false);
-        }
+        this.actionTypes = event.detail.value;
+        this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0
     };
 
     handleClear() {
@@ -209,26 +204,6 @@ export default class Diagnostic extends LightningElement {
     handleSelectClassName(event) {
         this.actionTypes.push(event.detail.value);
         this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0
-    }
-
-    handleNext = () => {
-        this.selectingStep = 2;
-    };
-
-    handlePrevious = () => {
-        this.selectingStep = 1;
-        this.checkboxValues.forEach((element, index) => {
-            this.checkboxValues[index] = false;
-          });
-    };
-
-    handleChange(event) {
-        this.checkboxValues[event.target.dataset.index] = event.target.checked;
-        this.index = event.target.dataset.index;
-    }
-
-    get isDataTypesSelected(){
-        return this.selectingStep == 2;
     }
 
     get isDataLoading() {

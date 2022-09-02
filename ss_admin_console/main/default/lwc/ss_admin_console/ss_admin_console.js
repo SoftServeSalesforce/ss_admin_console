@@ -104,7 +104,7 @@ export default class Diagnostic extends LightningElement {
             if (this.jobResultPayload.data.payload.CreatedById !== userId) {
                 return;
             }
-            if (this.actionTypes.length != this.actionNumber && this.jobResultPayload.data.payload.Action_Type__c) {
+            if (this.values.length != this.actionNumber && this.jobResultPayload.data.payload.Action_Type__c) {
                 if (this.jobResultPayload.data.payload.Action_Type__c === 'Test') {
                     this.handleTest();
                 } else if (this.jobResultPayload.data.payload.Action_Type__c === 'Execute') {
@@ -195,13 +195,6 @@ export default class Diagnostic extends LightningElement {
     handleDataType(event) {
         this.actionTypes = event.detail.value;
         this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0
-    };
-
-    handleActions(event) {
-        this.actionTypes = [];
-        this.actionNumber = 0;
-        this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0;
-        this.selectedAction = event.detail.value;
     };
 
     handleClear() {

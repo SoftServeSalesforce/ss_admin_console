@@ -12,18 +12,18 @@ public inherited sharing class SSACResultsUtil {
         return resultsByStatus;
     }
 
-    public String keysToString(List<SSACResult> results) {
+    public String keysToString(List<SObject> results) {
         String message = '';
-        for (SSACResult result : results) {
-            message += result.recordKey + ID_SEPARATOR;
+        for (SObject result : results) {
+            message += result.ID + ID_SEPARATOR;
         }
         return message.removeEnd(ID_SEPARATOR);
     }
 
-    public String idsToString(List<SSACResult> results) {
+    public String idsToString(List<SObject> results) {
         String message = '';
-        for (SSACResult result : results) {
-            message += result.recordId + ID_SEPARATOR;
+        for (SObject result : results) {
+            message += result.ID + ID_SEPARATOR;
         }
         return message.removeEnd(ID_SEPARATOR);
     }

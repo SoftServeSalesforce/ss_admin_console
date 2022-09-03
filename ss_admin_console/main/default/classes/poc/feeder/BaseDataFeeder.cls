@@ -18,31 +18,40 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
 
     public void feed(Boolean updateRecords, FeedLogger logger) {
         SSACResultsUtil util = new SSACResultsUtil();
-        LoggerAppender appender = new LoggerAppender(logger);
+        fflib_SObjectUnitOfWork uow;
+        if (supplier.getMetadata().referenceFields.isEmpty()) {
+            uow = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {supplier.getMetadata().objectType});
+        } else {
+            uow = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {supplier.getMetadata().objectType, supplier.getMetadata().referenceFields[0].parentSObjectType});
+        }
+        UnitOfWorkHelper uowHelper = new UnitOfWorkHelper(uow, supplier);
         List<SSACResult> results = createDataFilter(supplier).filter();
-        List<SSACResult> okResults = util.getResultsByStatus(results, SSACConstants.OK_STATUS);
-        List<SSACResult> changedResults = util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS);
-        List<SSACResult> duplicatedResults = util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS);
-        List<SSACResult> recordsToUpsert = new List<SSACResult>();
+        List<SObject> okResults = this.convertToSObject(util.getResultsByStatus(results, SSACConstants.OK_STATUS));
+        List<SObject> changedResults = this.convertToSObject(util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS));
+        List<SObject> duplicatedResults = this.convertToSObject(util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS));
+        List<SObject> recordsToUpsert = new List<SObject>();
         recordsToUpsert.addAll(okResults);
         recordsToUpsert.addAll(changedResults);
-        //fflib_SObjectUnitOfWork uow = new UnitOfWorkHelper(this.convertToSObject(recordsToUpsert), supplier).linkSObjects();
         if (updateRecords) {
             if (!recordsToUpsert.isEmpty()) {
                 try {
-                    Database.UpsertResult[] upsertedResults = Database.upsert(this.convertToSObject(recordsToUpsert));
-                    appender.logUpsert(upsertedResults, duplicatedResults, supplier.getMetadata().objectType);
+                    uow = uowHelper.registerRecords(recordsToUpsert, supplier.getMetadata().isChild, logger);
+                    uow.commitWork();
+                    logger.log(String.valueOf(supplier.getMetadata().objectType), this.handleAmountOfRecordsProceed(recordsToUpsert.size()), SSACConstants.UPSERTED_STATUS);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
+            } else if (!duplicatedResults.isEmpty()) {
+                logger.log(String.valueOf(supplier.getMetadata().objectType), this.handleAmountOfRecordsProceed(duplicatedResults.size()), SSACConstants.DUPLICATED_STATUS);
             } else {
-                logger.error('FAILED: No records to be upserted. Check the sample data again.');
+                logger.error('FAILED: No records to be displayed. Check the sample data again.');
             }
         } else {
             if (!okResults.isEmpty()) {
                 try {
-                    Database.SaveResult[] insertedResults = Database.insert(this.convertToSObject(okResults));
-                    appender.logInsert(insertedResults, supplier.getMetadata().objectType);
+                    uow = uowHelper.registerRecords(okResults, supplier.getMetadata().isChild, logger);
+                    uow.commitWork();
+                    logger.log(String.valueOf(supplier.getMetadata().objectType), this.handleAmountOfRecordsProceed(okResults.size()), SSACConstants.INSERTED_STATUS);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
@@ -72,80 +81,8 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         return records;
     }
 
-    public class LoggerAppender {
-       
-        private SSACResultsUtil util;
-        private FeedLogger logger;
-        public LoggerAppender(FeedLogger logger) {
-            this.util = new SSACResultsUtil();
-            this.logger = logger;
-        }
-
-        public void logUpsert(Database.UpsertResult[] upsertedResults, List<SSACResult> duplicatedResults, Schema.SObjectType sObjectType) {
-            List<SSACResult> upsertedRecords = new List<SSACResult>();
-            if (!duplicatedResults.isEmpty()) {
-                logger.log(String.valueOf(sObjectType), this.handleMessageText(duplicatedResults), SSACConstants.DUPLICATED_STATUS);
-            }
-            for (Database.UpsertResult result : upsertedResults) {
-                if (result.isSuccess()) {
-                    upsertedRecords.add(new SSACResult()
-                            .setStatus(SSACConstants.UPDATED_STATUS)
-                            .setRecordId(result.getId())
-                            .setSObjectApiName(sObjectType.getDescribe().getName()));
-                    logger.log(String.valueOf(sObjectType), this.handleMessageUpsertedText(upsertedRecords), SSACConstants.UPSERTED_STATUS);
-                } else {
-                    String errorMessage = '';
-                    for (Database.Error err : result.getErrors()) {
-                        errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage()
-                                + String.valueOf(sObjectType) + ' fields that affected this error: ' + err.getFields() + '. ';
-                    }
-                    upsertedRecords.add(new SSACResult()
-                            .setStatus(SSACConstants.FAILED_STATUS)
-                            .setErrorMessage(errorMessage)
-                            .setSObjectApiName(sObjectType.getDescribe().getName()));
-                    logger.error(util.errorsToString(upsertedRecords));
-                }
-            }
-        }
-
-        public void logInsert(Database.SaveResult[] savedResulits, Schema.SObjectType sObjectType) {
-            List<SSACResult> insertedResults = new List<SSACResult>();
-            for (Database.SaveResult result : savedResulits) {
-                if (result.isSuccess()) {
-                    insertedResults.add(new SSACResult()
-                            .setStatus(SSACConstants.INSERTED_STATUS)
-                            .setRecordId(result.getId())
-                            .setSObjectApiName(sObjectType.getDescribe().getName()));
-                    System.debug(String.valueOf(sObjectType) +', '+ this.handleMessageUpsertedText(insertedResults) +', '+ SSACConstants.INSERTED_STATUS);
-                    logger.log(String.valueOf(sObjectType), this.handleMessageUpsertedText(insertedResults), SSACConstants.INSERTED_STATUS);
-                } else {
-                    String errorMessage = '';
-                    for (Database.Error err : result.getErrors()) {
-                        errorMessage += 'The following error has occurred. ' + err.getStatusCode() + ': ' + err.getMessage()
-                                + String.valueOf(sObjectType) + ' fields that affected this error: ' + err.getFields() + '. ';
-                    }
-                    insertedResults.add(new SSACResult()
-                            .setStatus(SSACConstants.FAILED_STATUS)
-                            .setErrorMessage(errorMessage)
-                            .setSObjectApiName(sObjectType.getDescribe().getName()));
-                    logger.error(util.errorsToString(insertedResults));
-                }
-            }
-        }
-
-        @TestVisible
-        private String handleMessageText(List<SSACResult> results) {
-            return results.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(results) : this.handleAmountOfRecordsProceed(results.size());
-        }
-
-        @TestVisible
-        private String handleMessageUpsertedText(List<SSACResult> results) {
-            return results.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.idsToString(results) : this.handleAmountOfRecordsProceed(results.size());
-        }
-
-        @TestVisible
-        private String handleAmountOfRecordsProceed(Integer size) {
-            return String.valueOf(size) + ' records were proceed.';
-        }
-    }
+    @TestVisible
+    private String handleAmountOfRecordsProceed(Integer size) {
+        return String.valueOf(size) + ' records were proceed.';
+    } 
 }

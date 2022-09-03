@@ -1,5 +1,6 @@
 public inherited sharing class DataDefinition {
     public SObjectType objectType {get; private set;}
+    public Boolean isChild {get; private set;}
     public List<FieldReference> keyFields {get; private set;}
     public List<FieldReference> dataFields {get; private set;}
     public List<ReferenceFieldDefinition> referenceFields {get; private set;}
@@ -11,11 +12,14 @@ public inherited sharing class DataDefinition {
      */
     public class ReferenceFieldDefinition {
         public SObjectField referenceField {get; private set;}
+        public SObjectType parentSObjectType {get; private set;}
         public List<FieldReference> referencedKeyFields {get; private set;}
+        public List<FieldReference> parentFields {get; private set;}
     }
 
     public class DataDefinitionBuilder {
         private SObjectType objectType;
+        private Boolean isChild;
         private List<FieldReference> keyFields = new List<FieldReference>();
         private List<FieldReference> dataFields = new List<FieldReference>();
         private List<ReferenceFieldDefinition> referenceFields = new List<ReferenceFieldDefinition>();
@@ -25,6 +29,14 @@ public inherited sharing class DataDefinition {
                 throw new IllegalArgumentException('\'objectType\' parameter can not be null.');
             }
             this.objectType = objectType;
+        }
+
+        public DataDefinitionBuilder addIsChild(Boolean isChild) {
+            if (isChild == null) {
+                throw new IllegalArgumentException('\'isChild\' parameter can not be null.');
+            }
+            this.isChild = isChild;
+            return this;
         }
 
         public DataDefinitionBuilder addKeyField(String keyField) {
@@ -59,30 +71,43 @@ public inherited sharing class DataDefinition {
             return this;
         }
 
-        public DataDefinitionBuilder addReferenceField(SObjectField referenceField, List<SObjectField> referencedKeyFields) {
+        public DataDefinitionBuilder addReferenceField(SObjectField referenceField, SObjectType parentSObjectType, List<SObjectField> referencedKeyFields) {
             if (referenceField == null) {
                 throw new IllegalArgumentException('\'referenceField\' parameter can not be null.');
+            }
+            if (parentSObjectType == null) {
+                throw new IllegalArgumentException('\'parentSObjectType\' parameter can not be null.');
             }
             if (referencedKeyFields == null || referencedKeyFields.isEmpty()) {
                 throw new IllegalArgumentException('\'referencedKeyFields\' parameter can not be null or empty.');
             }
             ReferenceFieldDefinition rfd = new ReferenceFieldDefinition();
             rfd.referenceField = referenceField;
+            rfd.parentSObjectType = parentSObjectType;
             rfd.referencedKeyFields = toFieldReferences(referencedKeyFields);
             referenceFields.add(rfd);
             return this;
         }
 
-        public DataDefinitionBuilder addReferenceField(SObjectField referenceField, List<String> referencedKeyFields) {
+        public DataDefinitionBuilder addReferenceField(SObjectField referenceField, SObjectType parentSObjectType, List<String> referencedKeyFields, List<String> parentFields) {
             if (referenceField == null) {
                 throw new IllegalArgumentException('\'referenceField\' parameter can not be null.');
+            }
+            if (parentSObjectType == null) {
+                throw new IllegalArgumentException('\'parentSObjectType\' parameter can not be null.');
             }
             if (referencedKeyFields == null || referencedKeyFields.isEmpty()) {
                 throw new IllegalArgumentException('\'referencedKeyFields\' parameter can not be null or empty.');
             }
+            if (parentFields == null || parentFields.isEmpty()) {
+                throw new IllegalArgumentException('\'parentFields\' parameter can not be null or empty.');
+            }
+            
             ReferenceFieldDefinition rfd = new ReferenceFieldDefinition();
             rfd.referenceField = referenceField;
+            rfd.parentSObjectType = parentSObjectType;
             rfd.referencedKeyFields = toFieldReferences(objectType, referencedKeyFields);
+            rfd.parentFields = toFieldReferences(parentSObjectType, parentFields);
             referenceFields.add(rfd);
             return this;
         }
@@ -96,6 +121,7 @@ public inherited sharing class DataDefinition {
                 throw new IllegalArgumentException('\'dataFields\' parameter can not be null or empty.');
             }
             dd.objectType = objectType;
+            dd.isChild = isChild;
             dd.keyFields = keyFields;
             dd.dataFields = dataFields;
             dd.referenceFields = referenceFields;

@@ -16,9 +16,14 @@ public inherited sharing class SSACUtil {
         List<Type> result = new List<Type>();
         List<ApexClass> classes = getApexClasses();
         for (ApexClass aClass : classes) {
-            Type classType = Type.forName(aClass.Name);
-            if (classType != null && theType.isAssignableFrom(classType)) {
-                result.add(classType);
+            try {
+                Type classType = Type.forName(aClass.Name);
+                if (classType != null && theType.isAssignableFrom(classType) && theType != classType) {
+                    result.add(classType);
+                }
+            }
+            catch (Exception e) {
+                System.debug('Error in SSACUtil.getSubClasses: ' + e.getMessage());
             }
         }
         return result;

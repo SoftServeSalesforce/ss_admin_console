@@ -29,4 +29,24 @@ public inherited sharing class SSACUtilTest {
         Test.stopTest();
         System.assertNotEquals(null, interfaces, 'JobClasses successfully recovered.');
     }
+
+    @isTest
+    static void testGetSubClassesForTestClass() {
+        SSACUtil utility = new SSACUtil();
+        Test.startTest();
+        List<Type> subClasses = utility.getSubClasses(TestClass.class);
+        Test.stopTest();
+
+        System.assertEquals(2, subClasses.size());
+    }
+
+    @isTest
+    static void testGetSubClassesForTestInterface() {
+        SSACUtil utility = new SSACUtil();
+        Test.startTest();
+        List<Type> subClasses = utility.getSubClasses(TestInterface.class);
+        Test.stopTest();
+
+        System.assertEquals(2, subClasses.size());
+    }
 }

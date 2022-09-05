@@ -12,7 +12,7 @@ public inherited sharing class SSACController {
 
     @AuraEnabled
     public static List<DataSupplierFactoryWrapper> getDataFeederFactories() {
-        List<Type> factoryTypes = new SSACUtil().getSubClasses(DataFeederFactory.class);
+        List<Type> factoryTypes = SSACUtil.getSubClasses(DataFeederFactory.class);
         List<DataSupplierFactoryWrapper> feederFactories = new List<DataSupplierFactoryWrapper>();
         for (Type factoryType : factoryTypes) {
             if (factoryType != DataFeederFactory.class) {
@@ -29,7 +29,7 @@ public inherited sharing class SSACController {
 
     @AuraEnabled
     public static List<String> getJobClasses(String interfaceName) {
-        return new SSACUtil().getJobClasses(interfaceName);
+        return SSACUtil.getJobClasses(interfaceName);
     }
 
     @AuraEnabled

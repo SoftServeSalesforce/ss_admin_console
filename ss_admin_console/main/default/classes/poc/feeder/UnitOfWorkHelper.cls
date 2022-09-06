@@ -1,4 +1,4 @@
-public with sharing class UnitOfWorkHelper {
+public inherited sharing class UnitOfWorkHelper {
     private DataSupplier supplier;
     private String parentSObjectType;
     private fflib_SObjectUnitOfWork uow;
@@ -84,10 +84,10 @@ public with sharing class UnitOfWorkHelper {
     private List<SObject> getRecords(List<SObject> data) {
         List<Set<Object>> referenceFieldValues = this.getReferenceFieldValues(data);
         Integer fieldsNumber = referenceFieldValues.size();
-        List<ReferenceFieldDefinition> referenceFields = supplier.getMetadata().referenceFields[0];
-        Object pr0 = (fieldsNumber > 0) ? SetUtils.toSetOfType(referenceFields.referencedKeyFields[0], referenceFieldValues[0]) : null;
-        Object pr1 = (fieldsNumber > 1) ? SetUtils.toSetOfType(referenceFields.referencedKeyFields[1], referenceFieldValues[1]) : null;
-        Object pr2 = (fieldsNumber > 2) ? SetUtils.toSetOfType(referenceFields.referencedKeyFields[2], referenceFieldValues[2]) : null;
+        DataDefinition.ReferenceFieldDefinition referenceFieldsList = supplier.getMetadata().referenceFields[0];
+        Object pr0 = (fieldsNumber > 0) ? SetUtils.toSetOfType(referenceFieldsList.referencedKeyFields[0], referenceFieldValues[0]) : null;
+        Object pr1 = (fieldsNumber > 1) ? SetUtils.toSetOfType(referenceFieldsList.referencedKeyFields[1], referenceFieldValues[1]) : null;
+        Object pr2 = (fieldsNumber > 2) ? SetUtils.toSetOfType(referenceFieldsList.referencedKeyFields[2], referenceFieldValues[2]) : null;
         String query = this.buildQuery();
         return Database.query(query);
     }

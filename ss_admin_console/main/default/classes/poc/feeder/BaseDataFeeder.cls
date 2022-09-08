@@ -18,11 +18,12 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
 
     public void feed(Boolean updateRecords, FeedLogger logger) {
         SSACResultsUtil util = new SSACResultsUtil();
+        Schema.SObjectType parentSObjectType = supplier.getMetadata().referenceFields[0].referenceField.getDescribe().getReferenceTo()[0];
         fflib_SObjectUnitOfWork uow;
         if (supplier.getMetadata().referenceFields.isEmpty()) {
             uow = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {supplier.getMetadata().objectType});
         } else {
-            uow = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {supplier.getMetadata().objectType, supplier.getMetadata().referenceFields[0].parentSObjectType});
+            uow = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {supplier.getMetadata().objectType, parentSObjectType});
         }
         UnitOfWorkHelper uowHelper = new UnitOfWorkHelper(uow, supplier);
         List<SSACResult> results = createDataFilter(supplier).filter();
@@ -35,7 +36,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         if (updateRecords) {
             if (!recordsToUpsert.isEmpty()) {
                 try {
-                    uow = uowHelper.registerRecords(recordsToUpsert, supplier.getMetadata().isChild, logger);
+                    uow = uowHelper.registerRecords(recordsToUpsert, supplier.getMetadata().referenceFields.size(), logger);
                     uow.commitWork();
                     logger.log(String.valueOf(supplier.getMetadata().objectType), this.handleAmountOfRecordsProceed(recordsToUpsert.size()), SSACConstants.UPSERTED_STATUS);
                 } catch (Exception e) {
@@ -49,7 +50,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         } else {
             if (!okResults.isEmpty()) {
                 try {
-                    uow = uowHelper.registerRecords(okResults, supplier.getMetadata().isChild, logger);
+                    uow = uowHelper.registerRecords(okResults, supplier.getMetadata().referenceFields.size(), logger);
                     uow.commitWork();
                     logger.log(String.valueOf(supplier.getMetadata().objectType), this.handleAmountOfRecordsProceed(okResults.size()), SSACConstants.INSERTED_STATUS);
                 } catch (Exception e) {

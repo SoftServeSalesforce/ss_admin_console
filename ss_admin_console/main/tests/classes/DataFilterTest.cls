@@ -1,10 +1,10 @@
 @IsTest
 public with sharing class DataFilterTest {
 
-    private static final DataDefinition.DataDefinitionBuilder dataDefinitionBuilder = new DataDefinition.DataDefinitionBuilder(Contact.SObjectType).addIsChild(true).
+    private static final DataDefinition.DataDefinitionBuilder dataDefinitionBuilder = new DataDefinition.DataDefinitionBuilder(Contact.SObjectType).
             addKeyField(Contact.Email).addKeyField(Contact.LastName).addKeyField('Account.Name').addDataField(Contact.Email).
             addDataField(Contact.LastName).addDataField(Contact.FirstName).addDataField('Account.Name').
-            addReferenceField(Contact.AccountId, Account.SObjectType, new String[] {'Account.Name'}, new String[] {'Name'});
+            addReferenceField(Contact.AccountId, new String[] {'Name'});
 
     @IsTest
     static void testFilter() {

@@ -5,7 +5,7 @@ public inherited sharing class AccountsDataFeederFactory implements DataFeederFa
 
     public DataFeeder getDataFeeder() {
         DataDefinition.DataDefinitionBuilder dataDefinitionBuilder = new DataDefinition.DataDefinitionBuilder(Account.SObjectType).
-                addKeyField(Account.Name).addDataField(Account.Name).addIsChild(false);
+                addKeyField(Account.Name).addDataField(Account.Name);
         return new BaseDataFeeder(
                 new StaticDataSupplier(
                     dataDefinitionBuilder.build(),

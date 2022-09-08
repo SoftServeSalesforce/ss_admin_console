@@ -7,13 +7,13 @@ public inherited sharing class UnitOfWorkHelper {
         this.supplier = supplier;
         this.uow = uow;
         if (!supplier.getMetadata().referenceFields.isEmpty()) {
-            this.parentSObjectType = String.valueOf(supplier.getMetadata().referenceFields[0].parentSObjectType);
+            this.parentSObjectType = String.valueOf(supplier.getMetadata().referenceFields[0].referenceField.getDescribe().getReferenceTo()[0]);
         }
     }
 
 
-    public fflib_SObjectUnitOfWork registerRecords(List<SObject> data, Boolean isChild, FeedLogger logger) {
-        if (isChild) {
+    public fflib_SObjectUnitOfWork registerRecords(List<SObject> data, Integer referenceFieldsSize, FeedLogger logger) {
+        if (referenceFieldsSize > 0) {
             uow = registerChildsToParent(data, logger);
         } else {
             uow = registerParents(data);
@@ -59,7 +59,7 @@ public inherited sharing class UnitOfWorkHelper {
     @TestVisible
     private String generateRecordFingerprint(SObject record) {
         String recordKeysFingerprint = '';
-        for (FieldReference keyField : supplier.getMetadata().referenceFields[0].parentFields) {
+        for (FieldReference keyField : supplier.getMetadata().referenceFields[0].referencedKeyFields) {
             recordKeysFingerprint += String.valueOf(keyField.getFrom(record)).toLowerCase() + '_';
         }
         return recordKeysFingerprint;

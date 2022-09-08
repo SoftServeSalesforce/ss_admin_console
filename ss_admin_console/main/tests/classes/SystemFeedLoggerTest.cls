@@ -13,18 +13,18 @@ public with sharing class SystemFeedLoggerTest {
     @IsTest
     static void testErrorMethod(){
         Test.startTest();
-        SystemFeedLogger.error('');
+        SystemFeedLogger.getInstance().error('');
         Test.stopTest();
         
-        System.assertEquals('public void error', SystemFeedLogger.voidName);
+        System.assertEquals('public void error', SystemFeedLogger.getInstance().voidName);
     }
 
     @IsTest
     static void testLogMethod(){
         Test.startTest();
-        SystemFeedLogger.log('','','');
+        SystemFeedLogger.getInstance().log('','','');
         Test.stopTest();
         
-        System.assertEquals('public void log', SystemFeedLogger.voidName);
+        System.assertEquals('public void log', SystemFeedLogger.getInstance().voidName);
     }
 }

@@ -1,5 +1,6 @@
 public with sharing class SystemFeedLogger implements FeedLogger {
-    public static String voidName = '';
+    @TestVisible 
+    private String voidName = '';
 
     @TestVisible
     private static SystemFeedLogger instance;
@@ -15,12 +16,12 @@ public with sharing class SystemFeedLogger implements FeedLogger {
         return instance;
     }
 
-    public static void error(String messageError) {
+    public void error(String messageError) {
         voidName = 'public void error';
         System.debug('messageError: ' + messageError);
     }
 
-    public static void log(String messageTitle, String message, String status) {
+    public void log(String messageTitle, String message, String status) {
         voidName = 'public void log';
         System.debug('messageTitle: ' + messageTitle);
         System.debug('message: ' + message);

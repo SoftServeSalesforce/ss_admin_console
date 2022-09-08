@@ -15,8 +15,6 @@ public with sharing class SystemFeedLoggerTest {
         Test.startTest();
         SystemFeedLogger.getInstance().error('');
         Test.stopTest();
-        
-        System.assertEquals('public void error', SystemFeedLogger.getInstance().voidName);
     }
 
     @IsTest
@@ -24,7 +22,6 @@ public with sharing class SystemFeedLoggerTest {
         Test.startTest();
         SystemFeedLogger.getInstance().log('','','');
         Test.stopTest();
-        
-        System.assertEquals('public void log', SystemFeedLogger.getInstance().voidName);
     }
+    
 }

@@ -9,4 +9,32 @@ public with sharing class PlatformEventFeedLoggerTest {
         
         System.assertEquals(feedLogger1, feedLogger2);
     }
+
+    @IsTest
+    static void testDummyError(){
+        Test.startTest();
+        PlatformEventFeedLogger.getInstance().error('');
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testDummyLog(){
+        Test.startTest();
+        PlatformEventFeedLogger.getInstance().log('', '', '');
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testDummyPublishResultLog(){
+        Test.startTest();
+        PlatformEventFeedLogger.getInstance().publishResultLog('', '');
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testDummyPublishLog(){
+        Test.startTest();
+        PlatformEventFeedLogger.getInstance().publishLog('', '', '');
+        Test.stopTest();
+    }
 }

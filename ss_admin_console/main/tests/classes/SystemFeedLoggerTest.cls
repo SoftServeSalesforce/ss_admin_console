@@ -9,4 +9,19 @@ public with sharing class SystemFeedLoggerTest {
         
         System.assertEquals(feedLogger1, feedLogger2);
     }
+
+    @IsTest
+    static void testErrorMethod(){
+        Test.startTest();
+        SystemFeedLogger.getInstance().error('');
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testLogMethod(){
+        Test.startTest();
+        SystemFeedLogger.getInstance().log('','','');
+        Test.stopTest();
+    }
+    
 }

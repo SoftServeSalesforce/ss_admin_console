@@ -1,9 +1,7 @@
 public with sharing class SystemFeedLogger implements FeedLogger {
-    @TestVisible
     private static SystemFeedLogger instance;
 
     private SystemFeedLogger() {
-
     }
 
     public static SystemFeedLogger getInstance() {

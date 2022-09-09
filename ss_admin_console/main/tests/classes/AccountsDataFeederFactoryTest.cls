@@ -1,6 +1,5 @@
 @IsTest
 public inherited sharing class AccountsDataFeederFactoryTest {
-
     @IsTest
     static void testGetName() {
         Test.startTest();

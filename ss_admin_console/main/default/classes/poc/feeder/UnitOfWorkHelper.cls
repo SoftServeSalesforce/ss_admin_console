@@ -38,48 +38,45 @@ public inherited sharing class UnitOfWorkHelper {
         List<SObject> existentParentRecords = getRecords(data);
         if (existentParentRecords.isEmpty()) {
             logger.error('NOTE: Please, insert ' + parentSObjectType + '\'s records first.');
+            return uow;
         }
-        Map<String, SObject> existentMap = generateExistentRecordsMap(existentParentRecords);
-        for (SObject item : data) {
-            String recordKeysFingerprint = generateRecordFingerprint(item.getSObject(parentSObjectType));
-            SObject existentSObject = existentMap.get(recordKeysFingerprint);
-            if (existentSObject != null) { // parent record exists
-                item.putSObject(parentSObjectType, existentSObject);
-                if (item.Id == null) { 
-                    uow.registerNew(item); 
-                } else { 
-                    uow.registerDirty(item); 
+        Map<KeyGenerator, SObject> existentMap = generateRecordsMap(existentParentRecords);
+        Map<KeyGenerator, SObject> sampleDataMap = generateSampleRecordsMap(data, parentSObjectType);
+        for (KeyGenerator item : sampleDataMap.keySet()) {
+            SObject sampleSObject = sampleDataMap.get(item);
+            if (existentMap.containsKey(item)) {
+                SObject existentSObject = existentMap.get(item);
+                if (existentSObject != null) { // parent record exists
+                    sampleSObject.putSObject(parentSObjectType, existentSObject);
+                    if (sampleSObject.Id == null) { 
+                        uow.registerNew(sampleSObject); 
+                    } else { 
+                        uow.registerDirty(sampleSObject); 
+                    } 
+                    uow.registerRelationship(sampleSObject, supplier.getMetadata().referenceFields[0].referenceField, sampleSObject.getSObject(parentSObjectType));   
                 } 
-                uow.registerRelationship(item, supplier.getMetadata().referenceFields[0].referenceField, item.getSObject(parentSObjectType));   
             } 
         }
         return uow;
     }
 
     @TestVisible
-    private String generateRecordFingerprint(SObject record) {
-        String recordKeysFingerprint = '';
-        for (FieldReference keyField : supplier.getMetadata().referenceFields[0].referencedKeyFields) {
-            recordKeysFingerprint += String.valueOf(keyField.getFrom(record)).toLowerCase() + '_';
+    private Map<KeyGenerator, SObject> generateRecordsMap(List<SObject> records) {
+        Map<KeyGenerator, SObject> recordsMap = new Map<KeyGenerator, SObject>();
+        for (SObject existSObj : records) {          
+            recordsMap.put(new KeyGenerator(supplier.getMetadata().referenceFields[0].referencedKeyFields, existSObj), existSObj);
         }
-        return recordKeysFingerprint;
+        return recordsMap;
     }
 
-    /**
-     * Generates map with existent records and key fields.
-     * @param existentParentRecords contains list of queried records
-     * @return map with recordFingerprint key and sobject as a value
-     */
     @TestVisible
-    private Map<String, SObject> generateExistentRecordsMap(List<SObject> existentParentRecords) {
-        Map<String, SObject> existentMap = new Map<String, SObject>();
-        for (SObject existSObj : existentParentRecords) {
-            String recordKeysFingerprint = generateRecordFingerprint(existSObj);          
-            existentMap.put(recordKeysFingerprint, existSObj);
+    private Map<KeyGenerator, SObject> generateSampleRecordsMap(List<SObject> records, String parentSObjectType) {
+        Map<KeyGenerator, SObject> recordsMap = new Map<KeyGenerator, SObject>();
+        for (SObject existSObj : records) {          
+            recordsMap.put(new KeyGenerator(supplier.getMetadata().referenceFields[0].referencedKeyFields, existSObj.getSObject(parentSObjectType)), existSObj);
         }
-        return existentMap;
+        return recordsMap;
     }
-
     @TestVisible
     private List<SObject> getRecords(List<SObject> data) {
         List<Set<Object>> referenceFieldValues = this.getReferenceFieldValues(data);
@@ -95,10 +92,12 @@ public inherited sharing class UnitOfWorkHelper {
     @TestVisible
     private List<Set<Object>> getReferenceFieldValues(List<SObject> data) {
         List<Set<Object>> constantValues = new List<Set<Object>>();
+        SObject parentSobj;
         for (FieldReference field : supplier.getMetadata().referenceFields[0].referencedKeyFields) {
             Set<Object> values = new Set<Object>();
             for (SObject obj : data) {
-                values.add(field.getFrom(obj));
+                parentSobj = obj.getSObject(supplier.getMetadata().referenceFields[0].referenceField);
+                values.add(field.getFrom(parentSobj));
             }
             constantValues.add(values);
         }

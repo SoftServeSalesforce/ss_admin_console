@@ -1,5 +1,10 @@
 public inherited sharing class BaseDataFeeder implements DataFeeder {
     private DataSupplier supplier;
+    private DataDefinition metadata;
+    private SObjectType objectType;
+    private SObjectType parentObjectType;
+    private List<FieldReference> keyFields; 
+    private List<FieldReference> dataFields; 
     private SSACResultsUtil util;
 
     @TestVisible
@@ -7,6 +12,13 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
 
     public BaseDataFeeder(DataSupplier supplier) {
         this.supplier = supplier;
+        this.metadata = supplier.getMetadata();
+        this.objectType = metadata.objectType;
+        if (!metadata.referenceFields.isEmpty()) {
+            this.parentObjectType = metadata.referenceFields[0].referenceField.getDescribe().getReferenceTo()[0];
+        }
+        this.keyFields = metadata.keyFields;
+        this.dataFields = metadata.dataFields;
     }
 
     private DataFilter createDataFilter(DataSupplier supplier) {
@@ -16,14 +28,14 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         return new DataFilter(supplier);
     }
 
-    public void feed(Boolean updateRecords, FeedLogger logger) {
+    public void feed(Boolean updateRecords, FeedLogger logger, String status) {
         SSACResultsUtil util = new SSACResultsUtil();
-        Schema.SObjectType parentSObjectType = supplier.getMetadata().referenceFields[0].referenceField.getDescribe().getReferenceTo()[0];
         fflib_SObjectUnitOfWork uow;
-        if (supplier.getMetadata().referenceFields.isEmpty()) {
-            uow = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {supplier.getMetadata().objectType});
+        DataDefinition metadata = supplier.getMetadata();
+        if (metadata.referenceFields.isEmpty()) {
+            uow = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {objectType});
         } else {
-            uow = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {supplier.getMetadata().objectType, parentSObjectType});
+            uow = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {objectType, parentObjectType});
         }
         UnitOfWorkHelper uowHelper = new UnitOfWorkHelper(uow, supplier);
         List<SSACResult> results = createDataFilter(supplier).filter();
@@ -36,14 +48,14 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         if (updateRecords) {
             if (!recordsToUpsert.isEmpty()) {
                 try {
-                    uow = uowHelper.registerRecords(recordsToUpsert, supplier.getMetadata().referenceFields.size(), logger);
+                    uow = uowHelper.registerRecords(recordsToUpsert, metadata.referenceFields.size(), logger);
                     uow.commitWork();
-                    logger.log(String.valueOf(supplier.getMetadata().objectType), this.handleAmountOfRecordsProceed(recordsToUpsert.size()), SSACConstants.UPSERTED_STATUS);
+                    logger.log(String.valueOf(objectType), this.handleAmountOfRecordsProceed(recordsToUpsert.size()), status);
                 } catch (Exception e) {
-                    logger.error(e.getMessage());
+                   logger.error(e.getMessage());
                 }
             } else if (!duplicatedResults.isEmpty()) {
-                logger.log(String.valueOf(supplier.getMetadata().objectType), this.handleAmountOfRecordsProceed(duplicatedResults.size()), SSACConstants.DUPLICATED_STATUS);
+                logger.log(String.valueOf(objectType), this.handleAmountOfRecordsProceed(duplicatedResults.size()), SSACConstants.DUPLICATED_STATUS);
             } else {
                 logger.error('FAILED: No records to be displayed. Check the sample data again.');
             }
@@ -52,9 +64,9 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
                 try {
                     uow = uowHelper.registerRecords(okResults, supplier.getMetadata().referenceFields.size(), logger);
                     uow.commitWork();
-                    logger.log(String.valueOf(supplier.getMetadata().objectType), this.handleAmountOfRecordsProceed(okResults.size()), SSACConstants.INSERTED_STATUS);
+                    logger.log(String.valueOf(objectType), this.handleAmountOfRecordsProceed(okResults.size()), status);
                 } catch (Exception e) {
-                    logger.error(e.getMessage());
+                   logger.error(e.getMessage());
                 }
             } else {
                 logger.error('FAILED: No records to be inserted. Check the sample data again.');
@@ -68,7 +80,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         Integer counter = 0;
         for (SObject item : supplier.supply()) {
             String recordKeysFingerprint = '';
-            for (FieldReference keyField: supplier.getMetadata().keyFields) {
+            for (FieldReference keyField: keyFields) {
                 recordKeysFingerprint += String.valueOf(keyField.getFrom(item)).toLowerCase() + '_';
             }
             recordKeysFingerprint = recordKeysFingerprint.removeEnd('_');

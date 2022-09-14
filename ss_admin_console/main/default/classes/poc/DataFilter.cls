@@ -33,14 +33,12 @@ public inherited sharing class DataFilter {
         List<SSACResult> results = new List<SSACResult>();
         List<SObject> existentRecords = getExistentRecords(records);
         Map<String, SObject> existentMap = generateExistentRecordsMap(existentRecords);
-        Set<FieldReference> nonKeyFields = new Set<FieldReference>(dataFields.clone());
-        nonKeyFields.removeAll(keyFields);
         for (SObject record : records) {
             Integer matchedNonKeyFields = 0;
             String recordKeysFingerprint = generateRecordFingerprint(record);
             SObject existentSObject = existentMap.get(recordKeysFingerprint);            
             if (existentSObject != null) {
-                for (FieldReference nonKeyField : nonKeyFields) {
+                for (FieldReference nonKeyField : dataFields) {
                     if (nonKeyField.getFrom(record) == nonKeyField.getFrom(existentSObject)) {
                         matchedNonKeyFields++;
                     } else {
@@ -52,7 +50,7 @@ public inherited sharing class DataFilter {
                         break;
                     }
                 }
-                if (matchedNonKeyFields == nonKeyFields.size()) {
+                if (matchedNonKeyFields == dataFields.size()) {
                     results.add(new SSACResult()
                         .setStatus(SSACConstants.DUPLICATED_STATUS)
                         .setRecordKey(recordKeysFingerprint)
@@ -132,7 +130,10 @@ public inherited sharing class DataFilter {
     private String buildQuery() {
         Integer counter = 0;
         String result = 'SELECT Id, ';
-        if (dataFields != null) {
+        if (dataFields != null || keyFields != null) {
+            for (FieldReference field : keyFields) {
+                result += field.toString() + ',';
+            }
             for (FieldReference field : dataFields) {
                 result += field.toString() + ',';
             }

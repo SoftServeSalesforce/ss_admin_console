@@ -15,7 +15,7 @@ public inherited sharing class SSACResultsUtil {
     public String keysToString(List<SObject> results) {
         String message = '';
         for (SObject result : results) {
-            message += result.ID + ID_SEPARATOR;
+            message += result.Id + ID_SEPARATOR;
         }
         return message.removeEnd(ID_SEPARATOR);
     }
@@ -23,7 +23,7 @@ public inherited sharing class SSACResultsUtil {
     public String idsToString(List<SObject> results) {
         String message = '';
         for (SObject result : results) {
-            message += result.ID + ID_SEPARATOR;
+            message += result.Id + ID_SEPARATOR;
         }
         return message.removeEnd(ID_SEPARATOR);
     }

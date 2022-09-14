@@ -44,17 +44,11 @@ public inherited sharing class DataDefinition {
         }
 
         public DataDefinitionBuilder addDataField(String dataField) {
-            if (String.isEmpty(dataField)) {
-                throw new IllegalArgumentException('\'dataField\' parameter can not be null or empty.');
-            }
             dataFields.add(FieldReference.build(objectType, dataField));
             return this;
         }
 
         public DataDefinitionBuilder addDataField(SObjectField dataField) {
-            if (dataField == null) {
-                throw new IllegalArgumentException('\'dataField\' parameter can not be null.');
-            }
             dataFields.add(FieldReference.build(dataField));
             return this;
         }
@@ -82,7 +76,7 @@ public inherited sharing class DataDefinition {
             }
             ReferenceFieldDefinition rfd = new ReferenceFieldDefinition();
             rfd.referenceField = referenceField;
-            rfd.referencedKeyFields = toFieldReferences(objectType, referencedKeyFields);
+            rfd.referencedKeyFields = toFieldReferences(referenceField.getDescribe().getReferenceTo()[0], referencedKeyFields);
             referenceFields.add(rfd);
             return this;
         }
@@ -91,9 +85,6 @@ public inherited sharing class DataDefinition {
             DataDefinition dd = new DataDefinition();
             if (keyFields == null || keyFields.isEmpty()) {
                 throw new IllegalArgumentException('\'keyFields\' parameter can not be null or empty.');
-            }
-            if (dataFields == null || dataFields.isEmpty()) {
-                throw new IllegalArgumentException('\'dataFields\' parameter can not be null or empty.');
             }
             dd.objectType = objectType;
             dd.keyFields = keyFields;

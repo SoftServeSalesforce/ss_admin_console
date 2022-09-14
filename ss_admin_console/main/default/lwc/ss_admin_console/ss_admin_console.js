@@ -139,11 +139,13 @@ export default class Diagnostic extends LightningElement {
             log += this.setColor('blue', 'Successfully updated ' + sObjectApiName + '\'s records. ');
         } else if (messageType == 'INSERTED') {
             log += this.setColor('blue', 'Successfully inserted ' + sObjectApiName + '\'s records. ');
-        }else if (messageType == 'UPSERTED') {
+        } else if (messageType == 'UPSERTED') {
             log += this.setColor('blue', 'Successfully upserted ' + sObjectApiName + '\'s records. ');
+        } else if (messageType == 'TESTED') {
+            log += this.setColor('blue', 'Successfully tested ' + sObjectApiName + '\'s records. ');
         } else if (messageType == 'FAILED') {
             log += this.setColor('red', 'Error occured. Ask administator for help');
-        }
+        } 
         if (message) {
             log += ' ' + message;
         }

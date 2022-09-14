@@ -7,6 +7,7 @@ public inherited sharing class SSACConstants {
     public static final String DUPLICATED_STATUS = 'DUPLICATED';
     public static final String CHANGED_STATUS = 'CHANGED';
     public static final String UPSERTED_STATUS = 'UPSERTED';
+    public static final String TESTED_STATUS = 'TESTED';
 
     public static final String TEST_ACTION_TYPE = 'Test';
     public static final String EXECUTE_ACTION_TYPE = 'Execute';

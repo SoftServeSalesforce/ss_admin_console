@@ -7,8 +7,8 @@ public with sharing class CompositeFeedLogger implements FeedLogger {
     }
 
     public void error(String messageError) {
-        for (FeedLogger feedLogger : feedLoggers) {
-            feedLogger.error(messageError);
+        for (FeedLogger logger : feedLoggers) {
+            logger.error(messageError);
         }
     }
 

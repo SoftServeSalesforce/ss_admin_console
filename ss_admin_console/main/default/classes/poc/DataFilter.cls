@@ -45,7 +45,7 @@ public inherited sharing class DataFilter {
                         matchedNonKeyFields++;
                     } else {
                         results.add(new SSACResult()
-                            .setStatus(SSACConstants.CHANGED_STATUS)
+                            .setStatus(ApexActionStatus.CHANGED.value())
                             .setRecordKey(recordKeysFingerprint)
                             .setRecordId(existentSObject.Id)
                             .setSObjectApiName(objectType.getDescribe().getName()));
@@ -54,13 +54,13 @@ public inherited sharing class DataFilter {
                 }
                 if (matchedNonKeyFields == nonKeyFields.size()) {
                     results.add(new SSACResult()
-                        .setStatus(SSACConstants.DUPLICATED_STATUS)
+                        .setStatus(ApexActionStatus.DUPLICATED.value())
                         .setRecordKey(recordKeysFingerprint)
                         .setSObjectApiName(objectType.getDescribe().getName()));
                 }
             } else {
                 results.add(new SSACResult()
-                    .setStatus(SSACConstants.OK_STATUS)
+                    .setStatus(ApexActionStatus.OK.value())
                     .setRecordKey(recordKeysFingerprint)
                     .setSObjectApiName(objectType.getDescribe().getName()));
             }

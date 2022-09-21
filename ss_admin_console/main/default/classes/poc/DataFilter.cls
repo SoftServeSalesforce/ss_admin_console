@@ -32,49 +32,39 @@ public inherited sharing class DataFilter {
         List<SObject> records = supplier.supply();
         List<SSACResult> results = new List<SSACResult>();
         List<SObject> existentRecords = getExistentRecords(records);
-        Map<String, SObject> existentMap = generateExistentRecordsMap(existentRecords);
-        Set<FieldReference> nonKeyFields = new Set<FieldReference>(dataFields.clone());
-        nonKeyFields.removeAll(keyFields);
-        for (SObject record : records) {
-            Integer matchedNonKeyFields = 0;
-            String recordKeysFingerprint = generateRecordFingerprint(record);
-            SObject existentSObject = existentMap.get(recordKeysFingerprint);            
+        Map<KeyGenerator, SObject> existentMap = generateRecordsMap(existentRecords);
+        Map<KeyGenerator, SObject> sampleRecords = generateRecordsMap(records);
+        for (KeyGenerator item : sampleRecords.keySet()) {
+            SObject existentSObject = existentMap.get(item);
             if (existentSObject != null) {
-                for (FieldReference nonKeyField : nonKeyFields) {
-                    if (nonKeyField.getFrom(record) == nonKeyField.getFrom(existentSObject)) {
+                Integer matchedNonKeyFields = 0;
+                SObject sampleSObject = sampleRecords.get(item);
+                for (FieldReference nonKeyField : dataFields) {
+                    if (nonKeyField.getFrom(sampleSObject) == nonKeyField.getFrom(existentSObject)) {
                         matchedNonKeyFields++;
                     } else {
                         results.add(new SSACResult()
                             .setStatus(SSACConstants.CHANGED_STATUS)
-                            .setRecordKey(recordKeysFingerprint)
+                            .setRecordKey(item.hashCode())
                             .setRecordId(existentSObject.Id)
                             .setSObjectApiName(objectType.getDescribe().getName()));
                         break;
                     }
                 }
-                if (matchedNonKeyFields == nonKeyFields.size()) {
+                if (matchedNonKeyFields == dataFields.size()) {
                     results.add(new SSACResult()
                         .setStatus(SSACConstants.DUPLICATED_STATUS)
-                        .setRecordKey(recordKeysFingerprint)
+                        .setRecordKey(item.hashCode())
                         .setSObjectApiName(objectType.getDescribe().getName()));
                 }
             } else {
                 results.add(new SSACResult()
                     .setStatus(SSACConstants.OK_STATUS)
-                    .setRecordKey(recordKeysFingerprint)
+                    .setRecordKey(item.hashCode())
                     .setSObjectApiName(objectType.getDescribe().getName()));
-            }
+            }    
         }
         return results;
-    }
-
-    @TestVisible
-    private String generateRecordFingerprint(SObject record) {
-        String recordKeysFingerprint = '';
-        for (FieldReference keyField : keyFields) {
-            recordKeysFingerprint += String.valueOf(keyField.getFrom(record)).toLowerCase() + '_';
-        }
-        return recordKeysFingerprint.removeEnd('_');
     }
 
     /**
@@ -83,13 +73,12 @@ public inherited sharing class DataFilter {
      * @return map with recordFingerprint key and sobject as a value
      */
     @TestVisible
-    private Map<String, SObject> generateExistentRecordsMap(List<SObject> existentRecords) {
-        Map<String, SObject> existentMap = new Map<String, SObject>();
-        for (SObject existSObj : existentRecords) {
-            String recordKeysFingerprint = generateRecordFingerprint(existSObj);          
-            existentMap.put(recordKeysFingerprint, existSObj);
+    private Map<KeyGenerator, SObject> generateRecordsMap(List<SObject> records) {
+        Map<KeyGenerator, SObject> recordsMap = new Map<KeyGenerator, SObject>();
+        for (SObject existSObj : records) {
+            recordsMap.put(new KeyGenerator(supplier.getMetadata().keyFields, existSObj), existSObj);
         }
-        return existentMap;
+        return recordsMap;
     }
 
     /**
@@ -132,7 +121,10 @@ public inherited sharing class DataFilter {
     private String buildQuery() {
         Integer counter = 0;
         String result = 'SELECT Id, ';
-        if (dataFields != null) {
+        if (dataFields != null || keyFields != null) {
+            for (FieldReference field : keyFields) {
+                result += field.toString() + ',';
+            }
             for (FieldReference field : dataFields) {
                 result += field.toString() + ',';
             }

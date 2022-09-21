@@ -19,9 +19,9 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
     public void feed(Boolean updateRecords, FeedLogger logger) {
         SSACResultsUtil util = new SSACResultsUtil();
         List<SSACResult> results = createDataFilter(supplier).filter();
-        List<SSACResult> okResults = util.getResultsByStatus(results, SSACConstants.OK_STATUS);
-        List<SSACResult> changedResults = util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS);
-        List<SSACResult> duplicatedResults = util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS);
+        List<SSACResult> okResults = util.getResultsByStatus(results, ApexActionStatus.OK);
+        List<SSACResult> changedResults = util.getResultsByStatus(results, ApexActionStatus.CHANGED.value());
+        List<SSACResult> duplicatedResults = util.getResultsByStatus(results, ApexActionStatus.DUPLICATED.value());
         List<SSACResult> recordsToUpsert = new List<SSACResult>();
         recordsToUpsert.addAll(okResults);
         recordsToUpsert.addAll(changedResults);
@@ -83,15 +83,15 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         public void logUpsert(Database.UpsertResult[] upsertedResults, List<SSACResult> duplicatedResults, Schema.SObjectType sObjectType, FeedLogger logger) {
             List<SSACResult> upsertedRecords = new List<SSACResult>();
             if (!duplicatedResults.isEmpty()) {
-                logger.log(String.valueOf(sObjectType), this.handleMessageText(duplicatedResults), SSACConstants.DUPLICATED_STATUS);
+                logger.log(String.valueOf(sObjectType), this.handleMessageText(duplicatedResults), ApexActionStatus.DUPLICATED.value());
             }
             for (Database.UpsertResult result : upsertedResults) {
                 if (result.isSuccess()) {
                     upsertedRecords.add(new SSACResult()
-                            .setStatus(SSACConstants.UPDATED_STATUS)
+                            .setStatus(ApexActionStatus.UPSERTED.value())
                             .setRecordId(result.getId())
                             .setSObjectApiName(sObjectType.getDescribe().getName()));
-                    logger.log(String.valueOf(sObjectType), this.handleMessageUpsertedText(upsertedRecords), SSACConstants.UPSERTED_STATUS);
+                    logger.log(String.valueOf(sObjectType), this.handleMessageUpsertedText(upsertedRecords), ApexActionStatus.UPSERTED.value());
                 } else {
                     String errorMessage = '';
                     for (Database.Error err : result.getErrors()) {
@@ -99,7 +99,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
                                 + String.valueOf(sObjectType) + ' fields that affected this error: ' + err.getFields() + '. ';
                     }
                     upsertedRecords.add(new SSACResult()
-                            .setStatus(SSACConstants.FAILED_STATUS)
+                            .setStatus(ApexActionStatus.FAILED.value())
                             .setErrorMessage(errorMessage)
                             .setSObjectApiName(sObjectType.getDescribe().getName()));
                     logger.error(util.errorsToString(upsertedRecords));
@@ -112,11 +112,11 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
             for (Database.SaveResult result : savedResulits) {
                 if (result.isSuccess()) {
                     insertedResults.add(new SSACResult()
-                            .setStatus(SSACConstants.INSERTED_STATUS)
+                            .setStatus(ApexActionStatus.INSERTED.value())
                             .setRecordId(result.getId())
                             .setSObjectApiName(sObjectType.getDescribe().getName()));
-                    System.debug(String.valueOf(sObjectType) +', '+ this.handleMessageUpsertedText(insertedResults) +', '+ SSACConstants.INSERTED_STATUS);
-                    logger.log(String.valueOf(sObjectType), this.handleMessageUpsertedText(insertedResults), SSACConstants.INSERTED_STATUS);
+                    System.debug(String.valueOf(sObjectType) +', '+ this.handleMessageUpsertedText(insertedResults) +', '+ ApexActionStatus.INSERTED.value());
+                    logger.log(String.valueOf(sObjectType), this.handleMessageUpsertedText(insertedResults), ApexActionStatus.INSERTED.value());
                 } else {
                     String errorMessage = '';
                     for (Database.Error err : result.getErrors()) {
@@ -124,7 +124,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
                                 + String.valueOf(sObjectType) + ' fields that affected this error: ' + err.getFields() + '. ';
                     }
                     insertedResults.add(new SSACResult()
-                            .setStatus(SSACConstants.FAILED_STATUS)
+                            .setStatus(ApexActionStatus.FAILED.value())
                             .setErrorMessage(errorMessage)
                             .setSObjectApiName(sObjectType.getDescribe().getName()));
                     logger.error(util.errorsToString(insertedResults));

@@ -104,7 +104,7 @@ export default class Diagnostic extends LightningElement {
             if (this.jobResultPayload.data.payload.CreatedById !== userId) {
                 return;
             }
-            if (this.values.length != this.actionNumber && this.jobResultPayload.data.payload.Action_Type__c) {
+            if (this.actionTypes.length != this.actionNumber && this.jobResultPayload.data.payload.Action_Type__c) {
                 if (this.jobResultPayload.data.payload.Action_Type__c === 'Test') {
                     this.handleTest();
                 } else if (this.jobResultPayload.data.payload.Action_Type__c === 'Execute') {
@@ -139,11 +139,13 @@ export default class Diagnostic extends LightningElement {
             log += this.setColor('blue', 'Successfully updated ' + sObjectApiName + '\'s records. ');
         } else if (messageType == 'INSERTED') {
             log += this.setColor('blue', 'Successfully inserted ' + sObjectApiName + '\'s records. ');
-        }else if (messageType == 'UPSERTED') {
+        } else if (messageType == 'UPSERTED') {
             log += this.setColor('blue', 'Successfully upserted ' + sObjectApiName + '\'s records. ');
+        } else if (messageType == 'TESTED') {
+            log += this.setColor('blue', 'Successfully tested ' + sObjectApiName + '\'s records. ');
         } else if (messageType == 'FAILED') {
             log += this.setColor('red', 'Error occured. Ask administator for help');
-        }
+        } 
         if (message) {
             log += ' ' + message;
         }
@@ -195,6 +197,13 @@ export default class Diagnostic extends LightningElement {
     handleDataType(event) {
         this.actionTypes = event.detail.value;
         this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0
+    };
+
+    handleActions(event) {
+        this.actionTypes = [];
+        this.actionNumber = 0;
+        this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0;
+        this.selectedAction = event.detail.value;
     };
 
     handleClear() {

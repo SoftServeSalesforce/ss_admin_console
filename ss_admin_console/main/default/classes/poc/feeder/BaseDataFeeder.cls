@@ -134,7 +134,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
 
         @TestVisible
         private String handleMessageText(List<SSACResult> results) {
-            return results.size() < SSACConstants.MAX_RECORDS_PER_PAGE.value() ? this.util.keysToString(results) : this.handleAmountOfRecordsProceed(results.size());
+            return results.size() < SSACConstants.MAX_RECORDS_PER_PAGE ? this.util.keysToString(results) : this.handleAmountOfRecordsProceed(results.size());
         }
 
         @TestVisible

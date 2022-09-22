@@ -28,7 +28,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         return new DataFilter(supplier);
     }
 
-    public void feed(Boolean updateRecords, FeedLogger logger, String status) {
+    public void feed(Boolean updateRecords, FeedLogger logger) {
         SSACResultsUtil util = new SSACResultsUtil();
         fflib_SObjectUnitOfWork uow;
         DataDefinition metadata = supplier.getMetadata();
@@ -38,7 +38,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
             uow = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {objectType, parentObjectType});
         }
         UnitOfWorkHelper uowHelper = new UnitOfWorkHelper(uow, supplier);
-        List<SSACResult> results = createDataFilter(supplier).filter();
+        List<SSACResult> results = createDataFilter(metadata, generateRecordsMap()).filter();
         List<SObject> okResults = this.convertToSObject(util.getResultsByStatus(results, SSACConstants.OK_STATUS));
         List<SObject> changedResults = this.convertToSObject(util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS));
         List<SObject> duplicatedResults = this.convertToSObject(util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS));
@@ -50,7 +50,8 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
                 try {
                     uow = uowHelper.registerRecords(recordsToUpsert, metadata.referenceFields.size(), logger);
                     uow.commitWork();
-                    logger.log(String.valueOf(objectType), this.handleAmountOfRecordsProceed(recordsToUpsert.size()), status);
+                    logger.log(String.valueOf(objectType), this.handleAmountOfRecordsProceed(okResults.size()), ApexActionStatus.INSERTED.value());
+                    logger.log(String.valueOf(objectType), this.handleAmountOfRecordsProceed(changedResults.size()), ApexActionStatus.UPDATED.value());
                 } catch (Exception e) {
                    logger.error(e.getMessage());
                 }

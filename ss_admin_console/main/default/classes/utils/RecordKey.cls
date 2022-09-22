@@ -2,7 +2,6 @@ public with sharing class RecordKey {
     private List<FieldReference> keyFields;
     private SObject record;
 
-    // rename to RecordKey
     public RecordKey(List<FieldReference> keyFields, SObject record) {
         this.keyFields = keyFields;
         this.record = record;
@@ -26,5 +25,9 @@ public with sharing class RecordKey {
             builder.append(field.getFrom(record));
         }        
         return builder.build();
+    }
+    
+    public override String toString() {
+        return 'Hello';
     }
 }

@@ -1,4 +1,4 @@
-public with sharing class PriceBookDataFeederFactory {
+public with sharing class PriceBookDataFeederFactory implements DataFeederFactory {
     public String getName() {
         return 'Sample Pricebooks';
     }

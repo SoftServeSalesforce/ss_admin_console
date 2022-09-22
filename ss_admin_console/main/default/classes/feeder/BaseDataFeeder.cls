@@ -21,11 +21,11 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         this.dataFields = metadata.dataFields;
     }
 
-    private DataFilter createDataFilter(DataSupplier supplier) {
+    private DataFilter createDataFilter(DataDefinition metadata, Map<RecordKey, SObject> recordsMap) {
         if (mockedDF != null) {
             return mockedDF;
         }
-        return new DataFilter(supplier);
+        return new DataFilter(metadata, recordsMap);
     }
 
     public void feed(Boolean updateRecords, FeedLogger logger) {
@@ -39,9 +39,9 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         }
         UnitOfWorkHelper uowHelper = new UnitOfWorkHelper(uow, supplier);
         List<SSACResult> results = createDataFilter(metadata, generateRecordsMap()).filter();
-        List<SObject> okResults = this.convertToSObject(util.getResultsByStatus(results, SSACConstants.OK_STATUS));
-        List<SObject> changedResults = this.convertToSObject(util.getResultsByStatus(results, SSACConstants.CHANGED_STATUS));
-        List<SObject> duplicatedResults = this.convertToSObject(util.getResultsByStatus(results, SSACConstants.DUPLICATED_STATUS));
+        List<SObject> okResults = this.convertToSObject(util.getResultsByStatus(results, ApexActionStatus.OK.value()));
+        List<SObject> changedResults = this.convertToSObject(util.getResultsByStatus(results, ApexActionStatus.CHANGED.value()));
+        List<SObject> duplicatedResults = this.convertToSObject(util.getResultsByStatus(results, ApexActionStatus.DUPLICATED.value()));
         List<SObject> recordsToUpsert = new List<SObject>();
         recordsToUpsert.addAll(okResults);
         recordsToUpsert.addAll(changedResults);
@@ -56,7 +56,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
                    logger.error(e.getMessage());
                 }
             } else if (!duplicatedResults.isEmpty()) {
-                logger.log(String.valueOf(objectType), this.handleAmountOfRecordsProceed(duplicatedResults.size()), SSACConstants.DUPLICATED_STATUS);
+                logger.log(String.valueOf(objectType), this.handleAmountOfRecordsProceed(duplicatedResults.size()), ApexActionStatus.DUPLICATED.value());
             } else {
                 logger.error('FAILED: No records to be displayed. Check the sample data again.');
             }
@@ -65,7 +65,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
                 try {
                     uow = uowHelper.registerRecords(okResults, supplier.getMetadata().referenceFields.size(), logger);
                     uow.commitWork();
-                    logger.log(String.valueOf(objectType), this.handleAmountOfRecordsProceed(okResults.size()), status);
+                    logger.log(String.valueOf(objectType), this.handleAmountOfRecordsProceed(okResults.size()), ApexActionStatus.INSERTED.value());
                 } catch (Exception e) {
                    logger.error(e.getMessage());
                 }
@@ -81,7 +81,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         List<SObject> records = new List<SObject>();
         for (RecordKey item : recordsMap.keySet()) {
             for (SSACResult result : results) {
-                if (item.hashCode() == result.recordKey) {
+                if (item.toString() == result.recordKey) {
                     recordsMap.get(item).Id = result.recordId;
                     records.add(recordsMap.get(item));
                 }

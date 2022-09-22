@@ -8,11 +8,11 @@ public inherited sharing class AsyncDataFeeder implements DataFeeder {
         this.logger = logger;
     }
 
-    public void feed(Boolean updateRecords, FeedLogger logger, String status) {
+    public void feed(Boolean updateRecords, FeedLogger logger) {
         if (originalFeeder instanceof AsyncDataFeeder) {
-            originalFeeder.feed(updateRecords, logger, status);
+            originalFeeder.feed(updateRecords, logger);
         } else {
-            System.enqueueJob(new AsyncExecutor(originalFeeder, updateRecords, logger, status));
+            System.enqueueJob(new AsyncExecutor(originalFeeder, updateRecords, logger));
         }
     }
 
@@ -22,7 +22,7 @@ public inherited sharing class AsyncDataFeeder implements DataFeeder {
         private FeedLogger logger;
         private String status;
 
-        private AsyncExecutor(DataFeeder feeder, Boolean updateRecords, FeedLogger logger, String status) {
+        private AsyncExecutor(DataFeeder feeder, Boolean updateRecords, FeedLogger logger) {
             this.feeder = feeder;
             this.updateRecords = updateRecords;
             this.logger = logger;
@@ -30,7 +30,7 @@ public inherited sharing class AsyncDataFeeder implements DataFeeder {
         }
 
         public void execute(QueueableContext qc) {
-            feeder.feed(updateRecords, logger, status);
+            feeder.feed(updateRecords, logger);
         }
     }
 }

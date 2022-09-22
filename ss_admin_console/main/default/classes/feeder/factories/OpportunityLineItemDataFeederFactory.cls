@@ -9,32 +9,13 @@ public with sharing class OpportunityLineItemDataFeederFactory implements DataFe
         DataDefinition.DataDefinitionBuilder dataDefinitionBuilder = new DataDefinition.DataDefinitionBuilder(OpportunityLineItem.SObjectType).
             addKeyField('Product2.ProductCode').addDataField(OpportunityLineItem.Quantity).addReferenceField(OpportunityLineItem.Product2Id, new String[] {'Name'}).
             addReferenceField(OpportunityLineItem.OpportunityId, new String[] {'Name'});
-
+        // TODO: Delete amount of OLI
         return new BaseDataFeeder(
                 new StaticDataSupplier(
                     dataDefinitionBuilder.build(),
                     new OpportunityLineItem [] {
                     new OpportunityLineItem(TotalPrice = 578, Quantity = 85.00, Product2 = new Product2(Name = 'TEST-0001'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 442, Quantity = 91.00, Product2 = new Product2(Name = 'TEST-0002'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 238, Quantity = 87.00, Product2 = new Product2(Name = 'TEST-0003'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 476, Quantity = 216.00, Product2 = new Product2(Name = 'TEST-0004'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 34, Quantity = 90.00, Product2 = new Product2(Name = 'TEST-0005'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 102, Quantity = 57.00, Product2 = new Product2(Name = 'TEST-0006'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 68, Quantity = 116.00, Product2 = new Product2(Name = 'TEST-0007'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 476, Quantity = 130.00, Product2 = new Product2(Name = 'TEST-0008'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 272, Quantity = 145.00, Product2 = new Product2(Name = 'TEST-0009'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 68, Quantity = 157.00, Product2 = new Product2(Name = 'TEST-0010'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 68, Quantity = 224.00, Product2 = new Product2(Name = 'TEST-0011'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 170, Quantity = 210.00, Product2 = new Product2(Name = 'TEST-0012'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 238, Quantity = 186.00, Product2 = new Product2(Name = 'TEST-0013'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
-                    new OpportunityLineItem(TotalPrice = 102, Quantity = 139.00, Product2 = new Product2(Name = 'TEST-0014'), Opportunity = new Opportunity(Name = 'OPP_TEST-0001')),
                     new OpportunityLineItem(TotalPrice = 612, Quantity = 43.00, Product2 = new Product2(Name = 'TEST-0015'), Opportunity = new Opportunity(Name = 'OPP_TEST-0002')),
-                    new OpportunityLineItem(TotalPrice = 374, Quantity = 117.00, Product2 = new Product2(Name = 'TEST-0016'), Opportunity = new Opportunity(Name = 'OPP_TEST-0002')),
-                    new OpportunityLineItem(TotalPrice = 680, Quantity = 46.00, Product2 = new Product2(Name = 'TEST-0017'), Opportunity = new Opportunity(Name = 'OPP_TEST-0002')),
-                    new OpportunityLineItem(TotalPrice = 408, Quantity = 117.00, Product2 = new Product2(Name = 'TEST-0018'), Opportunity = new Opportunity(Name = 'OPP_TEST-0002')),
-                    new OpportunityLineItem(TotalPrice = 272, Quantity = 193.00, Product2 = new Product2(Name = 'TEST-0019'), Opportunity = new Opportunity(Name = 'OPP_TEST-0002')),
-                    new OpportunityLineItem(TotalPrice = 204, Quantity = 211.00, Product2 = new Product2(Name = 'TEST-0020'), Opportunity = new Opportunity(Name = 'OPP_TEST-0002')),
-                    new OpportunityLineItem(TotalPrice = 646, Quantity = 39.00, Product2 = new Product2(Name = 'TEST-0021'), Opportunity = new Opportunity(Name = 'OPP_TEST-0002')),
                     new OpportunityLineItem(TotalPrice = 442, Quantity = 156.00, Product2 = new Product2(Name = 'TEST-0022'), Opportunity = new Opportunity(Name = 'OPP_TEST-0003')),
                     new OpportunityLineItem(TotalPrice = 408, Quantity = 143.00, Product2 = new Product2(Name = 'TEST-0023'), Opportunity = new Opportunity(Name = 'OPP_TEST-0003')),
                     new OpportunityLineItem(TotalPrice = 510, Quantity = 135.00, Product2 = new Product2(Name = 'TEST-0024'), Opportunity = new Opportunity(Name = 'OPP_TEST-0003')),

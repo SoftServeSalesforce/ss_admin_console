@@ -12,7 +12,7 @@ public inherited sharing class SSACController {
 
     @AuraEnabled
     public static List<DataSupplierFactoryWrapper> getDataFeederFactories() {
-        List<Type> factoryTypes = new SSACUtil().getSubClasses(DataFeederFactory.class);
+        List<Type> factoryTypes = SSACUtil.getSubClasses(DataFeederFactory.class);
         List<DataSupplierFactoryWrapper> feederFactories = new List<DataSupplierFactoryWrapper>();
         for (Type factoryType : factoryTypes) {
             if (factoryType != DataFeederFactory.class) {
@@ -29,7 +29,7 @@ public inherited sharing class SSACController {
 
     @AuraEnabled
     public static List<String> getJobClasses(String interfaceName) {
-        return new SSACUtil().getJobClasses(interfaceName);
+        return SSACUtil.getJobClasses(interfaceName);
     }
 
     @AuraEnabled
@@ -50,31 +50,19 @@ public inherited sharing class SSACController {
             if (checkOnly) {
                 Savepoint sp = Database.setSavepoint();
                 try {
-                    df.feed(true, logger, SSACConstants.TESTED_STATUS);
+                    df.feed(true, logger);
                 } finally {
                     Database.rollback(sp);
                 }
-                PlatformEventFeedLogger.getInstance().publishResultLog(actionType, SSACConstants.TEST_ACTION_TYPE);
+                PlatformEventFeedLogger.getInstance().publishResultLog(actionType, ApexActionStatus.TEST_ACTION_TYPE.value());
             } else {
                 try {
-                    if(updateRecords) {
-                        df.feed(updateRecords, logger, SSACConstants.UPSERTED_STATUS);
-                    } else {
-                        df.feed(updateRecords, logger, SSACConstants.INSERTED_STATUS);
-                    }
+                    df.feed(updateRecords, logger);
                 } finally {
-                    PlatformEventFeedLogger.getInstance().publishResultLog(actionType, SSACConstants.EXECUTE_ACTION_TYPE);
+                    PlatformEventFeedLogger.getInstance().publishResultLog(actionType, ApexActionStatus.EXECUTE_ACTION_TYPE.value());
                 }
             }
         }
-        /*if (TypeUtils.isBatchable(actionType)) {
-            new BaseBatchableFeeder(actionType).feed(false);
-            return 'Test for batch job ' + actionType + ' started';
-        }
-        if (TypeUtils.isSchedulable(actionType)) {
-            new BaseSchedulableFeeder(actionType).feed(false);
-            return 'Test for scheduled job ' + actionType + ' started';
-        } */
         return 'Action Started';
     }
 

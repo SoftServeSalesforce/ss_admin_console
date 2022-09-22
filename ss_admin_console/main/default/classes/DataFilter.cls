@@ -32,9 +32,9 @@ public inherited sharing class DataFilter {
         List<SObject> records = supplier.supply();
         List<SSACResult> results = new List<SSACResult>();
         List<SObject> existentRecords = getExistentRecords(records);
-        Map<KeyGenerator, SObject> existentMap = generateRecordsMap(existentRecords);
-        Map<KeyGenerator, SObject> sampleRecords = generateRecordsMap(records);
-        for (KeyGenerator item : sampleRecords.keySet()) {
+        Map<RecordKey, SObject> existentMap = generateRecordsMap(existentRecords);
+        Map<RecordKey, SObject> sampleRecords = generateRecordsMap(records);
+        for (RecordKey item : sampleRecords.keySet()) {
             SObject existentSObject = existentMap.get(item);
             if (existentSObject != null) {
                 Integer matchedNonKeyFields = 0;
@@ -73,10 +73,10 @@ public inherited sharing class DataFilter {
      * @return map with recordFingerprint key and sobject as a value
      */
     @TestVisible
-    private Map<KeyGenerator, SObject> generateRecordsMap(List<SObject> records) {
-        Map<KeyGenerator, SObject> recordsMap = new Map<KeyGenerator, SObject>();
+    private Map<RecordKey, SObject> generateRecordsMap(List<SObject> records) {
+        Map<RecordKey, SObject> recordsMap = new Map<RecordKey, SObject>();
         for (SObject existSObj : records) {
-            recordsMap.put(new KeyGenerator(supplier.getMetadata().keyFields, existSObj), existSObj);
+            recordsMap.put(new RecordKey(supplier.getMetadata().keyFields, existSObj), existSObj);
         }
         return recordsMap;
     }

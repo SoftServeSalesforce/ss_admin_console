@@ -20,13 +20,11 @@ public inherited sharing class AsyncDataFeeder implements DataFeeder {
         private DataFeeder feeder;
         private Boolean updateRecords;
         private FeedLogger logger;
-        private String status;
 
         private AsyncExecutor(DataFeeder feeder, Boolean updateRecords, FeedLogger logger) {
             this.feeder = feeder;
             this.updateRecords = updateRecords;
             this.logger = logger;
-            this.status = status;
         }
 
         public void execute(QueueableContext qc) {

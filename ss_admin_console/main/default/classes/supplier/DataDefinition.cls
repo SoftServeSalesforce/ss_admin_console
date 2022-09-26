@@ -92,9 +92,6 @@ public inherited sharing class DataDefinition {
             if (keyFields == null || keyFields.isEmpty()) {
                 throw new IllegalArgumentException('\'keyFields\' parameter can not be null or empty.');
             }
-            if (dataFields == null || dataFields.isEmpty()) {
-                throw new IllegalArgumentException('\'dataFields\' parameter can not be null or empty.');
-            }
             dd.objectType = objectType;
             dd.keyFields = keyFields;
             dd.dataFields = dataFields;

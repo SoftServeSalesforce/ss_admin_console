@@ -54,23 +54,15 @@ public inherited sharing class SSACController {
                 } finally {
                     Database.rollback(sp);
                 }
-                PlatformEventFeedLogger.getInstance().publishResultLog(actionType, SSACConstants.TEST_ACTION_TYPE);
+                PlatformEventFeedLogger.getInstance().publishResultLog(actionType, ApexActionStatus.TEST_ACTION_TYPE.value());
             } else {
                 try {
                     df.feed(updateRecords, logger);
                 } finally {
-                    PlatformEventFeedLogger.getInstance().publishResultLog(actionType, SSACConstants.EXECUTE_ACTION_TYPE);
+                    PlatformEventFeedLogger.getInstance().publishResultLog(actionType, ApexActionStatus.EXECUTE_ACTION_TYPE.value());
                 }
             }
         }
-        /*if (TypeUtils.isBatchable(actionType)) {
-            new BaseBatchableFeeder(actionType).feed(false);
-            return 'Test for batch job ' + actionType + ' started';
-        }
-        if (TypeUtils.isSchedulable(actionType)) {
-            new BaseSchedulableFeeder(actionType).feed(false);
-            return 'Test for scheduled job ' + actionType + ' started';
-        } */
         return 'Action Started';
     }
 

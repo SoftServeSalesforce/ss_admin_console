@@ -54,12 +54,12 @@ public inherited sharing class SSACController {
                 } finally {
                     Database.rollback(sp);
                 }
-                PlatformEventFeedLogger.getInstance().publishResultLog(actionType, ApexActionStatus.TEST_ACTION_TYPE.value());
+                PlatformEventFeedLogger.getInstance().publishResultLog(actionType, ApexActionType.TEST_ACTION_TYPE.value());
             } else {
                 try {
                     df.feed(updateRecords, logger);
                 } finally {
-                    PlatformEventFeedLogger.getInstance().publishResultLog(actionType, ApexActionStatus.EXECUTE_ACTION_TYPE.value());
+                    PlatformEventFeedLogger.getInstance().publishResultLog(actionType, ApexActionType.EXECUTE_ACTION_TYPE.value());
                 }
             }
         }

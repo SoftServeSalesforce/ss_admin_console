@@ -9,7 +9,6 @@ public with sharing class BaseDataFeederTest {
             addDataField(Contact.LastName).addDataField(Contact.FirstName).addDataField('Account.Name').
             addReferenceField(Contact.AccountId, new String[] {'Name'});
 
-
     @IsTest 
     private static void testFeedUpsertMocksNegative() {
         fflib_ApexMocks mocks = new fflib_ApexMocks();
@@ -29,7 +28,7 @@ public with sharing class BaseDataFeederTest {
         Test.startTest();
         df.feed(true, logger);
         Test.stopTest();
-        ((FeedLogger) mocks.verify(logger, 1)).log('Contact', '2 records were proceed.', SSACConstants.UPSERTED_STATUS);
+        ((FeedLogger) mocks.verify(logger, 1)).log('Contact', '2 records were proceed.', ApexActionStatus.UPDATED.value());
     }
 
     @IsTest 
@@ -51,7 +50,7 @@ public with sharing class BaseDataFeederTest {
         Test.startTest();
         df.feed(false, logger);
         Test.stopTest();
-        ((FeedLogger) mocks.verify(logger, 1)).log('Contact', '1 records were proceed.', SSACConstants.INSERTED_STATUS);
+        ((FeedLogger) mocks.verify(logger, 1)).log('Contact', '1 records were proceed.', ApexActionStatus.INSERTED.value());
     }
 
     @IsTest 
@@ -62,7 +61,7 @@ public with sharing class BaseDataFeederTest {
         Test.startTest();
         df.feed(false, logger);
         Test.stopTest();
-        ((FeedLogger) mocks.verify(logger, 1)).log('Account', '1 records were proceed.', SSACConstants.INSERTED_STATUS);
+        ((FeedLogger) mocks.verify(logger, 1)).log('Account', '1 records were proceed.', ApexActionStatus.INSERTED.value());
     }
     
     private static BaseDataFeeder baseDataFeederInstance(fflib_ApexMocks mocks, Boolean clearResults, Boolean isChild) {
@@ -86,18 +85,18 @@ public with sharing class BaseDataFeederTest {
 
     private static List<SSACResult> resultsContact = new List<SSACResult> {
         new SSACResult()
-            .setStatus(SSACConstants.OK_STATUS)
+            .setStatus(ApexActionStatus.OK.value())
             .setRecordKey('oliviasmith@testmail.com_test_social software')
             .setSObjectApiName('Contact')
             .setErrorMessage('Error message')
             .setDescription('Description'),
         new SSACResult()
-            .setStatus(SSACConstants.CHANGED_STATUS)
+            .setStatus(ApexActionStatus.CHANGED.value())
             .setRecordKey('emmabrown@testmail.com_brown_adept software')
             .setRecordId(String.valueOf(fflib_IDGenerator.generate(Contact.SObjectType)))
             .setSObjectApiName('Contact'),
         new SSACResult()
-            .setStatus(SSACConstants.DUPLICATED_STATUS)
+            .setStatus(ApexActionStatus.DUPLICATED.value())
             .setRecordKey('ameliawilson@testmail.com_wilson_boss software')
             .setRecordId(String.valueOf(fflib_IDGenerator.generate(Contact.SObjectType)))
             .setSObjectApiName('Contact')
@@ -111,18 +110,18 @@ public with sharing class BaseDataFeederTest {
 
     private static List<SSACResult> resultsAccount = new List<SSACResult> {
         new SSACResult()
-            .setStatus(SSACConstants.OK_STATUS)
+            .setStatus(ApexActionStatus.OK.value())
             .setRecordKey('velocity software')
             .setSObjectApiName('Account')
             .setErrorMessage('Error message')
             .setDescription('Description'),
         new SSACResult()
-            .setStatus(SSACConstants.CHANGED_STATUS)
+            .setStatus(ApexActionStatus.CHANGED.value())
             .setRecordKey('urge software')
             .setRecordId(String.valueOf(fflib_IDGenerator.generate(Account.SObjectType)))
             .setSObjectApiName('Account'),
         new SSACResult()
-            .setStatus(SSACConstants.DUPLICATED_STATUS)
+            .setStatus(ApexActionStatus.DUPLICATED.value())
             .setRecordKey('access software')
             .setRecordId(String.valueOf(fflib_IDGenerator.generate(Account.SObjectType)))
             .setSObjectApiName('Account')

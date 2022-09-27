@@ -2,28 +2,27 @@
 public with sharing class DataFilterTest {
 
     private static final DataDefinition.DataDefinitionBuilder dataDefinitionBuilder = new DataDefinition.DataDefinitionBuilder(Contact.SObjectType).
-            addKeyField(Contact.Email).addKeyField(Contact.LastName).addKeyField('Account.Name').addDataField(Contact.Email).
-            addDataField(Contact.LastName).addDataField(Contact.FirstName).addDataField('Account.Name').
+            addKeyField(Contact.Email).addKeyField(Contact.LastName).addKeyField('Account.Name').addDataField(Contact.FirstName).
             addReferenceField(Contact.AccountId, new String[] {'Name'});
 
     @IsTest
-    static void testFilter() {
+    private static void testFilter() {
         insertData();
         Test.startTest();
-        List<SSACResult> filteredRecords = new DataFilter(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData)).filter();
+        List<SSACResult> filteredRecords = new DataFilter(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata(), generateMap()).filter();
         Test.stopTest();
         System.assertEquals(3, filteredRecords.size(), 'Filter method is not returning the right amount of records');
         System.assert(filteredRecords.get(0).status != null, 'Status is not populated');
-        System.assertEquals(SSACConstants.OK_STATUS, filteredRecords.get(0).status, 'Filter status is not correct');
-        System.assertEquals(SSACConstants.CHANGED_STATUS, filteredRecords.get(1).status, 'Filter status is not correct');
-        System.assertEquals(SSACConstants.DUPLICATED_STATUS, filteredRecords.get(2).status, 'Filter status is not correct');
+        System.assertEquals(ApexActionStatus.OK.value(), filteredRecords.get(0).status, 'Filter status is not correct');
+        System.assertEquals(ApexActionStatus.CHANGED.value(), filteredRecords.get(1).status, 'Filter status is not correct');
+        System.assertEquals(ApexActionStatus.DUPLICATED.value(), filteredRecords.get(2).status, 'Filter status is not correct');
     }
 
     @IsTest
-    static void testGetExistentContactRecords() { 
+    private static void testGetExistentContactRecords() { 
         insertData();
         Test.startTest();
-        List<SObject> queriedRecords = new DataFilter(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData)).getExistentRecords(sampleTestData);
+        List<SObject> queriedRecords = new DataFilter(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata(), generateMap()).getExistentRecords(generateMap());
         Test.stopTest();
         System.assertEquals(queriedRecords.size(), 2, 'Query does not return the right amount of records');
         System.assertEquals(sampleTestData[2].LastName, queriedRecords[1].get('LastName'));
@@ -61,4 +60,13 @@ public with sharing class DataFilterTest {
         new Contact(LastName = 'Brown', FirstName = 'Test', Email = 'EmmaBrown@testmail.com', Account = new Account(Name='Adept Software')), // Changed
         new Contact(LastName = 'Wilson', FirstName = 'Amelia', Email = 'AmeliaWilson@testmail.com', Account = new Account(Name='Boss Software')) // Duplicated
     };
+
+    private static Map<RecordKey, SObject> generateMap() {
+        Map<RecordKey, SObject> recordsMap = new Map<RecordKey, SObject>();
+        for (SObject item : sampleTestData) {
+            recordsMap.put(new RecordKey(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata().keyFields, item), item);
+        }
+        return recordsMap;
+    }
+    
 }

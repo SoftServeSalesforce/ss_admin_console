@@ -33,8 +33,8 @@ public with sharing class DataFilterTest {
     static void insertData() {
         fflib_SObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(
             new Schema.SObjectType[] {
-            Account.SObjectType,
-            Contact.SObjectType
+                Account.SObjectType,
+                Contact.SObjectType
             }
         );
         Account a1 = new Account(Name='Social Software');

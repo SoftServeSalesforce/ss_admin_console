@@ -42,19 +42,6 @@ public inherited sharing class DataDefinitionTest {
     }
 
     @IsTest
-    static void testDDBInvalidDataFieldsBuild() {
-        DataDefinition.DataDefinitionBuilder ddb = new DataDefinition.DataDefinitionBuilder(Account.SObjectType).
-                addKeyField('Name');
-        
-        Test.startTest();
-        try {
-            ddb.build();
-            System.assert(false, 'IllegalArgumentException is expected here');
-        } catch (IllegalArgumentException e) {}
-        Test.stopTest();
-    }
-
-    @IsTest
     static void testDDBAddInvalidKeyField() {
         DataDefinition.DataDefinitionBuilder ddb = new DataDefinition.DataDefinitionBuilder(Account.SObjectType);
 

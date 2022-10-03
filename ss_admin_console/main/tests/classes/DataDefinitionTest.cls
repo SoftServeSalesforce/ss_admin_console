@@ -7,7 +7,7 @@ public inherited sharing class DataDefinitionTest {
                 addKeyField(OpportunityLineItem.Quantity).addKeyField('Product2.ProductCode').
                 addDataField(OpportunityLineItem.Quantity).addDataField('Product2.ProductCode').
                 addReferenceField(OpportunityLineItem.OpportunityId, new SObjectField[] {OpportunityLineItem.Opportunity.Name}).
-                addReferenceField(OpportunityLineItem.Product2Id, new String[] {'Product2.ProductCode'});
+                addReferenceField(OpportunityLineItem.Product2Id, new String[] {'ProductCode'});
 
         Test.startTest();
         DataDefinition dd = ddb.build();

@@ -12,7 +12,7 @@ public with sharing class DataFilterTest {
         List<SSACResult> filteredRecords = new DataFilter(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata(), generateMap()).filter();
         Test.stopTest();
         System.assertEquals(3, filteredRecords.size(), 'Filter method is not returning the right amount of records');
-        System.assert(filteredRecords.get(0).status != null, 'Status is not populated');
+        System.assertNotEquals(null, filteredRecords.get(0).status, 'Status is not populated');
         System.assertEquals(ApexActionStatus.OK.value(), filteredRecords.get(0).status, 'Filter status is not correct');
         System.assertEquals(ApexActionStatus.CHANGED.value(), filteredRecords.get(1).status, 'Filter status is not correct');
         System.assertEquals(ApexActionStatus.DUPLICATED.value(), filteredRecords.get(2).status, 'Filter status is not correct');
@@ -22,7 +22,7 @@ public with sharing class DataFilterTest {
     private static void testGetExistentContactRecords() { 
         insertData();
         Test.startTest();
-        List<SObject> queriedRecords = new DataFilter(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata(), generateMap()).getExistentRecords(generateMap());
+        List<SObject> queriedRecords = new DataFilter(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata(), generateMap()).loadExistentRecords(generateMap());
         Test.stopTest();
         System.assertEquals(queriedRecords.size(), 2, 'Query does not return the right amount of records');
         System.assertEquals(sampleTestData[2].LastName, queriedRecords[1].get('LastName'));

@@ -16,11 +16,13 @@ public with sharing class BaseDataFeederTest {
     private static void testFeedUpsertMocksPositive() {
         fflib_ApexMocks mocks = new fflib_ApexMocks();
         FeedLogger logger = (FeedLogger) mocks.mock(FeedLogger.class);
+        fflib_SObjectUnitOfWork fflibUnitofWork = (fflib_SObjectUnitOfWork) mocks.mock(fflib_SObjectUnitOfWork.class);
+        fflibUnitofWork = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {Contact.SObjectType, Account.SObjectType});
         BaseDataFeeder df = baseDataFeederInstance(mocks, false, true);
         Test.startTest();
         df.feed(true, logger);
         Test.stopTest();
-        ((FeedLogger) mocks.verify(logger, 1)).log('Contact', '2 records were proceed.', ApexActionStatus.UPDATED.value());
+        ((fflib_SObjectUnitOfWork) mocks.verify(fflibUnitofWork, 1)).commitWork();
     }
 
     @IsTest 
@@ -38,43 +40,44 @@ public with sharing class BaseDataFeederTest {
     private static void testFeedInsertMocksPositive() {
         fflib_ApexMocks mocks = new fflib_ApexMocks();
         FeedLogger logger = (FeedLogger) mocks.mock(FeedLogger.class);
+        fflib_SObjectUnitOfWork fflibUnitofWork = (fflib_SObjectUnitOfWork) mocks.mock(fflib_SObjectUnitOfWork.class);
+        fflibUnitofWork = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {Contact.SObjectType, Account.SObjectType});
         BaseDataFeeder df = baseDataFeederInstance(mocks, false, true);
         Test.startTest();
         df.feed(false, logger);
         Test.stopTest();
-        ((FeedLogger) mocks.verify(logger, 1)).log('Contact', '1 records were proceed.', ApexActionStatus.INSERTED.value());
+        ((fflib_SObjectUnitOfWork) mocks.verify(fflibUnitofWork, 1)).commitWork();
     }
 
     @IsTest 
     private static void testFeedInsertMocksPositiveAccounts() {
         fflib_ApexMocks mocks = new fflib_ApexMocks();
         FeedLogger logger = (FeedLogger) mocks.mock(FeedLogger.class);
+        fflib_SObjectUnitOfWork fflibUnitofWork = (fflib_SObjectUnitOfWork) mocks.mock(fflib_SObjectUnitOfWork.class);
+        fflibUnitofWork = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {Account.SObjectType});
         BaseDataFeeder df = baseDataFeederInstance(mocks, false, false);
         Test.startTest();
         df.feed(false, logger);
         Test.stopTest();
-        ((FeedLogger) mocks.verify(logger, 1)).log('Account', '1 records were proceed.', ApexActionStatus.INSERTED.value());
+        ((fflib_SObjectUnitOfWork) mocks.verify(fflibUnitofWork, 1)).commitWork(); 
     }
-    
+
     private static BaseDataFeeder baseDataFeederInstance(fflib_ApexMocks mocks, Boolean clearResults, Boolean isChild) {
        DataDefinition.DataDefinitionBuilder dataDefinitionBuilderAccount = new DataDefinition.DataDefinitionBuilder(Account.SObjectType).
-                addKeyField(Account.Name).addDataField(Account.Name);
+                addKeyField(Account.Name);
     
         DataDefinition.DataDefinitionBuilder dataDefinitionBuilderContact = new DataDefinition.DataDefinitionBuilder(Contact.SObjectType).
-            addKeyField(Contact.Email).addKeyField(Contact.LastName).addKeyField('Account.Name').addDataField(Contact.Email).
-            addDataField(Contact.LastName).addDataField(Contact.FirstName).addDataField('Account.Name').
-            addReferenceField(Contact.AccountId, new String[] {'Name'});
+            addKeyField(Contact.Email).addKeyField(Contact.LastName).addKeyField('Account.Name')
+            .addDataField(Contact.FirstName)
+            .addReferenceField(Contact.AccountId, new String[] {'Name'});
 
         DataFilter filter = (DataFilter) mocks.mock(DataFilter.class);
         mocks.startStubbing();
         if (clearResults) {
-            if (isChild) {
-                resultsContact().clear();
-            } else {
-                resultsAccount().clear();
-            }
+            mocks.when(filter.filter()).thenReturn(new List<SSACResult>());
+        } else {
+            mocks.when(filter.filter()).thenReturn(isChild ? resultsContact() : resultsAccount());
         }
-        mocks.when(filter.filter()).thenReturn(isChild ? resultsContact() : resultsAccount());
         mocks.stopStubbing();
         DataSupplier accountDataSupplier = new StaticDataSupplier(dataDefinitionBuilderAccount.build(), sampleTestDataAccount());
         DataSupplier contactDataSupplier = new StaticDataSupplier(dataDefinitionBuilderContact.build(), sampleTestDataContact());
@@ -87,18 +90,18 @@ public with sharing class BaseDataFeederTest {
         List<SSACResult> contactsList = new List<SSACResult>();
         contactsList.add(new SSACResult()
             .setStatus(ApexActionStatus.OK.value())
-            .setRecordKey('oliviasmith@testmail.com_test_social software')
+            .setRecordKey('oliviasmith@testmail.comtestsocial software')
             .setSObjectApiName('Contact')
             .setErrorMessage('Error message')
             .setDescription('Description'));
         contactsList.add(new SSACResult()
             .setStatus(ApexActionStatus.CHANGED.value())
-            .setRecordKey('emmabrown@testmail.com_brown_adept software')
+            .setRecordKey('emmabrown@testmail.combrownadept software')
             .setRecordId(String.valueOf(fflib_IDGenerator.generate(Contact.SObjectType)))
             .setSObjectApiName('Contact'));
         contactsList.add(new SSACResult()
             .setStatus(ApexActionStatus.DUPLICATED.value())
-            .setRecordKey('ameliawilson@testmail.com_wilson_boss software')
+            .setRecordKey('ameliawilson@testmail.comwilsonboss software')
             .setRecordId(String.valueOf(fflib_IDGenerator.generate(Contact.SObjectType)))
             .setSObjectApiName('Contact')
         );

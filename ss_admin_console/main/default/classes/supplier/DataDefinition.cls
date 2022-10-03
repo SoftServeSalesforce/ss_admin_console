@@ -82,7 +82,7 @@ public inherited sharing class DataDefinition {
             }
             ReferenceFieldDefinition rfd = new ReferenceFieldDefinition();
             rfd.referenceField = referenceField;
-            rfd.referencedKeyFields = toFieldReferences(objectType, referencedKeyFields);
+            rfd.referencedKeyFields = toFieldReferences(referenceField.getDescribe().getReferenceTo()[0], referencedKeyFields);
             referenceFields.add(rfd);
             return this;
         }

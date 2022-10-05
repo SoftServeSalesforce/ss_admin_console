@@ -19,11 +19,11 @@
 <p>These classes contain provided sample data: AccountDataFeederFactory, ContactDataFeederFactory, OpportunityDataFeederFactory...</p>
 <p>For example, this is peace of code from AccountDataFeederFactory, just update all accounts from this map with required field</p>
 <pre> 
-public String getName() {
+    public String getName() {
         return 'Sample Contacts';
     }
 
-public DataFeeder getDataFeeder() {
+    public DataFeeder getDataFeeder() {
         DataDefinition.DataDefinitionBuilder dataDefinitionBuilder = new DataDefinition.DataDefinitionBuilder(Account.SObjectType).
                 addKeyField(Account.Name);
         return new BaseDataFeeder(
@@ -46,10 +46,10 @@ public DataFeeder getDataFeeder() {
 <p>2) list of SObject as a sample data;
 <h3>Usage</h3>
 <p>1. Open Admin Console Tab and choose any of factories you want to test</p>
-<img width="932" alt="image" src="https://user-images.githubusercontent.com/57544473/194052659-b4bff1a0-15ee-494a-a04f-ce63ede9a8e5.png">
+<img width="938" alt="image" src="https://user-images.githubusercontent.com/57544473/194053914-9741f511-3dc5-41b8-98df-fd356cc849f7.png">
 <p>2. Then click "Next" and choose factories which you need to update.</p>
 <img width="935" alt="image" src="https://user-images.githubusercontent.com/57544473/194052752-e23deb55-9e96-4a33-a522-0338dec828aa.png">
 <p>You can click "Execute" to insert sample data to database.</p>
-<img width="943" alt="image" src="https://user-images.githubusercontent.com/57544473/194053556-b9033d88-8cec-42c3-bdd8-a0f8c29a2bbd.png">
+<img width="942" alt="image" src="https://user-images.githubusercontent.com/57544473/194055096-fa239c6d-2520-4e7f-bbb5-f91feca7b90d.png">
 <p>You can either click "Test" to insert sample data and rockback the transaction</p>
-<img width="918" alt="image" src="https://user-images.githubusercontent.com/57544473/194052961-d87ae9dc-7d97-47b1-8805-ff7321d086b0.png">
+<img width="942" alt="image" src="https://user-images.githubusercontent.com/57544473/194054340-70e1291a-25bf-4f31-9fcb-fa6974cc2f47.png">

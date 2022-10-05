@@ -13,8 +13,6 @@
 <p>$ sfdx force:source:deploy -p path/to/source</p>
 <h2>UML Diagram</h2>
 <img width="500" alt="uml_diagram" src="https://user-images.githubusercontent.com/30637510/138530463-5bd61aca-f9ef-4cf4-a2cf-5b0b4b9b80bc.png" style="max-width: 100%;">
-![17 Task 2022-10-04 Class Diagram Update on Git - NEW Test](https://user-images.githubusercontent.com/51298991/194047926-f48c80d0-394d-4c0e-a78d-a899b07aa573.png)
-
 <h2>Usage</h2>
 <h3>Usage of provided data</h3>
 <p>Just deploy source and you already can create testing data for a lot of standart sObjects</p>

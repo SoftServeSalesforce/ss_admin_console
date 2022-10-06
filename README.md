@@ -24,18 +24,19 @@
     }
 
     public DataFeeder getDataFeeder() {
-        DataDefinition.DataDefinitionBuilder dataDefinitionBuilder = new DataDefinition.DataDefinitionBuilder(Account.SObjectType).
-                addKeyField(Account.Name);
+        DataDefinition.DataDefinitionBuilder dataDefinitionBuilder = new DataDefinition.DataDefinitionBuilder(Contact.SObjectType).
+                addKeyField(Contact.Email).addKeyField(Contact.LastName).addKeyField('Account.Name').addDataField(Contact.FirstName).
+                addReferenceField(Contact.AccountId, new String[] {'Name'});
         return new BaseDataFeeder(
                 new StaticDataSupplier(
                     dataDefinitionBuilder.build(),
-                    new Account[] {
-                        new Account(Name = 'Social Software'),
-                        new Account(Name = 'Adept Software'),
-                        new Account(Name = 'Boss Software'),
-                        new Account(Name = 'Scope Software'),
-                        new Account(Name = 'Variable Software')
-                    }
+                    new Contact[] {
+                        new Contact(LastName = 'Smith', FirstName = 'Olivia', Email = 'OliviaSmith@testmail.com', Account = new Account(Name='Social Software')),
+                        new Contact(LastName = 'Brown', FirstName = 'Emma', Email = 'EmmaBrown@testmail.com', Account = new Account(Name='Adept Software')),
+                        new Contact(LastName = 'Wilson', FirstName = 'Amelia', Email = 'AmeliaWilson@testmail.com', Account = new Account(Name='Boss Software')),
+                        new Contact(LastName = 'Thomson', FirstName = 'Ava', Email = 'AvaThomson@testmail.com', Account = new Account(Name='Scope Software')),
+                        new Contact(LastName = 'Robertson', FirstName = 'Sophia', Email = 'SophiaRobertson@testmail.com', Account = new Account(Name='Variable Software')),
+                     } 
                 )
         );
     }

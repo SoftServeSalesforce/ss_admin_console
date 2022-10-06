@@ -17,7 +17,7 @@
 <p>You can customize this sample data, for example, to add some required field</p>
 <p>Sample data is stored in DataFactories and consists of keyFields, dataFields, referencedFields(if a SObject has any reference fields) and sample data.</p>
 <p>These classes contain provided sample data: AccountDataFeederFactory, ContactDataFeederFactory, OpportunityDataFeederFactory...</p>
-<p>For example, this is peace of code from AccountDataFeederFactory, just update all accounts from this map with required field</p>
+<p>For example, this is peace of code from ContactDataFeederFactory, just update all contacts from this map with required field</p>
 <pre> 
     public String getName() {
         return 'Sample Contacts';

@@ -14,9 +14,12 @@ export default class Diagnostic extends LightningElement {
     @track actionTypes = [];
     @track actionNumber = 0;
     @track types = [];
+    @track selectingStep = 1;
     @track batchClasses = [];
     @track scheduledClasses = [];
-    @track updateRecords = false;
+    @track values = [];
+    checkboxValues = [];
+    index;
     logPayload = {};
     jobResultPayload = {};
     sObjectLoadLog = '/event/SObjectLoadEvent__e';
@@ -105,9 +108,9 @@ export default class Diagnostic extends LightningElement {
                 return;
             }
             if (this.values.length != this.actionNumber && this.jobResultPayload.data.payload.Action_Type__c) {
-                if (this.jobResultPayload.data.payload.Action_Type__c === 'Test') {
+                if (this.jobResultPayload.data.payload.Action_Type__c === 'TEST') {
                     this.handleTest();
-                } else if (this.jobResultPayload.data.payload.Action_Type__c === 'Execute') {
+                } else if (this.jobResultPayload.data.payload.Action_Type__c === 'RUN') {
                     this.handleExecute();
                 }
             } else {
@@ -139,8 +142,6 @@ export default class Diagnostic extends LightningElement {
             log += this.setColor('blue', 'Successfully updated ' + sObjectApiName + '\'s records. ');
         } else if (messageType == 'INSERTED') {
             log += this.setColor('blue', 'Successfully inserted ' + sObjectApiName + '\'s records. ');
-        }else if (messageType == 'UPSERTED') {
-            log += this.setColor('blue', 'Successfully upserted ' + sObjectApiName + '\'s records. ');
         } else if (messageType == 'FAILED') {
             log += this.setColor('red', 'Error occured. Ask administator for help');
         }
@@ -154,19 +155,16 @@ export default class Diagnostic extends LightningElement {
         return 'Action was finished';
     }
 
-    handleCheckboxChange(event) {
-        this.updateRecords = event.target.checked;        
-    }
-
     setColor(color, message) {
         return '<p style="font-weight: bold; color:' + color + '">' + message + '</p>';
     }
 
     handleExecute = () => {
         this.actionDisabled = true;
-        let type = this.actionTypes[this.actionNumber];
+        let type = this.values[this.actionNumber];
+        let update = this.checkboxValues[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
-        action({actionType: type, updateRecords: this.updateRecords, checkOnly: false})
+        action({actionType: type, updateRecords: update, checkOnly: false})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })
@@ -177,9 +175,10 @@ export default class Diagnostic extends LightningElement {
 
     handleTest = () => {
         this.actionDisabled = true;
-        let type = this.actionTypes[this.actionNumber];
+        let type = this.values[this.actionNumber];
+        let update = this.checkboxValues[this.actionNumber];
         this.actionNumber = this.actionNumber + 1;
-        action({actionType: type, updateRecords: this.updateRecords, checkOnly: true})
+        action({actionType: type, updateRecords: update, checkOnly: true})
             .then(result => {
                 this.logs.push(this.handleHeaderMessage(result));
             })
@@ -193,8 +192,12 @@ export default class Diagnostic extends LightningElement {
     }
 
     handleDataType(event) {
-        this.actionTypes = event.detail.value;
-        this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0
+        this.values = event.detail.value;
+        this.actionDisabled = !this.values || this.values.length <= 0;
+        this.checkboxValues = [];
+        for (let i = 0; i < event.detail.value.length; i++) {
+            this.checkboxValues.push(false);
+        }
     };
 
     handleClear() {
@@ -204,6 +207,26 @@ export default class Diagnostic extends LightningElement {
     handleSelectClassName(event) {
         this.actionTypes.push(event.detail.value);
         this.actionDisabled = !this.actionTypes || this.actionTypes.length <= 0
+    }
+
+    handleNext = () => {
+        this.selectingStep = 2;
+    };
+
+    handlePrevious = () => {
+        this.selectingStep = 1;
+        this.checkboxValues.forEach((element, index) => {
+            this.checkboxValues[index] = false;
+          });
+    };
+
+    handleChange(event) {
+        this.checkboxValues[event.target.dataset.index] = event.target.checked;
+        this.index = event.target.dataset.index;
+    }
+
+    get isDataTypesSelected(){
+        return this.selectingStep == 2;
     }
 
     get isDataLoading() {

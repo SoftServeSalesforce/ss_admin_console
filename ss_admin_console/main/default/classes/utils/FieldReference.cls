@@ -39,7 +39,7 @@ public abstract class FieldReference {
      * @param record describes sObject 
      * @return value of the field
      */
-    public abstract Object getFrom(sObject record);
+    public abstract Object getFrom(SObject record);
 
     /**
      * Return referenced field as SObjectField

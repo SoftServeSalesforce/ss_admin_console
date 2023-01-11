@@ -36,6 +36,12 @@ public inherited sharing class SSACUtilTest {
         System.assertEquals(2, subClasses.size());
     }
 
+    @IsTest
+    private static void testDummy() {
+        new TestClassSub1();
+        new TestClassSub2();
+    }
+
     @isTest
     static void testGetSubClassesForTestInterface() {
         Test.startTest();

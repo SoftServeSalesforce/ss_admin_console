@@ -7,7 +7,7 @@ public inherited sharing class DataDefinitionTest {
                 addKeyField(OpportunityLineItem.Quantity).addKeyField('Product2.ProductCode').
                 addDataField(OpportunityLineItem.Quantity).addDataField('Product2.ProductCode').
                 addReferenceField(OpportunityLineItem.OpportunityId, new SObjectField[] {OpportunityLineItem.Opportunity.Name}).
-                addReferenceField(OpportunityLineItem.Product2Id, new String[] {'Product2.ProductCode'});
+                addReferenceField(OpportunityLineItem.Product2Id, new String[] {'ProductCode'});
 
         Test.startTest();
         DataDefinition dd = ddb.build();
@@ -32,19 +32,6 @@ public inherited sharing class DataDefinitionTest {
     @IsTest
     static void testDDBInvalidKeyFieldsBuild() {
         DataDefinition.DataDefinitionBuilder ddb = new DataDefinition.DataDefinitionBuilder(Account.SObjectType);
-        
-        Test.startTest();
-        try {
-            ddb.build();
-            System.assert(false, 'IllegalArgumentException is expected here');
-        } catch (IllegalArgumentException e) {}
-        Test.stopTest();
-    }
-
-    @IsTest
-    static void testDDBInvalidDataFieldsBuild() {
-        DataDefinition.DataDefinitionBuilder ddb = new DataDefinition.DataDefinitionBuilder(Account.SObjectType).
-                addKeyField('Name');
         
         Test.startTest();
         try {

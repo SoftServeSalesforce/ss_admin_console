@@ -6,96 +6,60 @@
                 </lightning-spinner>
             </template>
         </div>
-        <lightning-combobox
-                name="actions"
-                label="Select an action:"
-                placeholder="Select an action"
-                options={actions}
-                onchange={handleActions}>
-        </lightning-combobox>
-        <template if:true={isDataLoading}>
-            <lightning-dual-listbox name="languages"
-                                    source-label="Available"
-                                    selected-label="Selected"
-                                    options={types}
-                                    onchange={handleDataType}
-                                    value={values}>
-            </lightning-dual-listbox>
-        </template>
 
-        <template if:true={isJobScheduled}>
-            <div class="slds-box slds-m-top_large">
-                <div class="slds-m-left_x-small">
-                    <lightning-combobox
-                            name="scheduledClasses"
-                            label="Select a Scheduled class:"
-                            placeholder="Select a Scheduled class"
-                            options={scheduledClasses}
-                            required=true
-                            onchange={handleSelectClassName}>
-                    </lightning-combobox>
-                </div>
-            </div>
-        </template>
+        <lightning-tabset>
+            <lightning-tab label="Load Data">
+                <template if:false={isDataTypesSelected}>
+                    <lightning-dual-listbox name="languages" source-label="Available" selected-label="Selected"
+                        options={types} onchange={handleDataType} value={values}>
+                    </lightning-dual-listbox>
 
-        <template if:true={isJobBatchable}>
-            <div class="slds-box slds-m-top_large">
-                <div class="slds-m-left_x-small">
-                    <lightning-combobox
-                            name="batchClasses"
-                            label="Select a Batch class:"
-                            placeholder="Select a Batch class"
-                            options={batchClasses}
-                            required=true
-                            onchange={handleSelectClassName}>
-                    </lightning-combobox>
-                </div>
-            </div>
-        </template>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-col_bump-left slds-text-align_center slds-m-top_large">
+                            <div class="slds-button-group">
+                                <lightning-button label="Clear" title="Clear" onclick={handleClear}
+                                    class="slds-m-right_medium">
+                                </lightning-button>
+                                <lightning-button disabled={actionDisabled} label="Next" variant="brand"
+                                    onclick={handleNext} class="slds-m-right_medium">
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
 
-        <div class="slds-grid slds-grid_align-spread">
-            <div class="slds-col">
-                <div class="slds-m-top_large">
-                    <lightning-button
-                            disabled={actionDisabled}
-                            label="Test"
-                            title="Test"
-                            variant="brand"
-                            onclick={handleTest}
-                            class="slds-m-left_x-small">
-                    </lightning-button>
-                    <lightning-button
-                            disabled={actionDisabled}
-                            label="Execute"
-                            title="Execute"
-                            variant="brand"
-                            onclick={handleExecute}
-                            class="slds-m-left_x-small">
-                    </lightning-button>
-                    <lightning-input 
-                            type="checkbox" 
-                            label="Update records?" 
-                            class="slds-m-left_x-small" 
-                            checked={updateRecords}
-                            onchange={handleCheckboxChange}>
-                    </lightning-input>
-                </div>
-            </div>
-            <div class="slds-col">
-                <div class="slds-m-top_large">
-                    <lightning-button
-                            label="Clear"
-                            title="Clear"
-                            variant="destructive"
-                            onclick={handleClear}
-                            class="slds-m-left_x-small">
-                    </lightning-button>
-                </div>
-            </div>
-        </div>
-
+                <template if:true={isDataTypesSelected}>
+                    <div class="slds-box slds-m-top_medium">
+                        <h1>Select data types, for which you want to update existing records:</h1>
+                        <template for:each={values} for:item="v" for:index="index">
+                            <lightning-input key={v} data-index={index} type="checkbox" label={v}
+                                class="slds-m-left_x-small" onchange={handleChange}>
+                            </lightning-input>
+                        </template>
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-col_bump-left slds-text-align_center slds-m-top_large">
+                            <div class="slds-button-group">
+                                <lightning-button label="Previous" title="Previous" variant="brand"
+                                    onclick={handlePrevious} class="slds-m-right_medium">
+                                </lightning-button>
+                                <lightning-button label="Clear" title="Clear" onclick={handleClear}
+                                    class="slds-m-right_medium">
+                                </lightning-button>
+                                <lightning-button disabled={actionDisabled} label="Test" title="Test" variant="brand"
+                                    onclick={handleTest} class="slds-m-right_medium">
+                                </lightning-button>
+                                <lightning-button disabled={actionDisabled} label="Execute" title="Execute"
+                                    variant="brand" onclick={handleExecute} class="slds-m-right_medium">
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </lightning-tab>
+        </lightning-tabset>
         <div class="slds-box slds-m-top--large slds-scrollable"
-             style="height: 18rem; font-family: 'Source Code Pro',monospace; font-size: x-small">
+            style="height: 18rem; font-family: 'Source Code Pro',monospace; font-size: x-small">
             <template for:each={logs} for:item="logsItem">
                 <div key={logsItem}>
                     <lightning-formatted-rich-text value={logsItem}></lightning-formatted-rich-text>

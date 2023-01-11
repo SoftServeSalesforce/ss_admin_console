@@ -108,9 +108,9 @@ export default class Diagnostic extends LightningElement {
                 return;
             }
             if (this.values.length != this.actionNumber && this.jobResultPayload.data.payload.Action_Type__c) {
-                if (this.jobResultPayload.data.payload.Action_Type__c === 'Test') {
+                if (this.jobResultPayload.data.payload.Action_Type__c === 'TEST') {
                     this.handleTest();
-                } else if (this.jobResultPayload.data.payload.Action_Type__c === 'Execute') {
+                } else if (this.jobResultPayload.data.payload.Action_Type__c === 'RUN') {
                     this.handleExecute();
                 }
             } else {

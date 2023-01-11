@@ -4,43 +4,53 @@ public with sharing class SSACResultTest {
     static void testSetStatus() {
         SSACResult obj = new SSACResult();
         Test.startTest();
-        //String str = obj.setStatus('');
-        obj.setStatus('');
+        obj.setStatus('Duplicated');
         Test.stopTest();
+        System.assertEquals('Duplicated', obj.status);
     }
 
     @IsTest
     static void testSetRecordKey() {
+        SSACResult obj = new SSACResult();
         Test.startTest();
-        new SSACResult().setRecordKey('recordKey');
+        obj.setRecordKey('recordKey');
         Test.stopTest();
+        System.assertEquals('recordKey', obj.recordKey);
     }
 
     @IsTest
     static void testSetRecordId() {
+        SSACResult obj = new SSACResult();
         Test.startTest();
-        new SSACResult().setRecordId('recordId');
+        obj.setRecordId('recordId');
         Test.stopTest();
+        System.assertEquals('recordId', obj.recordId);
     }
 
     @IsTest
     static void testSetErrorMessage() {
+        SSACResult obj = new SSACResult();
         Test.startTest();
-        new SSACResult().setErrorMessage('ErrorMessage');
+        obj.setErrorMessage('ErrorMessage');
         Test.stopTest();
+        System.assertEquals('ErrorMessage', obj.errorMessage);
     }
 
     @IsTest
     static void testSetDescription() {
+        SSACResult obj = new SSACResult();
         Test.startTest();
-        new SSACResult().setDescription('Description');
+        obj.setDescription('Description');
         Test.stopTest();
+        System.assertEquals('Description', obj.description);
     }
 
     @IsTest
     static void testSetSObjectApiName() {
+        SSACResult obj = new SSACResult();
         Test.startTest();
-        new SSACResult().setSObjectApiName('SObjectApiName');
+        obj.setSObjectApiName('SObjectApiName');
         Test.stopTest();
+        System.assertEquals('SObjectApiName', obj.sObjectApiName);
     }
 }

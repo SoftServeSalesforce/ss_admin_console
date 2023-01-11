@@ -28,6 +28,10 @@ public with sharing class RecordKey {
     }
     
     public override String toString() {
-        return 'Hello';
+        String recordFingerprint = '';
+        for (FieldReference field : keyFields) {
+            recordFingerprint += field.getFrom(record);
+        }
+        return recordFingerprint.toLowerCase();
     }
 }

@@ -23,12 +23,12 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
 
     public void feed(Boolean updateRecords, FeedLogger logger) {
         SSACResultsUtil util = new SSACResultsUtil();
-        fflib_SObjectUnitOfWork uow;
+        fflib_ISObjectUnitOfWork uow;
         DataDefinition metadata = supplier.getMetadata();
         if (metadata.referenceFields.isEmpty()) {
-            uow = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {metadata.objectType});
+            uow = ApplicationFactories.UNIT_OF_WORK.newInstance(new Schema.SObjectType[] {metadata.objectType});
         } else {
-            uow = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {metadata.objectType, parentObjectType});
+            uow = ApplicationFactories.UNIT_OF_WORK.newInstance(new Schema.SObjectType[] {metadata.objectType, parentObjectType});
         }
         UnitOfWorkHelper uowHelper = new UnitOfWorkHelper(uow, supplier);
         List<SSACResult> results = createDataFilter(metadata, generateRecordsMap()).filter();
@@ -41,7 +41,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         if (updateRecords) {
             if (!recordsToUpsert.isEmpty()) {
                 try {
-                    uow = uowHelper.registerRecords(recordsToUpsert, metadata.referenceFields.size(), logger);
+                    uowHelper.registerRecords(recordsToUpsert, metadata.referenceFields.size(), logger);
                     uow.commitWork();
                     logger.log(String.valueOf(metadata.objectType), this.handleAmountOfRecordsProceed(okResults.size()), ApexActionStatus.INSERTED.value());
                     logger.log(String.valueOf(metadata.objectType), this.handleAmountOfRecordsProceed(changedResults.size()), ApexActionStatus.UPDATED.value());
@@ -56,7 +56,7 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         } else {
             if (!okResults.isEmpty()) {
                 try {
-                    uow = uowHelper.registerRecords(okResults, supplier.getMetadata().referenceFields.size(), logger);
+                    uowHelper.registerRecords(okResults, supplier.getMetadata().referenceFields.size(), logger);
                     uow.commitWork();
                     logger.log(String.valueOf(metadata.objectType), this.handleAmountOfRecordsProceed(okResults.size()), ApexActionStatus.INSERTED.value());
                 } catch (Exception e) {

@@ -1,6 +1,5 @@
 /**
  *  Provides a data filtration dividing records to three status: Changed/Duplicated/Ok.
- *  If at least one key field of current record is changed, record is Ok and ready to be inserted.
  *  If key fields are not changed but non key fields changed, record is Changed and ready to be updated.
  *  If data fields are not changed, record is Duplicated and upsertion is skipped.
  */
@@ -9,8 +8,12 @@ public inherited sharing class DataFilter {
     private Map<RecordKey, SObject> records;
     
     /**
-     * @param supplier contains data to filter
+     * Constructor.
+     *
+     * @param metadata SObject metadata
+     * @param records records to filter
      */
+    // TODO Replace Map with List
     public DataFilter(DataDefinition metadata, Map<RecordKey, SObject> records) {
         this.metadata = metadata;
         this.records = records;
@@ -18,7 +21,7 @@ public inherited sharing class DataFilter {
 
     /** 
      * Determines OK, Duplicated and Changed records.
-     *  @return list of filtered records with determined status
+     * @return list of filtered records with determined status
      */
     public List<SSACResult> filter() {
         if (records == null && records.isEmpty()) {

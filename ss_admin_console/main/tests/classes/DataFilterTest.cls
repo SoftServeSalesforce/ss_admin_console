@@ -8,9 +8,12 @@ public with sharing class DataFilterTest {
     @IsTest
     private static void testFilter() {
         insertData();
+
         Test.startTest();
-        List<SSACResult> filteredRecords = new DataFilter(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata(), generateMap()).filter();
+        List<SSACResult> filteredRecords = new DataFilter(
+                new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata(), generateMap()).filter();
         Test.stopTest();
+
         System.assertEquals(3, filteredRecords.size(), 'Filter method is not returning the right amount of records');
         System.assertNotEquals(null, filteredRecords.get(0).status, 'Status is not populated');
         System.assertEquals(ApexActionStatus.OK.value(), filteredRecords.get(0).status, 'Filter status is not correct');

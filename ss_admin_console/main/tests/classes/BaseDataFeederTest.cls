@@ -40,6 +40,8 @@ public with sharing class BaseDataFeederTest {
         fflib_ApexMocks mocks = new fflib_ApexMocks();
         FeedLogger logger = (FeedLogger) mocks.mock(FeedLogger.class);
         fflib_SObjectUnitOfWork fflibUnitOfWork = (fflib_SObjectUnitOfWork) mocks.mock(fflib_SObjectUnitOfWork.class);
+        ApplicationFactories.UNIT_OF_WORK.setMock(fflibUnitOfWork);
+
         BaseDataFeeder df = baseDataFeederInstance(mocks, false, true);
         Test.startTest();
         df.feed(false, logger);
@@ -52,6 +54,8 @@ public with sharing class BaseDataFeederTest {
         fflib_ApexMocks mocks = new fflib_ApexMocks();
         FeedLogger logger = (FeedLogger) mocks.mock(FeedLogger.class);
         fflib_SObjectUnitOfWork fflibUnitOfWork = (fflib_SObjectUnitOfWork) mocks.mock(fflib_SObjectUnitOfWork.class);
+        ApplicationFactories.UNIT_OF_WORK.setMock(fflibUnitOfWork);
+
         BaseDataFeeder df = baseDataFeederInstance(mocks, false, false);
         Test.startTest();
         df.feed(false, logger);

@@ -63,8 +63,9 @@ public with sharing class DataFilterTest {
 
     private static Map<RecordKey, SObject> generateMap() {
         Map<RecordKey, SObject> recordsMap = new Map<RecordKey, SObject>();
+        List<FieldReference> keyFields = new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata().keyFields;
         for (SObject item : sampleTestData) {
-            recordsMap.put(new RecordKey(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata().keyFields, item), item);
+            recordsMap.put(new RecordKey(keyFields, item), item);
         }
         return recordsMap;
     }

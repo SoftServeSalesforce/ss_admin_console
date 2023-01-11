@@ -1,8 +1,7 @@
 public inherited sharing class BaseDataFeeder implements DataFeeder {
-    private DataSupplier supplier;
-    private DataDefinition metadata;
-    private SObjectType parentObjectType;
-    private SSACResultsUtil util;
+    private final DataSupplier supplier;
+    private final DataDefinition metadata;
+    private final SObjectType parentObjectType;
 
     @TestVisible
     private DataFilter mockedDF;

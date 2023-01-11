@@ -66,16 +66,16 @@ node {
     withCredentials([file(credentialsId: JWT_KEY_FILE_CRED_NAME, variable: 'jwt_key_file')]) {
 
         stage('Deploy To Org') {
-            rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${ORG_USERNAME} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
+            rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${ORG_USERNAME} --jwtkeyfile ${jwt_key_file} --setdefaultusername --instanceurl ${SFDC_HOST}"
             if (rc != 0) { error 'hub org authorization failed' }
 
             if (isPrToMain) {
-                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:source:deploy --checkonly --testlevel RunLocalTests --targetusername ${ORG_USERNAME} -p \"3rd-party, ss_admin_console\""
+                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:source:deploy --checkonly --testlevel RunLocalTests -p \"3rd-party, ss_admin_console\""
                 if (rc != 0) {
                     error 'Validation failed'
                 }
             } else {
-                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:source:deploy --targetusername ${ORG_USERNAME} -p \"3rd-party, ss_admin_console\""
+                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:source:deploy -p \"3rd-party, ss_admin_console\""
                 if (rc != 0) {
                     error 'Deploy failed'
                 }

@@ -16,13 +16,12 @@ public with sharing class BaseDataFeederTest {
     private static void testFeedUpsertMocksPositive() {
         fflib_ApexMocks mocks = new fflib_ApexMocks();
         FeedLogger logger = (FeedLogger) mocks.mock(FeedLogger.class);
-        fflib_SObjectUnitOfWork fflibUnitofWork = (fflib_SObjectUnitOfWork) mocks.mock(fflib_SObjectUnitOfWork.class);
-        fflibUnitofWork = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {Contact.SObjectType, Account.SObjectType});
+        fflib_SObjectUnitOfWork fflibUnitOfWork = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {Contact.SObjectType, Account.SObjectType});
         BaseDataFeeder df = baseDataFeederInstance(mocks, false, true);
         Test.startTest();
         df.feed(true, logger);
         Test.stopTest();
-        ((fflib_SObjectUnitOfWork) mocks.verify(fflibUnitofWork, 1)).commitWork();
+        ((fflib_SObjectUnitOfWork) mocks.verify(fflibUnitOfWork, 1)).commitWork();
     }
 
     @IsTest 
@@ -40,26 +39,24 @@ public with sharing class BaseDataFeederTest {
     private static void testFeedInsertMocksPositive() {
         fflib_ApexMocks mocks = new fflib_ApexMocks();
         FeedLogger logger = (FeedLogger) mocks.mock(FeedLogger.class);
-        fflib_SObjectUnitOfWork fflibUnitofWork = (fflib_SObjectUnitOfWork) mocks.mock(fflib_SObjectUnitOfWork.class);
-        fflibUnitofWork = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {Contact.SObjectType, Account.SObjectType});
+        fflib_SObjectUnitOfWork fflibUnitOfWork = (fflib_SObjectUnitOfWork) mocks.mock(fflib_SObjectUnitOfWork.class);
         BaseDataFeeder df = baseDataFeederInstance(mocks, false, true);
         Test.startTest();
         df.feed(false, logger);
         Test.stopTest();
-        ((fflib_SObjectUnitOfWork) mocks.verify(fflibUnitofWork, 1)).commitWork();
+        ((fflib_SObjectUnitOfWork) mocks.verify(fflibUnitOfWork, 1)).commitWork();
     }
 
     @IsTest 
     private static void testFeedInsertMocksPositiveAccounts() {
         fflib_ApexMocks mocks = new fflib_ApexMocks();
         FeedLogger logger = (FeedLogger) mocks.mock(FeedLogger.class);
-        fflib_SObjectUnitOfWork fflibUnitofWork = (fflib_SObjectUnitOfWork) mocks.mock(fflib_SObjectUnitOfWork.class);
-        fflibUnitofWork = new fflib_SObjectUnitOfWork(new Schema.SObjectType[] {Account.SObjectType});
+        fflib_SObjectUnitOfWork fflibUnitOfWork = (fflib_SObjectUnitOfWork) mocks.mock(fflib_SObjectUnitOfWork.class);
         BaseDataFeeder df = baseDataFeederInstance(mocks, false, false);
         Test.startTest();
         df.feed(false, logger);
         Test.stopTest();
-        ((fflib_SObjectUnitOfWork) mocks.verify(fflibUnitofWork, 1)).commitWork(); 
+        ((fflib_SObjectUnitOfWork) mocks.verify(fflibUnitOfWork, 1)).commitWork();
     }
 
     private static BaseDataFeeder baseDataFeederInstance(fflib_ApexMocks mocks, Boolean clearResults, Boolean isChild) {

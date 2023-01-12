@@ -4,8 +4,8 @@
  *  If data fields are not changed, record is Duplicated and upsertion is skipped.
  */
 public inherited sharing class DataFilter {
-    private DataDefinition metadata;
-    private Map<RecordKey, SObject> records;
+    private final DataDefinition metadata;
+    private final List<SObject> records;
     
     /**
      * Constructor.
@@ -14,7 +14,7 @@ public inherited sharing class DataFilter {
      * @param records records to filter
      */
     // TODO Replace Map with List
-    public DataFilter(DataDefinition metadata, Map<RecordKey, SObject> records) {
+    public DataFilter(DataDefinition metadata, List<SObject> records) {
         this.metadata = metadata;
         this.records = records;
     }
@@ -30,18 +30,18 @@ public inherited sharing class DataFilter {
         List<SSACResult> results = new List<SSACResult>();
         List<SObject> existentRecords = loadExistentRecords(records);
         Map<RecordKey, SObject> existentMap = generateRecordsMap(existentRecords);
-        for (RecordKey key : records.keySet()) {
-            SObject existentSObject = existentMap.get(key);
+        for (SObject record : records) {
+            RecordKey recordKey = new RecordKey(metadata.keyFields, record);
+            SObject existentSObject = existentMap.get(recordKey);
             if (existentSObject != null) {
                 Integer matchedNonKeyFields = 0;
-                SObject sampleSObject = records.get(key);
                 for (FieldReference nonKeyField : metadata.dataFields) {
-                    if (nonKeyField.getFrom(sampleSObject) == nonKeyField.getFrom(existentSObject)) {
+                    if (nonKeyField.getFrom(record) == nonKeyField.getFrom(existentSObject)) {
                         matchedNonKeyFields++;
                     } else {
                         results.add(new SSACResult()
                             .setStatus(ApexActionStatus.CHANGED.value())
-                            .setRecordKey(key.toString())
+                            .setRecordKey(recordKey.toString())
                             .setRecordId(existentSObject.Id)
                             .setSObjectApiName(metadata.objectType.getDescribe().getName()));
                         break;
@@ -50,13 +50,13 @@ public inherited sharing class DataFilter {
                 if (matchedNonKeyFields == metadata.dataFields.size()) {
                     results.add(new SSACResult()
                         .setStatus(ApexActionStatus.DUPLICATED.value())
-                        .setRecordKey(key.toString())
+                        .setRecordKey(recordKey.toString())
                         .setSObjectApiName(metadata.objectType.getDescribe().getName()));
                 }
             } else {
                 results.add(new SSACResult()
                     .setStatus(ApexActionStatus.OK.value())
-                    .setRecordKey(key.toString())
+                    .setRecordKey(recordKey.toString())
                     .setSObjectApiName(metadata.objectType.getDescribe().getName()));
             }
         }
@@ -83,7 +83,7 @@ public inherited sharing class DataFilter {
      * @return list of queried records
      */
     @TestVisible
-    private List<SObject> loadExistentRecords(Map<RecordKey, SObject> records) {
+    private List<SObject> loadExistentRecords(List<SObject> records) {
         List<Set<Object>> keyFieldValues = this.getKeyFieldValues(records);
         Integer fieldsNumber = keyFieldValues.size();
         Object pr0 = (fieldsNumber > 0) ? SetUtils.toSetOfType(metadata.keyFields[0], keyFieldValues[0]) : null;
@@ -101,11 +101,11 @@ public inherited sharing class DataFilter {
      * @return list of values of all key fields 
      */
     @TestVisible
-    private List<Set<Object>> getKeyFieldValues(Map<RecordKey, SObject> records) {
+    private List<Set<Object>> getKeyFieldValues(List<SObject> records) {
         List<Set<Object>> constantValues = new List<Set<Object>>();
         for (FieldReference field : metadata.keyFields) {
             Set<Object> values = new Set<Object>();
-            for (SObject obj : records.values()) {
+            for (SObject obj : records) {
                 values.add(field.getFrom(obj));
             }
             constantValues.add(values);

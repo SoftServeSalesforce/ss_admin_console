@@ -11,7 +11,7 @@ public with sharing class DataFilterTest {
 
         Test.startTest();
         List<SSACResult> filteredRecords = new DataFilter(
-                new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata(), generateMap()).filter();
+                new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata(), sampleTestData).filter();
         Test.stopTest();
 
         System.assertEquals(3, filteredRecords.size(), 'Filter method is not returning the right amount of records');
@@ -25,7 +25,7 @@ public with sharing class DataFilterTest {
     private static void testGetExistentContactRecords() { 
         insertData();
         Test.startTest();
-        List<SObject> queriedRecords = new DataFilter(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata(), generateMap()).loadExistentRecords(generateMap());
+        List<SObject> queriedRecords = new DataFilter(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata(), sampleTestData).loadExistentRecords(sampleTestData);
         Test.stopTest();
         System.assertEquals(queriedRecords.size(), 2, 'Query does not return the right amount of records');
         System.assertEquals(sampleTestData[2].LastName, queriedRecords[1].get('LastName'));
@@ -63,14 +63,4 @@ public with sharing class DataFilterTest {
         new Contact(LastName = 'Brown', FirstName = 'Test', Email = 'EmmaBrown@testmail.com', Account = new Account(Name='Adept Software')), // Changed
         new Contact(LastName = 'Wilson', FirstName = 'Amelia', Email = 'AmeliaWilson@testmail.com', Account = new Account(Name='Boss Software')) // Duplicated
     };
-
-    private static Map<RecordKey, SObject> generateMap() {
-        Map<RecordKey, SObject> recordsMap = new Map<RecordKey, SObject>();
-        List<FieldReference> keyFields = new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata().keyFields;
-        for (SObject item : sampleTestData) {
-            recordsMap.put(new RecordKey(keyFields, item), item);
-        }
-        return recordsMap;
-    }
-    
 }

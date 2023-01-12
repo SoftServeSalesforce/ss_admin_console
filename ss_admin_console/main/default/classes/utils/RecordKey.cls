@@ -1,6 +1,6 @@
 public with sharing class RecordKey {
-    private List<FieldReference> keyFields;
-    private SObject record;
+    private final List<FieldReference> keyFields;
+    private final SObject record;
 
     public RecordKey(List<FieldReference> keyFields, SObject record) {
         this.keyFields = keyFields;

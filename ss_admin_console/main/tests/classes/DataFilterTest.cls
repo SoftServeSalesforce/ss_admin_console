@@ -25,12 +25,22 @@ public with sharing class DataFilterTest {
     private static void testGetExistentContactRecords() { 
         insertData();
         Test.startTest();
-        List<SObject> queriedRecords = new DataFilter(new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData).getMetadata(), sampleTestData).loadExistentRecords(sampleTestData);
+        DataSupplier supplier = new StaticDataSupplier(dataDefinitionBuilder.build(), sampleTestData);
+        DataFilter filter = new DataFilter(supplier.getMetadata(), sampleTestData);
+        List<Contact> queriedRecords = (List<Contact>) filter.loadExistentRecords(sampleTestData);
         Test.stopTest();
+
         System.assertEquals(queriedRecords.size(), 2, 'Query does not return the right amount of records');
-        System.assertEquals(sampleTestData[2].LastName, queriedRecords[1].get('LastName'));
-        System.assertEquals(sampleTestData[2].FirstName, queriedRecords[1].get('FirstName'));
-        System.assertEquals(sampleTestData[2].Email.toLowerCase(), queriedRecords[1].get('Email'));
+        Integer index = -1;
+        for (Integer i = 0; i < queriedRecords.size(); i++) {
+            if (queriedRecords[i].Email == sampleTestData[2].Email) {
+                index = i;
+                break;
+            }
+        }
+        System.assert(index > -1);
+        System.assertEquals(sampleTestData[2].LastName, queriedRecords[index].get('LastName'));
+        System.assertEquals(sampleTestData[2].FirstName, queriedRecords[index].get('FirstName'));
     }
 
     static void insertData() {

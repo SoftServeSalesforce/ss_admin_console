@@ -32,9 +32,9 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
         }
         UnitOfWorkHelper uowHelper = new UnitOfWorkHelper(uow, supplier);
         List<SSACResult> results = createDataFilter(metadata, supplier.supply()).filter();
-        List<SObject> okResults = this.assignId(util.getResultsByStatus(results, ApexActionStatus.OK.value()));
-        List<SObject> changedResults = this.assignId(util.getResultsByStatus(results, ApexActionStatus.CHANGED.value()));
-        List<SObject> duplicatedResults = this.assignId(util.getResultsByStatus(results, ApexActionStatus.DUPLICATED.value()));
+        List<SObject> okResults = assignId(util.getResultsByStatus(results, ApexActionStatus.OK.value()));
+        List<SObject> changedResults = assignId(util.getResultsByStatus(results, ApexActionStatus.CHANGED.value()));
+        List<SObject> duplicatedResults = assignId(util.getResultsByStatus(results, ApexActionStatus.DUPLICATED.value()));
         List<SObject> recordsToUpsert = new List<SObject>();
         recordsToUpsert.addAll(okResults);
         recordsToUpsert.addAll(changedResults);
@@ -72,15 +72,18 @@ public inherited sharing class BaseDataFeeder implements DataFeeder {
     private List<SObject> assignId(List<SSACResult> results) {
         List<SObject> records = new List<SObject>();
 
-        Map<String, Id> recordKeyToId = new Map<String, Id>();
+        Map<String, SSACResult> recordKeyToId = new Map<String, SSACResult>();
         for (SSACResult result : results) {
-            recordKeyToId.put(result.recordKey, result.recordId);
+            recordKeyToId.put(result.recordKey, result);
         }
 
         for (SObject record : supplier.supply()) {
             RecordKey recordKey = new RecordKey(metadata.keyFields, record);
-            Id recordId = recordKeyToId.get(recordKey.toString());
-            record.Id = recordId;
+            SSACResult result = recordKeyToId.get(recordKey.toString());
+            if (result != null) {
+                record.Id = result.recordId;
+                records.add(record);
+            }
         }
         return records;
     }
